@@ -782,7 +782,10 @@ app.post("/api/admin/earning",adminOnly,async(req,res)=>{
 // ═══════════════════════════════════════════
 // PAGE ROUTES
 // ═══════════════════════════════════════════
-app.get("/",(req,res)=>res.sendFile(path.join(__dirname,"public","login.html")));
+// ═══════════════════════════════════════════
+// PAGE ROUTES
+// ═══════════════════════════════════════════
+app.get("/",(req,res)=>res.sendFile(path.join(__dirname,"public","landing.html"))); // ✅ Changed this to landing.html
 app.get("/login",(req,res)=>res.sendFile(path.join(__dirname,"public","login.html")));
 app.get("/register",(req,res)=>res.sendFile(path.join(__dirname,"public","register.html")));
 app.get("/dashboard",(req,res)=>res.sendFile(path.join(__dirname,"public","dashboard.html")));
