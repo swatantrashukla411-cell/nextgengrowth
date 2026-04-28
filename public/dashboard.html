@@ -849,7 +849,7 @@ function renderHomeMatchedJobs(jobs){
   el.innerHTML=jobs.map(j=>`<div class="pc" onclick="goTo('projects',null)" style="flex-direction:row;gap:10px;padding:11px;margin-bottom:8px"><div style="font-size:1.1rem;flex-shrink:0">${j.ico}</div><div style="flex:1;min-width:0"><div class="pn" style="font-size:.83rem">${j.title}</div><div class="pm" style="margin-top:2px;font-size:.7rem;color:var(--ts)">🏢 ${j.brand} · ${j.days}</div></div><div style="text-align:right;flex-shrink:0"><div class="pp" style="font-size:.88rem">${j.pay}</div>${bdg[j.badge]}</div></div>`).join('');
 }
 
-// PROJECTS
+/// PROJECTS
 function renderProjects(){
   let jobs=curFilter==='ai'?aiJobs:ALL_JOBS;
   if(curCat!=='all')jobs=jobs.filter(j=>j.cat===curCat);
@@ -859,7 +859,14 @@ function renderProjects(){
   const bdg={hot:'<span class="tag th">🔥 Hot</span>',new:'<span class="tag tn">✨ New</span>',apply:'<span class="tag trev">📝 Apply</span>'};
   grid.innerHTML=jobs.map(j=>{
     const m=j.isMatch&&curFilter==='ai';const mt=j.matchedTags||[];
-    return`<div class="pc ${m?'matched':''}" onclick="applyJob('${j.id}')">${m?'<div class="match-bd">🤖 Match</div>':''}<div class="pt_"><div class="pi">${j.ico}</div><div style="padding-right:${m?'70px':'0'}"><div class="pb_">${j.brand}</div><div class="pn">${j.title}</div></div></div><div class="ptgs">${(j.tags||[]).map(t=>`<span class="ptg ${mt.includes(t)?'mt':''}">${t}</span>`).join('')}</div><div class="pf_"><div><div class="pp">${j.pay}</div><div class="pm">⏱ ${j.days} · 📍 Remote</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">${bdg[j.badge]}<button class="pa" onclick="event.stopPropagation();applyJob('${j.id}')">Apply</button></div></div></div>`;
+    
+    // CHANGED: Determine button UI based on hasApplied state
+    const btnHtml = j.hasApplied 
+      ? `<button class="pa" style="background:var(--gm);color:white;border-color:var(--gm);cursor:default" onclick="event.stopPropagation()">Applied ✓</button>`
+      : `<button class="pa" onclick="event.stopPropagation();applyJob('${j.id}')">Apply</button>`;
+
+    // CHANGED: Disable card click if already applied
+    return`<div class="pc ${m?'matched':''}" onclick="${j.hasApplied ? '' : `applyJob('${j.id}')`}">${m?'<div class="match-bd">🤖 Match</div>':''}<div class="pt_"><div class="pi">${j.ico}</div><div style="padding-right:${m?'70px':'0'}"><div class="pb_">${j.brand}</div><div class="pn">${j.title}</div></div></div><div class="ptgs">${(j.tags||[]).map(t=>`<span class="ptg ${mt.includes(t)?'mt':''}">${t}</span>`).join('')}</div><div class="pf_"><div><div class="pp">${j.pay}</div><div class="pm">⏱ ${j.days} · 📍 Remote</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">${bdg[j.badge]||''}${btnHtml}</div></div></div>`;
   }).join('');
 }
 
@@ -871,10 +878,19 @@ function setFilter(f,btn){
 
 async function applyJob(id){
   const j=ALL_JOBS.find(x=>x.id===id);
+  if(j.hasApplied) return; // Prevent double applying
+
   try{
     const res=await fetch('/api/apply',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+_tk},body:JSON.stringify({jobId:j.id,jobTitle:j.title,brandName:j.brand,pay:j.pay})});
     const data=await res.json();
-    if(data.success){showToast(`Applied for "${j.title}"! 🎉`,'success');loadStats();}
+    if(data.success){
+      showToast(`Applied for "${j.title}"! 🎉`,'success');
+      loadStats();
+      
+      // CHANGED: Update local state and re-render to show 'Applied ✓'
+      j.hasApplied = true;
+      renderProjects();
+    }
     else showToast(data.message,'error');
   }catch{showToast('Could not apply. Check connection.','error');}
 }
