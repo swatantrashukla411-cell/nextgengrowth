@@ -497,9 +497,10 @@ async function sendAIMessage() {
     // 5. Remove loading indicator and show AI response
     document.getElementById(loadingId).remove();
 
-    if (data.reply) {
-       body.innerHTML += `<div class="ai-msg">${data.reply}</div>`;
-    } else {
+   if (data.reply) {
+         // The marked.parse() command translates it to perfect HTML!
+         body.innerHTML += `<div class="ai-msg">${marked.parse(data.reply)}</div>`;
+      } else {
        body.innerHTML += `<div class="ai-msg" style="color:red">Error: ${data.error || "Could not get response."}</div>`;
     }
   } catch(e) {
@@ -816,56 +817,6 @@ function closeStudentProfile() {
     <button onclick="sendAIMessage()">Send</button>
   </div>
 </div>
-<!-- ══ DEDICATED AI SCRIPT ══ -->
-<script>
-  function toggleAIChat() {
-    const win = document.getElementById('aiChatWindow');
-    win.style.display = win.style.display === 'flex' ? 'none' : 'flex';
-    if (typeof _u !== 'undefined' && _u && _u.role === 'brand') {
-      document.getElementById('aiChatTitle').textContent = "NextGen Brand Guide";
-    }
-  }
 
-  async function sendAIMessage() {
-    const input = document.getElementById('aiChatInput');
-    const msg = input.value.trim();
-    if(!msg) return;
-
-    const body = document.getElementById('aiChatBody');
-    body.innerHTML += `<div class="user-msg">${msg}</div>`;
-    input.value = '';
-    body.scrollTop = body.scrollHeight;
-
-    const loadingId = 'loading-' + Date.now();
-    body.innerHTML += `<div class="ai-msg" id="${loadingId}"><span class="spin"></span>Thinking...</div>`;
-    body.scrollTop = body.scrollHeight;
-
-    try {
-      const aiUserType = (typeof _u !== 'undefined' && _u && _u.role === 'brand') ? 'brand' : 'student';
-      const response = await fetch('/api/ask-ai', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userType: aiUserType, userMessage: msg })
-      });
-
-      const data = await response.json();
-      document.getElementById(loadingId).remove();
-
-      if (data.reply) {
-         body.innerHTML += `<div class="ai-msg">${data.reply}</div>`;
-      } else {
-         body.innerHTML += `<div class="ai-msg" style="color:red">Error: ${data.error || "Could not get response."}</div>`;
-      }
-    } catch(e) {
-      document.getElementById(loadingId).remove();
-      body.innerHTML += `<div class="ai-msg" style="color:red">Connection failed. Make sure the backend is running.</div>`;
-    }
-    body.scrollTop = body.scrollHeight;
-  }
-
-  function handleAIKeyPress(e) {
-    if(e.key === 'Enter') sendAIMessage();
-  }
-</script>
 </body>
 </html>
