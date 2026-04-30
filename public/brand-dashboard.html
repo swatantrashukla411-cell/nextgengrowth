@@ -151,6 +151,18 @@
     .toast.info{background:var(--td);color:white}
     .content::-webkit-scrollbar{width:3px}
     .content::-webkit-scrollbar-thumb{background:var(--br);border-radius:100px}
+    /* ══ AI CHAT WIDGET STYLES ══ */
+.ai-chat-btn { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, var(--gm), var(--gd)); color: white; border: none; padding: 12px 20px; border-radius: 100px; font-family: 'Clash Display', sans-serif; font-size: .9rem; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 10000; transition: transform 0.2s; }
+.ai-chat-btn:hover { transform: translateY(-2px); }
+.ai-chat-window { display: none; position: fixed; bottom: 80px; right: 20px; width: 340px; height: 450px; background: white; border: 1px solid var(--br); border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); z-index: 10000; flex-direction: column; overflow: hidden; }
+.ai-chat-header { background: linear-gradient(135deg, var(--gm), var(--gd)); color: white; padding: 14px 18px; font-family: 'Clash Display', sans-serif; display: flex; justify-content: space-between; align-items: center; }
+.ai-chat-body { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: var(--off); }
+.ai-msg { background: white; border: 1px solid var(--br); padding: 10px 14px; border-radius: 12px 12px 12px 0; font-size: .85rem; color: var(--td); max-width: 85%; align-self: flex-start; line-height: 1.4; }
+.user-msg { background: var(--gl); color: var(--tm); padding: 10px 14px; border-radius: 12px 12px 0 12px; font-size: .85rem; max-width: 85%; align-self: flex-end; border: 1px solid var(--br); line-height: 1.4; }
+.ai-chat-input { display: flex; padding: 12px; background: white; border-top: 1px solid var(--br); gap: 8px; }
+.ai-chat-input input { flex: 1; padding: 10px 14px; border: 1px solid var(--br); border-radius: 9px; outline: none; font-family: 'Outfit', sans-serif; font-size: .85rem; }
+.ai-chat-input button { background: var(--gm); color: white; border: none; padding: 0 16px; border-radius: 9px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+.ai-chat-input button:hover { background: var(--gd); }
   </style>
 </head>
 <body>
@@ -438,6 +450,70 @@
 <div class="toast" id="toast"></div>
 
 <script>
+  // ══ AI CHAT LOGIC ══
+function toggleAIChat() {
+  const win = document.getElementById('aiChatWindow');
+  win.style.display = win.style.display === 'flex' ? 'none' : 'flex';
+  
+  // Update header based on role
+  if (_u && _u.role === 'brand') {
+    document.getElementById('aiChatTitle').textContent = "NextGen Brand Guide";
+  }
+}
+
+async function sendAIMessage() {
+  const input = document.getElementById('aiChatInput');
+  const msg = input.value.trim();
+  if(!msg) return;
+
+  const body = document.getElementById('aiChatBody');
+  
+  // 1. Show the user's message
+  body.innerHTML += `<div class="user-msg">${msg}</div>`;
+  input.value = '';
+  body.scrollTop = body.scrollHeight;
+
+  // 2. Show a loading indicator
+  const loadingId = 'loading-' + Date.now();
+  body.innerHTML += `<div class="ai-msg" id="${loadingId}"><span class="spin"></span>Thinking...</div>`;
+  body.scrollTop = body.scrollHeight;
+
+  try {
+    // 3. Automatically detect if this is a student or a brand
+    const aiUserType = (_u && _u.role === 'brand') ? 'brand' : 'student';
+
+    // 4. Send to your Railway backend
+    const response = await fetch('/api/ask-ai', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        userType: aiUserType, 
+        userMessage: msg 
+      })
+    });
+
+    const data = await response.json();
+    
+    // 5. Remove loading indicator and show AI response
+    document.getElementById(loadingId).remove();
+
+    if (data.reply) {
+       body.innerHTML += `<div class="ai-msg">${data.reply}</div>`;
+    } else {
+       body.innerHTML += `<div class="ai-msg" style="color:red">Error: ${data.error || "Could not get response."}</div>`;
+    }
+  } catch(e) {
+    document.getElementById(loadingId).remove();
+    body.innerHTML += `<div class="ai-msg" style="color:red">Connection failed. Make sure the server is running.</div>`;
+  }
+  
+  body.scrollTop = body.scrollHeight;
+}
+
+// Allow pressing 'Enter' to send
+function handleAIKeyPress(e) {
+  if(e.key === 'Enter') sendAIMessage();
+}
 // AUTH GUARD
 const _tk=localStorage.getItem('ngg_token');
 const _u=JSON.parse(localStorage.getItem('ngg_user')||'null');
@@ -725,5 +801,20 @@ function closeStudentProfile() {
   document.getElementById('studentProfileModal').style.display = 'none';
 }
 </script>
+<!-- ══ FLOATING AI CHAT WIDGET ══ -->
+<button class="ai-chat-btn" onclick="toggleAIChat()">✨ Ask AI</button>
+<div class="ai-chat-window" id="aiChatWindow">
+  <div class="ai-chat-header">
+    <strong id="aiChatTitle">NextGen AI Assistant</strong>
+    <button onclick="toggleAIChat()" style="background:none;border:none;color:white;cursor:pointer;font-size:1.2rem">✕</button>
+  </div>
+  <div class="ai-chat-body" id="aiChatBody">
+    <div class="ai-msg">Hi! I am your NextGen AI Guide. How can I help you today?</div>
+  </div>
+  <div class="ai-chat-input">
+    <input type="text" id="aiChatInput" placeholder="Ask something..." onkeypress="handleAIKeyPress(event)">
+    <button onclick="sendAIMessage()">Send</button>
+  </div>
+</div>
 </body>
 </html>
