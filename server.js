@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express    = require("express");
 const bcrypt     = require("bcryptjs");
 const jwt        = require("jsonwebtoken");
@@ -10,6 +11,7 @@ const nodemailer = require("nodemailer");
 const passport   = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const session    = require("express-session");
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const app        = express();
 const PORT       = process.env.PORT             || 3000;
@@ -797,7 +799,53 @@ app.get("/api/health",async(req,res)=>{
   const jobCount=await Job.countDocuments();
   res.json({success:true,message:"NextGenGrowth API 🚀 v3",users:userCount,jobs:jobCount,email:GMAIL_USER?"configured":"not configured",google:GOOGLE_CLIENT_ID?"configured":"not configured"});
 });
+// --- NEXTGEN GROWTH AI LOGIC START ---
 
+// 1. Connect to Gemini using the exact key name from your .env
+const aiClient = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+const model = aiClient.getGenerativeModel({ model: 'gemini-1.5-flash' });
+
+// 2. Define the Phase 1 Personas (Individual focus, preparing for teams)
+const prompts = {
+  student: `You are an internal guide for a student on the NextGen Growth platform. 
+  Your current focus is to help the student manage their individual tasks, improve their digital skills (like design, editing, or development), and successfully deliver high-quality posts and projects. 
+  Maintain an encouraging, mentoring tone. Subtly encourage good communication and organization skills, as we are preparing these students for our upcoming phase where they will be working in structured teams.`,
+  
+  brand: `You are an account manager for NextGen Growth. 
+  Assist brands using our platform to execute their digital projects and social media posts. Emphasize that we provide access to highly skilled individual student talent who can efficiently handle their creative and technical needs. 
+  Keep the tone professional, results-oriented, and focused on ROI. Highlight the speed and agility of working with our curated individual creators.`,
+  
+  default: `You are a helpful assistant for NextGen Growth, a platform connecting brands with skilled students for digital projects.`
+};
+
+// 3. The API Route (Dashboards will connect to this)
+app.post('/api/ask-ai', async (req, res) => {
+  const { userType, userMessage } = req.body;
+
+  if (!userMessage) {
+    return res.status(400).json({ error: "Please provide a message." });
+  }
+
+  try {
+    let systemInstruction = prompts.default;
+    if (userType === 'student') {
+      systemInstruction = prompts.student;
+    } else if (userType === 'brand') {
+      systemInstruction = prompts.brand;
+    }
+
+    const finalPrompt = `${systemInstruction}\n\nUser Question: ${userMessage}`;
+    const result = await model.generateContent(finalPrompt);
+    const aiResponse = await result.response.text();
+
+    res.json({ reply: aiResponse });
+
+  } catch (error) {
+    console.error("AI Error:", error);
+    res.status(500).json({ error: "Something went wrong communicating with the AI." });
+  }
+});
+// --- NEXTGEN GROWTH AI LOGIC END ---
 app.listen(PORT,()=>{
   console.log(`\n🚀 Server: http://localhost:${PORT}`);
   console.log(`📧 Email:  ${GMAIL_USER||"Not configured"}`);
