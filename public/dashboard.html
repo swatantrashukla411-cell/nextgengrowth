@@ -8,7 +8,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
-
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--gd:#064e2b;--gm:#0a7c44;--gb:#00c96b;--gg:#00ff88;--gl:#e8fdf2;--gp:#f0fdf6;--white:#fff;--off:#f7fdf9;--td:#0a1f12;--tm:#2d5a3d;--ts:#6b8f77;--br:#d1ead9;--sw:255px}
 
@@ -359,6 +358,13 @@
 .ai-chat-input input { flex: 1; padding: 10px 14px; border: 1px solid var(--br); border-radius: 9px; outline: none; font-family: 'Outfit', sans-serif; font-size: .85rem; }
 .ai-chat-input button { background: var(--gm); color: white; border: none; padding: 0 16px; border-radius: 9px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
 .ai-chat-input button:hover { background: var(--gd); }
+/* ══ AI CHAT TEXT FORMATTING ══ */
+.ai-msg p { margin-bottom: 10px; line-height: 1.5; }
+.ai-msg p:last-child { margin-bottom: 0; }
+.ai-msg ul, .ai-msg ol { margin-left: 20px; margin-bottom: 10px; }
+.ai-msg li { margin-bottom: 5px; }
+/* Optional: Makes the bold text pop with your brand color! */
+.ai-msg strong { color: var(--gm); font-weight: 700; }
 /* ══ AI CHAT TEXT FORMATTING ══ */
 .ai-msg p { margin-bottom: 10px; line-height: 1.5; }
 .ai-msg p:last-child { margin-bottom: 0; }
