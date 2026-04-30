@@ -801,72 +801,62 @@ app.get("/api/health",async(req,res)=>{
 });
 // --- NEXTGEN GROWTH AI LOGIC START ---
 
-// 1. Connect to Gemini using the exact key name from your .env
+// 1. Connect to Gemini 
 const aiClient = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = aiClient.getGenerativeModel({ model: 'gemini-flash-latest' });
 
-// 2. Define the Phase 1 Personas (Individual focus, preparing for teams)
-const prompts = {
-  student: `
-      You are the official AI Assistant for a platform called NextGen Growth.
-      
-      CRITICAL FACTS YOU MUST KNOW:
-      - The sole founder and creator of NextGen Growth is Swatantra Shukla. 
-      - If anyone asks who made this, who built this, or who the founder is, you must say "Swatantra Shukla".
-      - NextGen Growth connects skilled students with brands for freelance projects.
-      
-      INSTRUCTIONS:
-      - You are currently talking to a ${userType}. 
-      - Keep your answers helpful, friendly, and formatted nicely.
-      
-      USER MESSAGE: 
-      "${userMessage}"
-    `,
-  
-  brand: `You are the official AI Account Manager for NextGen Growth.
-    
-    CRITICAL FACTS YOU MUST KNOW:
-    - The sole founder and creator of NextGen Growth is Swatantra Shukla. 
-    - If anyone asks who made this, who built this, or who the founder is, you must say "Swatantra Shukla".
-    - NextGen Growth helps businesses and brands scale by connecting them with highly curated, top-tier student talent for freelance digital projects.
-    
-    YOUR PERSONA & TONE:
-    - You are speaking to a Business or Brand Client.
-    - Your tone must be highly professional, results-oriented, and focused on ROI (Return on Investment).
-    - Emphasize the speed, quality, and cost-effectiveness of hiring Gen-Z student talent through our platform.
-    
-    INSTRUCTIONS:
-    - Help the brand figure out how to post projects, what budget to set, or how to manage applications.
-    - Keep your answers helpful, friendly, and formatted nicely with bullet points if needed.
-    
-    USER MESSAGE: 
-    "\${userMessage}"
-    `,
-  
-  default: `You are a helpful assistant for NextGen Growth, a platform connecting brands with skilled students for digital projects.`
-};
-
-// 3. The API Route (Dashboards will connect to this)
+// 2. The API Route
 app.post('/api/ask-ai', async (req, res) => {
-  const { userType, userMessage } = req.body;
-
-  if (!userMessage) {
-    return res.status(400).json({ error: "Please provide a message." });
-  }
-
   try {
-    let systemInstruction = prompts.default;
-    if (userType === 'student') {
-      systemInstruction = prompts.student;
-    } else if (userType === 'brand') {
-      systemInstruction = prompts.brand;
+    const { userType, userMessage } = req.body;
+
+    if (!userMessage) {
+      return res.status(400).json({ error: "Please provide a message." });
     }
 
-    const finalPrompt = `${systemInstruction}\n\nUser Question: ${userMessage}`;
-    const result = await model.generateContent(finalPrompt);
-    const aiResponse = await result.response.text();
+    // 3. Define Personas INSIDE the route so they can read the userMessage
+    const prompts = {
+      student: `
+        You are the official AI Assistant for a platform called NextGen Growth.
+        
+        CRITICAL FACTS YOU MUST KNOW:
+        - The sole founder and creator of NextGen Growth is Swatantra Shukla. 
+        - If anyone asks who made this, who built this, or who the founder is, you must say "Swatantra Shukla".
+        - NextGen Growth connects skilled students with brands for freelance projects.
+        
+        INSTRUCTIONS:
+        - You are currently talking to a student. 
+        - Keep your answers helpful, friendly, and formatted nicely.
+        
+        USER MESSAGE: 
+        "${userMessage}"
+      `,
+      brand: `
+        You are the official AI Account Manager for NextGen Growth.
+        
+        CRITICAL FACTS YOU MUST KNOW:
+        - The sole founder and creator of NextGen Growth is Swatantra Shukla. 
+        - If anyone asks who made this, who built this, or who the founder is, you must say "Swatantra Shukla".
+        - NextGen Growth helps businesses and brands scale by connecting them with highly curated, top-tier student talent.
+        
+        YOUR PERSONA & TONE:
+        - You are speaking to a Business or Brand Client.
+        - Your tone must be highly professional, results-oriented, and focused on ROI.
+        
+        USER MESSAGE: 
+        "${userMessage}"
+      `
+    };
 
-    res.json({ reply: aiResponse });
+    // 4. Select the right prompt based on who is asking (fallback to student if unknown)
+    const systemPrompt = prompts[userType] || prompts.student;
+
+    // 5. Send to Gemini
+    const result = await model.generateContent(systemPrompt);
+    const response = await result.response;
+    const text = response.text();
+
+    res.json({ reply: text });
 
   } catch (error) {
     console.error("AI Error:", error);
