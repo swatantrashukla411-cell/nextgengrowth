@@ -803,7 +803,7 @@ app.get("/api/health",async(req,res)=>{
 
 // 1. Connect to Gemini using the exact key name from your .env
 const aiClient = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = aiClient.getGenerativeModel({ model: 'gemini-1.5-flash' });
+const model = aiClient.getGenerativeModel({ model: 'gemini-flash-latest' });
 
 // 2. Define the Phase 1 Personas (Individual focus, preparing for teams)
 const prompts = {
