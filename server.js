@@ -715,6 +715,46 @@ app.get("/api/brand/applications",verifyToken,async(req,res)=>{
   }catch(err){res.status(500).json({success:false,message:"Server error."});}
 });
 
+app.get("/api/brand/student/:id/profile",verifyToken,async(req,res)=>{
+  try{
+    if(req.user.role!=="brand")return res.status(403).json({success:false,message:"Brand only."});
+    const student=await User.findOne({_id:req.params.id,role:"student"}).select("-password");
+    if(!student)return res.status(404).json({success:false,message:"Student not found."});
+
+    const brand=await User.findById(req.user.id);
+    const brandName=brand.companyName||`${brand.firstName} ${brand.lastName}`;
+    const brandJobs=await Job.find({brandId:req.user.id}).select("_id");
+    const jobIds=brandJobs.map(j=>j._id.toString());
+    const hasAccess=await Application.findOne({studentId:student._id,$or:[{brandId:req.user.id},{jobId:{$in:jobIds}},{brandName}]});
+    if(!hasAccess)return res.status(403).json({success:false,message:"You can view profiles only for students who applied to your projects."});
+
+    const[applications,approvedWork,earnings,totalApps,acceptedApps]=await Promise.all([
+      Application.find({studentId:student._id}).sort({createdAt:-1}).limit(8),
+      ProjectWorkspace.find({studentId:student._id,status:{$in:["approved","completed"]}}).sort({approvedAt:-1,updatedAt:-1}).limit(6),
+      Earning.aggregate([{$match:{studentId:student._id,status:"paid"}},{$group:{_id:null,total:{$sum:"$amount"}}}]),
+      Application.countDocuments({studentId:student._id}),
+      Application.countDocuments({studentId:student._id,status:"accepted"}),
+    ]);
+
+    const completed=approvedWork.length;
+    const rating=completed?Math.min(5,4.6+Math.min(.4,completed*.06)):null;
+    res.json({
+      success:true,
+      student:safeUser(student),
+      stats:{rating,totalApps,acceptedApps,completed,totalEarned:earnings[0]?.total||0},
+      recentApplications:applications.map(a=>({jobTitle:a.jobTitle,brandName:a.brandName,pay:a.pay,status:a.status,createdAt:a.createdAt})),
+      recentWorks:approvedWork.map(w=>({
+        jobTitle:w.jobTitle,
+        status:w.status,
+        approvedAt:w.approvedAt||w.updatedAt,
+        submissionLink:String(w.brandId)===String(req.user.id)?w.submissionLink:"",
+      })),
+    });
+  }catch(err){
+    res.status(500).json({success:false,message:"Server error."});
+  }
+});
+
 // Brand accept/reject with email
 app.put("/api/brand/application/:id",verifyToken,async(req,res)=>{
   try{

@@ -122,6 +122,24 @@
     .ws-status{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:100px;background:white;border:1px solid #bfdbfe;color:#1d4ed8;font-size:.72rem;font-weight:700;margin-bottom:8px}
     .ws-submission{background:white;border:1px solid var(--br);border-radius:9px;padding:10px;margin-top:10px}
     .ws-link{color:#1d4ed8;font-weight:700;text-decoration:none;word-break:break-word}
+    .student-profile-page{display:none;position:fixed;inset:0;z-index:10000;background:var(--off);overflow-y:auto;padding:24px}
+    .sp-shell{max-width:1120px;margin:0 auto}
+    .sp-hero{background:white;border:1px solid var(--br);border-radius:16px;padding:22px;display:flex;gap:18px;align-items:flex-start;margin-bottom:14px}
+    .sp-bigav{width:76px;height:76px;border-radius:18px;background:linear-gradient(135deg,var(--gb),var(--gd));color:white;display:flex;align-items:center;justify-content:center;font-family:'Clash Display',sans-serif;font-size:1.6rem;font-weight:800;flex-shrink:0}
+    .sp-name{font-family:'Clash Display',sans-serif;font-size:1.55rem;font-weight:800;color:var(--td);margin-bottom:3px}
+    .sp-meta{font-size:.86rem;color:var(--ts);display:flex;gap:10px;flex-wrap:wrap}
+    .sp-close{margin-left:auto;width:38px;height:38px;border-radius:10px;border:1px solid var(--br);background:white;color:var(--ts);font-size:1.2rem;cursor:pointer}
+    .sp-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+    .sp-stat{background:white;border:1px solid var(--br);border-radius:12px;padding:14px}
+    .sp-stat strong{display:block;font-family:'Clash Display',sans-serif;font-size:1.25rem;color:var(--td)}
+    .sp-stat span{font-size:.74rem;color:var(--ts)}
+    .sp-layout{display:grid;grid-template-columns:1.15fr .85fr;gap:14px}
+    .sp-section{background:white;border:1px solid var(--br);border-radius:13px;padding:16px;margin-bottom:14px}
+    .sp-section h3{font-family:'Clash Display',sans-serif;font-size:.98rem;margin-bottom:10px}
+    .sp-list{display:flex;flex-direction:column;gap:8px}
+    .sp-item{border:1px solid var(--br);background:var(--gp);border-radius:10px;padding:10px}
+    .sp-item strong{display:block;font-size:.84rem;color:var(--td);margin-bottom:2px}
+    .sp-item span{font-size:.74rem;color:var(--ts)}
     .ftabs{display:flex;gap:3px;background:var(--gp);border:1px solid var(--br);border-radius:10px;padding:3px;margin-bottom:16px;width:fit-content}
     .ftab{padding:7px 16px;border-radius:7px;font-size:.82rem;font-weight:500;color:var(--ts);cursor:pointer;border:none;background:transparent;transition:all .2s;white-space:nowrap}
     .ftab.active{background:white;color:#1d4ed8;font-weight:700;box-shadow:0 2px 7px rgba(0,0,0,.07)}
@@ -210,6 +228,10 @@
       .pay-row{grid-template-columns:1fr}
       .pay-row .btn{justify-content:center;width:100%}
       .ws-grid,.ws-row{grid-template-columns:1fr}
+      .student-profile-page{padding:14px}
+      .sp-hero{flex-direction:column}
+      .sp-close{position:absolute;top:18px;right:18px}
+      .sp-stats,.sp-layout{grid-template-columns:1fr}
       .ai-chat-window{left:12px;right:12px;width:auto;height:min(72vh,460px)}
     }
     @media(max-width:560px){
@@ -484,32 +506,8 @@
   </div>
 </div>
 </div>
-<div class="overlay" id="studentProfileOverlay" onclick="closeStudentProfile()"></div>
-<div class="card" id="studentProfileModal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); z-index:10000; width:90%; max-width:500px; max-height:85vh; overflow-y:auto; box-shadow:0 20px 40px rgba(0,0,0,0.3);">
-  <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:16px;">
-    <div style="display:flex; align-items:center; gap:12px;">
-      <div id="spAvatar" style="width:50px; height:50px; border-radius:50%; background:linear-gradient(135deg, var(--gm), var(--gd)); color:white; display:flex; align-items:center; justify-content:center; font-family:'Clash Display', sans-serif; font-size:1.2rem; font-weight:700;">?</div>
-      <div>
-        <h3 id="spName" style="font-family:'Clash Display', sans-serif; font-size:1.2rem; color:var(--td); margin-bottom:2px;">Student Name</h3>
-        <p id="spCollege" style="font-size:.8rem; color:var(--ts);">College & Year</p>
-      </div>
-    </div>
-    <button onclick="closeStudentProfile()" style="background:none; border:none; font-size:1.2rem; cursor:pointer; color:var(--ts);">✕</button>
-  </div>
-  
-  <div style="background:var(--off); border:1px solid var(--br); border-radius:9px; padding:12px; margin-bottom:16px;">
-    <strong style="display:block; font-size:.8rem; color:var(--td); margin-bottom:6px;">About Me</strong>
-    <p id="spBio" style="font-size:.85rem; color:var(--ts); line-height:1.5;">No bio provided.</p>
-  </div>
-
-  <strong style="display:block; font-size:.8rem; color:var(--td); margin-bottom:8px;">Skills</strong>
-  <div id="spSkills" style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px;">
-    </div>
-
-  <div style="display:flex; gap:10px; margin-top:20px;">
-    <a id="spPortfolio" href="#" target="_blank" class="btn bpri" style="flex:1; justify-content:center; display:none;">📂 View Portfolio</a>
-    <a id="spLinkedin" href="#" target="_blank" class="btn bout" style="flex:1; justify-content:center; display:none;">🔗 LinkedIn</a>
-  </div>
+<div class="student-profile-page" id="studentProfileModal">
+  <div class="sp-shell" id="studentProfileContent"></div>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -1055,58 +1053,61 @@ window.addEventListener('DOMContentLoaded',()=>{
 window.addEventListener('resize',()=>{if(window.innerWidth>860)closeMenu();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeMenu();closeStudentProfile();}});
 // ✅ OPEN STUDENT PROFILE MODAL
-function viewStudentProfile(appId) {
-  // Find the exact application in the brandApps array
+async function viewStudentProfile(appId) {
   const app = brandApps.find(a => (a._id === appId || a.id === appId));
   if (!app || !app.student) return;
-  
-  const s = app.student;
-
-  // Populate Name & College
-  document.getElementById('spName').textContent = s.name;
-  document.getElementById('spCollege').textContent = `${s.college || 'College not listed'} ${s.year ? '• ' + s.year : ''}`;
-  
-  // Populate Avatar (Initials)
-  const parts = s.name.split(' ');
-  const initials = parts.length >= 2 ? (parts[0][0] + parts[parts.length-1][0]).toUpperCase() : s.name.slice(0,2).toUpperCase();
-  document.getElementById('spAvatar').textContent = initials;
-
-  // Populate Bio
-  document.getElementById('spBio').textContent = s.bio || "This student hasn't written a bio yet.";
-
-  // Populate Skills
-  const skillsContainer = document.getElementById('spSkills');
-  if (s.skills && s.skills.length > 0) {
-    skillsContainer.innerHTML = s.skills.map(sk => `<span class="tag tn">${sk}</span>`).join('');
-  } else {
-    skillsContainer.innerHTML = `<span style="font-size:.8rem; color:var(--ts);">No skills listed.</span>`;
+  const studentId=app.student.id||app.student._id||app.studentId;
+  if(!studentId)return showToast('Student profile is not available yet.','error');
+  const content=document.getElementById('studentProfileContent');
+  document.getElementById('studentProfileModal').style.display='block';
+  content.innerHTML='<div class="sp-section">Loading full profile...</div>';
+  try{
+    const res=await fetch(`/api/brand/student/${studentId}/profile`,{headers:{'Authorization':'Bearer '+_tk}});
+    const data=await res.json();
+    if(!data.success)throw new Error(data.message||'Could not load profile');
+    renderStudentProfile(data);
+  }catch(e){
+    renderStudentProfile({student:app.student,stats:{},recentApplications:[],recentWorks:[]});
   }
-
-  // Populate Links
-  const btnPortfolio = document.getElementById('spPortfolio');
-  if (s.portfolioLink) {
-    btnPortfolio.href = s.portfolioLink;
-    btnPortfolio.style.display = 'flex';
-  } else {
-    btnPortfolio.style.display = 'none';
-  }
-
-  const btnLinkedin = document.getElementById('spLinkedin');
-  if (s.linkedin) {
-    btnLinkedin.href = s.linkedin;
-    btnLinkedin.style.display = 'flex';
-  } else {
-    btnLinkedin.style.display = 'none';
-  }
-
-  // Show Modal
-  document.getElementById('studentProfileOverlay').classList.add('show');
-  document.getElementById('studentProfileModal').style.display = 'block';
 }
 
-// ✅ CLOSE MODAL
+function renderStudentProfile(data){
+  const s=data.student||{};
+  const st=data.stats||{};
+  const name=s.name||`${s.firstName||''} ${s.lastName||''}`.trim()||'Student';
+  const initials=name.split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase()||'?';
+  const skills=(s.skills||[]).map(sk=>`<span class="app-sk">${esc(sk)}</span>`).join('')||'<span style="color:var(--ts);font-size:.8rem">No skills listed</span>';
+  const apps=(data.recentApplications||[]).map(a=>`<div class="sp-item"><strong>${esc(a.jobTitle)}</strong><span>${esc(a.brandName)} · ${esc(a.pay)} · ${esc(a.status)}</span></div>`).join('')||'<div class="sp-item"><span>No application history yet.</span></div>';
+  const works=(data.recentWorks||[]).map(w=>`<div class="sp-item"><strong>${esc(w.jobTitle)}</strong><span>${esc(w.status)}${w.approvedAt?' · '+new Date(w.approvedAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):''}</span>${w.submissionLink?`<div style="margin-top:7px"><a class="ws-link" href="${esc(w.submissionLink)}" target="_blank">Open submitted work</a></div>`:''}</div>`).join('')||'<div class="sp-item"><span>No approved work yet. New talent profile.</span></div>';
+  document.getElementById('studentProfileContent').innerHTML=`
+    <div class="sp-hero">
+      <div class="sp-bigav">${initials}</div>
+      <div style="flex:1">
+        <div class="sp-name">${esc(name)}</div>
+        <div class="sp-meta"><span>🎓 ${esc(s.college||'College not listed')}</span><span>${esc(s.year||'Year not set')}</span><span>${esc(s.email||'')}</span></div>
+        <div class="app-skills" style="margin-top:12px">${skills}</div>
+      </div>
+      <button class="sp-close" onclick="closeStudentProfile()">×</button>
+    </div>
+    <div class="sp-stats">
+      <div class="sp-stat"><strong>${st.rating?Number(st.rating).toFixed(1)+' ⭐':'New'}</strong><span>Rating</span></div>
+      <div class="sp-stat"><strong>${st.completed||0}</strong><span>Completed Work</span></div>
+      <div class="sp-stat"><strong>${st.acceptedApps||0}</strong><span>Accepted Projects</span></div>
+      <div class="sp-stat"><strong>${formatINR(st.totalEarned||0)||'₹0'}</strong><span>Total Earned</span></div>
+    </div>
+    <div class="sp-layout">
+      <div>
+        <div class="sp-section"><h3>About</h3><p style="font-size:.9rem;color:var(--tm);line-height:1.6">${esc(s.bio||"This student has not added a bio yet.")}</p></div>
+        <div class="sp-section"><h3>Recent Applications</h3><div class="sp-list">${apps}</div></div>
+      </div>
+      <div>
+        <div class="sp-section"><h3>Portfolio & Links</h3><div style="display:flex;gap:8px;flex-wrap:wrap">${s.portfolioLink?`<a class="btn bpri bsm" href="${esc(s.portfolioLink)}" target="_blank">📂 Portfolio</a>`:''}${s.linkedin?`<a class="btn bout bsm" href="${esc(s.linkedin)}" target="_blank">🔗 LinkedIn</a>`:''}${!s.portfolioLink&&!s.linkedin?'<span style="color:var(--ts);font-size:.84rem">No external links added.</span>':''}</div></div>
+        <div class="sp-section"><h3>Recent Work</h3><div class="sp-list">${works}</div></div>
+      </div>
+    </div>`;
+}
+
 function closeStudentProfile() {
-  document.getElementById('studentProfileOverlay').classList.remove('show');
   document.getElementById('studentProfileModal').style.display = 'none';
 }
 </script>
