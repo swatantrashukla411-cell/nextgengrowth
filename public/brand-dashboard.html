@@ -115,6 +115,13 @@
     .pay-input:focus{border-color:var(--gb);box-shadow:0 0 0 3px rgba(0,201,107,.1)}
     .paid-note{display:inline-flex;align-items:center;gap:5px;background:var(--gl);border:1px solid var(--br);color:var(--gm);border-radius:100px;padding:5px 11px;font-size:.78rem;font-weight:700}
     .locked-note{display:inline-flex;align-items:center;gap:5px;background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;border-radius:100px;padding:5px 11px;font-size:.78rem;font-weight:700}
+    .workspace-box{width:100%;background:#f8fbff;border:1px solid #bfdbfe;border-radius:11px;padding:12px;margin-top:8px}
+    .workspace-box h4{font-family:'Clash Display',sans-serif;font-size:.86rem;color:var(--td);margin-bottom:8px}
+    .ws-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .ws-row{display:grid;grid-template-columns:minmax(90px,.6fr) 1fr;gap:8px;margin-bottom:8px}
+    .ws-status{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:100px;background:white;border:1px solid #bfdbfe;color:#1d4ed8;font-size:.72rem;font-weight:700;margin-bottom:8px}
+    .ws-submission{background:white;border:1px solid var(--br);border-radius:9px;padding:10px;margin-top:10px}
+    .ws-link{color:#1d4ed8;font-weight:700;text-decoration:none;word-break:break-word}
     .ftabs{display:flex;gap:3px;background:var(--gp);border:1px solid var(--br);border-radius:10px;padding:3px;margin-bottom:16px;width:fit-content}
     .ftab{padding:7px 16px;border-radius:7px;font-size:.82rem;font-weight:500;color:var(--ts);cursor:pointer;border:none;background:transparent;transition:all .2s;white-space:nowrap}
     .ftab.active{background:white;color:#1d4ed8;font-weight:700;box-shadow:0 2px 7px rgba(0,0,0,.07)}
@@ -202,6 +209,7 @@
       .app-date{width:100%;margin-left:0}
       .pay-row{grid-template-columns:1fr}
       .pay-row .btn{justify-content:center;width:100%}
+      .ws-grid,.ws-row{grid-template-columns:1fr}
       .ai-chat-window{left:12px;right:12px;width:auto;height:min(72vh,460px)}
     }
     @media(max-width:560px){
@@ -578,9 +586,10 @@ if(!_tk||!_u){window.location.href='/login';}
 if(_u&&_u.role&&_u.role!=='brand'){window.location.href='/login';}
 
 // STATE
-let myProjects=[], brandApps=[], curAppFilter='all';
+let myProjects=[], brandApps=[], brandWorkspaces=[], curAppFilter='all';
 
 function getAppId(app){return app?._id||app?.id||'';}
+function esc(value){return String(value??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 function parsePayAmount(pay){
   const match=String(pay||'').replace(/,/g,'').match(/(\d+(?:\.\d+)?)/);
   return match?Number(match[1]):'';
@@ -588,6 +597,17 @@ function parsePayAmount(pay){
 function formatINR(amount){
   const n=Number(amount||0);
   return n>0?`₹${n.toLocaleString('en-IN')}`:'';
+}
+function getWorkspace(appId){return brandWorkspaces.find(w=>String(w.applicationId)===String(appId));}
+function workspaceStatusText(status){
+  return {
+    resources_pending:'Resources pending',
+    in_progress:'In progress',
+    submitted:'Submitted for review',
+    revision_requested:'Revision requested',
+    approved:'Approved',
+    completed:'Completed'
+  }[status]||'Workspace';
 }
 
 // LOAD BRAND DATA
@@ -634,9 +654,13 @@ async function loadBrandStats(){
 // ✅ LOAD BRAND APPLICATIONS — Real API
 async function loadBrandApplications(){
   try{
-    const data=await fetch('/api/brand/applications',{headers:{'Authorization':'Bearer '+_tk}}).then(r=>r.json());
+    const [data,workspaceData]=await Promise.all([
+      fetch('/api/brand/applications',{headers:{'Authorization':'Bearer '+_tk}}).then(r=>r.json()),
+      fetch('/api/brand/workspaces',{headers:{'Authorization':'Bearer '+_tk}}).then(r=>r.json()).catch(()=>({success:false,workspaces:[]}))
+    ]);
     if(!data.success)return;
     brandApps=data.applications||[];
+    brandWorkspaces=workspaceData.success?(workspaceData.workspaces||[]):[];
     const reviewCount=brandApps.filter(a=>a.status==='review').length;
     document.getElementById('appsBadge').textContent=brandApps.length;
     document.getElementById('statApps').textContent=brandApps.length;
@@ -659,6 +683,43 @@ function renderFullProjList(projs){
   const el=document.getElementById('projListFull');
   if(!projs.length){el.innerHTML='<div class="empty-s"><div class="ei">📋</div><h3>No projects yet</h3><p>Post your first project!</p><button class="btn bpri" onclick="goTo(\'post\',null)">+ Post Project</button></div>';return;}
   el.innerHTML=projs.map(p=>`<div class="pj-card"><div class="pj-ico">📋</div><div class="pj-info"><div class="pj-title">${p.title}</div><div class="pj-meta"><span>📂 ${p.category}</span><span>📅 Posted ${new Date(p.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</span>${p.deadline?`<span>⏱ ${p.deadline}</span>`:''}</div></div><div class="pj-right"><div class="pj-budget">${p.budget}</div><span class="tag ${p.status==='open'?'topen':'tclosed'}">${p.status==='open'?'🟢 Open':'✓ Closed'}</span></div></div>`).join('');
+}
+
+function renderWorkspaceBox(appId){
+  const ws=getWorkspace(appId);
+  const res=ws?.resources||[];
+  const r0=res[0]||{}, r1=res[1]||{};
+  const status=workspaceStatusText(ws?.status||'resources_pending');
+  const submission=ws?.submissionLink?`
+    <div class="ws-submission">
+      <div style="font-size:.78rem;font-weight:700;color:var(--td);margin-bottom:5px">Student Submission</div>
+      <a class="ws-link" href="${esc(ws.submissionLink)}" target="_blank">🔗 Open submitted work</a>
+      ${ws.submissionNote?`<p style="font-size:.78rem;color:var(--ts);line-height:1.45;margin-top:7px">${esc(ws.submissionNote)}</p>`:''}
+      ${ws.status==='submitted'?`
+        <textarea class="fi" id="rev-${appId}" rows="2" placeholder="Revision note, if needed..." style="margin-top:9px"></textarea>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+          <button class="btn bgre bsm" onclick="reviewWorkspace('${appId}','approve',this)">✅ Approve Work</button>
+          <button class="btn bout bsm" onclick="reviewWorkspace('${appId}','revision',this)">↻ Request Revision</button>
+        </div>
+      `:''}
+      ${ws.status==='approved'?`<div class="paid-note" style="margin-top:8px">✅ Work approved</div>`:''}
+    </div>
+  `:'';
+
+  return`
+    <div class="workspace-box">
+      <h4>Project Workspace</h4>
+      <div class="ws-status">📌 ${status}</div>
+      <div class="fg"><label>Brief for student</label><textarea class="fi" id="brief-${appId}" rows="3" placeholder="Add project instructions, content requirements, brand tone, deliverables...">${esc(ws?.brief||'')}</textarea></div>
+      <div class="fg"><label>Deadline / Delivery note</label><input class="fi" id="deadline-${appId}" value="${esc(ws?.deadline||'')}" placeholder="e.g. First draft by Friday, final by Sunday"></div>
+      <div class="ws-grid">
+        <div class="ws-row"><input class="fi" id="res-title-1-${appId}" value="${esc(r0.title||'')}" placeholder="Resource title"><input class="fi" id="res-url-1-${appId}" value="${esc(r0.url||'')}" placeholder="https://drive.google.com/..."></div>
+        <div class="ws-row"><input class="fi" id="res-title-2-${appId}" value="${esc(r1.title||'')}" placeholder="Resource title"><input class="fi" id="res-url-2-${appId}" value="${esc(r1.url||'')}" placeholder="https://canva.com/..."></div>
+      </div>
+      <button class="btn bpri bsm" onclick="saveWorkspace('${appId}',this)">💾 Save Resources</button>
+      ${submission}
+    </div>
+  `;
 }
 
 // ✅ RENDER BRAND APPLICATIONS with Accept/Reject
@@ -721,6 +782,7 @@ function renderBrandApps(){
               </div>
             </div>
           `}
+          ${isPaid?renderWorkspaceBox(appId):''}
         `:
         `<span style="color:#dc2626;font-weight:600;font-size:.83rem">❌ You rejected this application</span>`}
         <span class="app-date">Applied ${new Date(a.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</span>
@@ -839,6 +901,65 @@ async function startPayment(appId, btn){
     showToast('Payment could not start. Check server and Razorpay credentials.','error');
     btn.innerHTML=orig;btn.disabled=false;
   }
+}
+
+function collectResources(appId){
+  return [1,2].map(i=>({
+    title:document.getElementById(`res-title-${i}-${appId}`)?.value.trim()||'',
+    url:document.getElementById(`res-url-${i}-${appId}`)?.value.trim()||''
+  })).filter(r=>r.title&&r.url);
+}
+
+async function saveWorkspace(appId,btn){
+  const orig=btn.innerHTML;
+  btn.innerHTML='<span class="spin"></span>Saving...';
+  btn.disabled=true;
+  try{
+    const body={
+      brief:document.getElementById(`brief-${appId}`)?.value.trim()||'',
+      deadline:document.getElementById(`deadline-${appId}`)?.value.trim()||'',
+      resources:collectResources(appId)
+    };
+    const res=await fetch(`/api/brand/workspace/${appId}/resources`,{
+      method:'PUT',
+      headers:{'Authorization':'Bearer '+_tk,'Content-Type':'application/json'},
+      body:JSON.stringify(body)
+    });
+    const data=await res.json();
+    if(data.success){
+      showToast('Resources saved. Student can start work. ✅','success');
+      await loadBrandApplications();
+    }else showToast(data.message||'Could not save resources.','error');
+  }catch{
+    showToast('Could not save workspace. Check connection.','error');
+  }
+  btn.innerHTML=orig;
+  btn.disabled=false;
+}
+
+async function reviewWorkspace(appId,action,btn){
+  const note=document.getElementById(`rev-${appId}`)?.value.trim()||'';
+  if(action==='revision'&&!note){showToast('Add a revision note first.','error');return;}
+  if(action==='approve'&&!confirm('Approve this submitted work and release the student earning?'))return;
+  const orig=btn.innerHTML;
+  btn.innerHTML='<span class="spin"></span>Updating...';
+  btn.disabled=true;
+  try{
+    const res=await fetch(`/api/brand/workspace/${appId}/review`,{
+      method:'PUT',
+      headers:{'Authorization':'Bearer '+_tk,'Content-Type':'application/json'},
+      body:JSON.stringify({action,revisionNote:note})
+    });
+    const data=await res.json();
+    if(data.success){
+      showToast(action==='approve'?'Work approved and earning released. ✅':'Revision requested.','success');
+      await loadBrandApplications();
+    }else showToast(data.message||'Review failed.','error');
+  }catch{
+    showToast('Could not update review. Check connection.','error');
+  }
+  btn.innerHTML=orig;
+  btn.disabled=false;
 }
 
 // POST PROJECT

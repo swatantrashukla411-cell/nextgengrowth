@@ -237,6 +237,17 @@
     .a-mt{font-size:.72rem;color:var(--ts);display:flex;gap:8px;flex-wrap:wrap}
     .a-ri{text-align:right;flex-shrink:0}
     .a-py{font-family:'Clash Display',sans-serif;font-size:.92rem;font-weight:700;color:var(--gm);display:block;margin-bottom:4px}
+    .ws-card{background:var(--white);border:1px solid var(--br);border-radius:12px;padding:15px;margin-bottom:12px}
+    .ws-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
+    .ws-title{font-weight:700;font-size:.9rem;color:var(--td);margin-bottom:2px}
+    .ws-meta{font-size:.72rem;color:var(--ts);display:flex;gap:8px;flex-wrap:wrap}
+    .ws-status{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:100px;background:var(--gl);border:1px solid var(--br);color:var(--gm);font-size:.7rem;font-weight:700;white-space:nowrap}
+    .ws-panel{background:var(--gp);border:1px solid var(--br);border-radius:10px;padding:11px;margin-top:9px}
+    .ws-panel strong{display:block;font-size:.78rem;color:var(--td);margin-bottom:5px}
+    .ws-panel p{font-size:.78rem;color:var(--tm);line-height:1.5}
+    .ws-links{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+    .ws-link{display:inline-flex;color:var(--gm);background:white;border:1px solid var(--br);border-radius:8px;padding:6px 10px;font-size:.76rem;font-weight:700;text-decoration:none;word-break:break-word}
+    .ws-submit{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}
 
     /* ══ EARNINGS ══ */
     .eh{background:linear-gradient(135deg,var(--gm),var(--gd));border-radius:14px;padding:22px;margin-bottom:16px;position:relative;overflow:hidden}
@@ -525,6 +536,10 @@
     <!-- APPLICATIONS -->
     <div class="page" id="page-applications">
       <div class="ph"><h2>My Applications 📋</h2><p>Track all your project applications.</p></div>
+      <div class="card" id="workspaceSection" style="display:none;margin-bottom:14px">
+        <div class="st">Active Project Workspace</div>
+        <div id="workspaceList"></div>
+      </div>
       <div class="atabs">
         <button class="atab active" onclick="filterApps('all',this)">All</button>
         <button class="atab" onclick="filterApps('review',this)">Under Review</button>
@@ -714,7 +729,19 @@ async function loadLiveJobs() {
   }
 }
 let curFilter='ai',curCat='all',curSearch='';
-let aiJobs=[],realApps=[],userSkills=[];
+let aiJobs=[],realApps=[],studentWorkspaces=[],userSkills=[];
+
+function esc(value){return String(value??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function workspaceStatusText(status){
+  return {
+    resources_pending:'Waiting for resources',
+    in_progress:'In progress',
+    submitted:'Submitted for review',
+    revision_requested:'Revision requested',
+    approved:'Approved',
+    completed:'Completed'
+  }[status]||'Workspace';
+}
 
 // AI MATCHING
 const SKILL_KW={'Video Editing':['video','editing','reel','reels','tiktok','youtube','shorts','capcut'],'Graphic Design':['design','graphic','logo','canva','brand','branding','visual','figma','banner'],'Web Development':['web','website','html','css','wordpress','landing','page','frontend'],'Content Writing':['content','writing','blog','article','seo','copy','copywriting','newsletter'],'Social Media':['social','instagram','twitter','linkedin','media','post'],'Photography':['photo','photography','lightroom','product'],'Audio':['audio','music','sound','podcast'],'Data & Excel':['data','excel','spreadsheet'],'AI Tools':['ai','chatgpt','automation']};
@@ -756,13 +783,85 @@ async function loadStats(){
     realApps=data.applications||[];
     if(realApps.length>0){renderHomeRecentApps(realApps);renderAppList(realApps,'all');}
     if(realApps.length>0||(data.transactions&&data.transactions.length>0))renderActivity(realApps,data.transactions||[]);
+    loadStudentWorkspaces();
   }catch(e){console.log('Stats error:',e);}
+}
+
+async function loadStudentWorkspaces(){
+  try{
+    const res=await fetch('/api/student/workspaces',{headers:{'Authorization':'Bearer '+_tk}});
+    const data=await res.json();
+    if(data.success){
+      studentWorkspaces=data.workspaces||[];
+      renderStudentWorkspaces();
+    }
+  }catch(e){console.log('Workspace error:',e);}
+}
+
+function renderStudentWorkspaces(){
+  const section=document.getElementById('workspaceSection');
+  const listEl=document.getElementById('workspaceList');
+  if(!section||!listEl)return;
+  if(!studentWorkspaces.length){section.style.display='none';return;}
+  section.style.display='block';
+  listEl.innerHTML=studentWorkspaces.map(ws=>{
+    const brand=ws.brandId?.companyName||`${ws.brandId?.firstName||''} ${ws.brandId?.lastName||''}`.trim()||'Brand';
+    const resources=(ws.resources||[]).map(r=>`<a class="ws-link" href="${esc(r.url)}" target="_blank">🔗 ${esc(r.title||'Resource')}</a>`).join('');
+    const canSubmit=['in_progress','revision_requested','submitted'].includes(ws.status);
+    return`
+      <div class="ws-card">
+        <div class="ws-head">
+          <div>
+            <div class="ws-title">${esc(ws.jobTitle||'Project')}</div>
+            <div class="ws-meta"><span>🏢 ${esc(brand)}</span>${ws.deadline?`<span>⏱ ${esc(ws.deadline)}</span>`:''}</div>
+          </div>
+          <span class="ws-status">${workspaceStatusText(ws.status)}</span>
+        </div>
+        ${ws.brief?`<div class="ws-panel"><strong>Brief</strong><p>${esc(ws.brief)}</p></div>`:''}
+        ${resources?`<div class="ws-panel"><strong>Resources</strong><div class="ws-links">${resources}</div></div>`:`<div class="ws-panel"><strong>Resources</strong><p>Waiting for the brand to add the project brief and links.</p></div>`}
+        ${ws.revisionNote?`<div class="ws-panel" style="background:#fff7ed;border-color:#fed7aa"><strong>Revision Note</strong><p>${esc(ws.revisionNote)}</p></div>`:''}
+        ${ws.submissionLink?`<div class="ws-panel"><strong>Your Submission</strong><a class="ws-link" href="${esc(ws.submissionLink)}" target="_blank">🔗 Open submitted work</a>${ws.submissionNote?`<p style="margin-top:7px">${esc(ws.submissionNote)}</p>`:''}</div>`:''}
+        ${canSubmit?`
+          <div class="ws-submit">
+            <input class="fi" id="sub-link-${ws.applicationId}" value="${esc(ws.submissionLink||'')}" placeholder="Final work link: Google Drive, Canva, Figma, Notion...">
+            <textarea class="fi" id="sub-note-${ws.applicationId}" rows="2" placeholder="Short note for the brand">${esc(ws.submissionNote||'')}</textarea>
+            <button class="btn bpri" style="justify-content:center" onclick="submitWorkspace('${ws.applicationId}',this)">Submit Work</button>
+          </div>
+        `:''}
+      </div>
+    `;
+  }).join('');
+}
+
+async function submitWorkspace(applicationId,btn){
+  const link=document.getElementById(`sub-link-${applicationId}`)?.value.trim()||'';
+  const note=document.getElementById(`sub-note-${applicationId}`)?.value.trim()||'';
+  if(!/^https?:\/\//i.test(link)){showToast('Add a valid work link first.','error');return;}
+  const orig=btn.innerHTML;
+  btn.innerHTML='<span class="spin"></span>Submitting...';
+  btn.disabled=true;
+  try{
+    const res=await fetch(`/api/student/workspace/${applicationId}/submit`,{
+      method:'POST',
+      headers:{'Authorization':'Bearer '+_tk,'Content-Type':'application/json'},
+      body:JSON.stringify({submissionLink:link,submissionNote:note})
+    });
+    const data=await res.json();
+    if(data.success){
+      showToast('Work submitted for brand review. ✅','success');
+      await loadStudentWorkspaces();
+    }else showToast(data.message||'Submission failed.','error');
+  }catch{
+    showToast('Could not submit work. Check connection.','error');
+  }
+  btn.innerHTML=orig;
+  btn.disabled=false;
 }
 
 function renderTxs(txs){
   const el=document.getElementById('txList');
   if(!txs.length)return;
-  el.innerHTML=txs.map(t=>`<div class="er"><div class="er-i ig">💸</div><div class="er-in"><div class="er-t">${t.description||'Payment'}</div><div class="er-d">${new Date(t.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</div></div><div class="er-a" style="color:var(--gm)">+₹${t.amount.toLocaleString('en-IN')}</div></div>`).join('');
+  el.innerHTML=txs.map(t=>`<div class="er"><div class="er-i ${t.status==='pending'?'ia':'ig'}">${t.status==='pending'?'⏳':'💸'}</div><div class="er-in"><div class="er-t">${t.description||'Payment'}</div><div class="er-d">${new Date(t.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})} · ${t.status==='pending'?'Pending approval':'Paid'}</div></div><div class="er-a" style="color:${t.status==='pending'?'#b45309':'var(--gm)'}">+₹${t.amount.toLocaleString('en-IN')}</div></div>`).join('');
 }
 
 function renderActivity(apps,txs){
@@ -974,7 +1073,7 @@ function goTo(pg,navBtn){
   else document.querySelectorAll('.ni').forEach(n=>{if((n.getAttribute('onclick')||'').includes("'"+pg+"'"))n.classList.add('active');});
   document.getElementById('pgT').textContent=PT[pg]||'Dashboard';
   if(pg==='projects')renderProjects();
-  if(pg==='applications')renderAppList(realApps,'all');
+  if(pg==='applications'){renderAppList(realApps,'all');loadStudentWorkspaces();}
   window.scrollTo({top:0,behavior:'smooth'});
   closeSidebar();
   gsap.fromTo('#page-'+pg,{opacity:0,y:10},{opacity:1,y:0,duration:.28,ease:'power2.out'});
@@ -1111,4 +1210,4 @@ function closeWelcomePopup() {
   }
 </script>
 </body>
-</html> 
+</html>

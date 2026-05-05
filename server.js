@@ -85,6 +85,7 @@ const applicationSchema = new mongoose.Schema({
 
 const earningSchema = new mongoose.Schema({
   studentId:{type:mongoose.Schema.Types.ObjectId,ref:"User",required:true},
+  applicationId:{type:mongoose.Schema.Types.ObjectId,ref:"Application"},
   amount:{type:Number,required:true},
   description:{type:String,default:"Project payment"},
   status:{type:String,enum:["paid","pending"],default:"paid"},
@@ -115,12 +116,30 @@ const paymentSchema = new mongoose.Schema({
   description:{type:String,default:"Project payment"},
 },{timestamps:true});
 
+const projectWorkspaceSchema = new mongoose.Schema({
+  applicationId:{type:mongoose.Schema.Types.ObjectId,ref:"Application",required:true,unique:true},
+  jobId:{type:String,required:true},
+  jobTitle:{type:String,default:""},
+  brandId:{type:mongoose.Schema.Types.ObjectId,ref:"User",required:true},
+  studentId:{type:mongoose.Schema.Types.ObjectId,ref:"User",required:true},
+  brief:{type:String,default:""},
+  resources:{type:[{title:{type:String,default:""},url:{type:String,default:""}}],default:[]},
+  status:{type:String,enum:["resources_pending","in_progress","submitted","revision_requested","approved","completed"],default:"resources_pending"},
+  submissionLink:{type:String,default:""},
+  submissionNote:{type:String,default:""},
+  revisionNote:{type:String,default:""},
+  deadline:{type:String,default:""},
+  submittedAt:{type:Date},
+  approvedAt:{type:Date},
+},{timestamps:true});
+
 const User        = mongoose.model("User",userSchema);
 const OTP         = mongoose.model("OTP",otpSchema);
 const Application = mongoose.model("Application",applicationSchema);
 const Earning     = mongoose.model("Earning",earningSchema);
 const Job         = mongoose.model("Job",jobSchema);
 const Payment     = mongoose.model("Payment",paymentSchema);
+const ProjectWorkspace = mongoose.model("ProjectWorkspace",projectWorkspaceSchema);
 
 console.log("✅ All models loaded!");
 
@@ -132,6 +151,27 @@ function getMinimumAmount(value){
 
 function formatINR(amount){
   return `₹${Number(amount||0).toLocaleString("en-IN")}`;
+}
+
+function isValidUrl(value){
+  try{
+    const url=new URL(String(value||"").trim());
+    return ["http:","https:"].includes(url.protocol);
+  }catch{
+    return false;
+  }
+}
+
+function cleanResources(resources){
+  if(!Array.isArray(resources))return [];
+  return resources
+    .map(r=>({title:String(r?.title||"").trim(),url:String(r?.url||"").trim()}))
+    .filter(r=>r.title&&r.url&&isValidUrl(r.url))
+    .slice(0,5);
+}
+
+function safeMessage(value,max=3000){
+  return String(value||"").trim().slice(0,max);
 }
 
 // ═══════════════════════════════════════════
@@ -719,6 +759,166 @@ async function brandOwnsApplication(application,brandId){
   return !!brandName&&String(application.brandName||"").trim().toLowerCase()===brandName.toLowerCase();
 }
 
+async function ensureWorkspaceForApplication(applicationId,brandId){
+  const application=await Application.findById(applicationId);
+  if(!application)return null;
+  return ProjectWorkspace.findOneAndUpdate(
+    {applicationId:application._id},
+    {$setOnInsert:{
+      applicationId:application._id,
+      jobId:application.jobId,
+      jobTitle:application.jobTitle,
+      brandId,
+      studentId:application.studentId,
+      status:"resources_pending",
+    }},
+    {new:true,upsert:true,setDefaultsOnInsert:true}
+  );
+}
+
+// ═══════════════════════════════════════════
+// PROJECT WORKSPACE ROUTES
+// ═══════════════════════════════════════════
+app.get("/api/brand/workspaces",verifyToken,async(req,res)=>{
+  try{
+    if(req.user.role!=="brand")return res.status(403).json({success:false,message:"Brand only."});
+    const workspaces=await ProjectWorkspace.find({brandId:req.user.id})
+      .populate("studentId","firstName lastName email")
+      .sort({updatedAt:-1});
+    res.json({success:true,workspaces});
+  }catch(err){
+    res.status(500).json({success:false,message:"Server error."});
+  }
+});
+
+app.put("/api/brand/workspace/:applicationId/resources",verifyToken,async(req,res)=>{
+  try{
+    if(req.user.role!=="brand")return res.status(403).json({success:false,message:"Brand only."});
+    let workspace=await ProjectWorkspace.findOne({applicationId:req.params.applicationId,brandId:req.user.id});
+    if(!workspace){
+      const application=await Application.findById(req.params.applicationId);
+      if(!application)return res.status(404).json({success:false,message:"Application not found."});
+      if(!(await brandOwnsApplication(application,req.user.id)))return res.status(403).json({success:false,message:"You can only manage your own workspaces."});
+      if(application.paymentStatus!=="paid")return res.status(400).json({success:false,message:"Complete payment before adding resources."});
+      workspace=await ensureWorkspaceForApplication(application._id,req.user.id);
+    }
+
+    const resources=cleanResources(req.body.resources);
+    const brief=safeMessage(req.body.brief);
+    const deadline=safeMessage(req.body.deadline,120);
+    if(!brief&&!deadline&&!resources.length){
+      return res.status(400).json({success:false,message:"Add a brief, deadline, or at least one resource link."});
+    }
+
+    workspace.brief=brief;
+    workspace.deadline=deadline;
+    workspace.resources=resources;
+    if(workspace.status==="resources_pending")workspace.status="in_progress";
+    await workspace.save();
+
+    const student=await User.findById(workspace.studentId);
+    if(student?.email){
+      sendEmail(student.email,`Project resources added — ${workspace.jobTitle}`,
+        `<div style="font-family:Arial,sans-serif;padding:20px;max-width:520px;margin:0 auto">
+          <h2 style="color:#0a7c44">Project resources are ready</h2>
+          <p>Hi ${student.firstName||"there"}, your brand has added the brief/resources for <b>${workspace.jobTitle}</b>.</p>
+          <p>You can now start work and submit your final link from your dashboard.</p>
+          <a href="${BASE_URL}/dashboard" style="display:inline-block;background:#0a7c44;color:white;padding:12px 20px;border-radius:9px;text-decoration:none;font-weight:bold">Open Dashboard</a>
+        </div>`);
+    }
+
+    res.json({success:true,message:"Workspace resources saved.",workspace});
+  }catch(err){
+    res.status(500).json({success:false,message:"Server error."});
+  }
+});
+
+app.put("/api/brand/workspace/:applicationId/review",verifyToken,async(req,res)=>{
+  try{
+    if(req.user.role!=="brand")return res.status(403).json({success:false,message:"Brand only."});
+    const{action,revisionNote}=req.body;
+    if(!["approve","revision"].includes(action))return res.status(400).json({success:false,message:"Invalid review action."});
+    const workspace=await ProjectWorkspace.findOne({applicationId:req.params.applicationId,brandId:req.user.id});
+    if(!workspace)return res.status(404).json({success:false,message:"Workspace not found."});
+    if(workspace.status!=="submitted")return res.status(400).json({success:false,message:"Student has not submitted work yet."});
+
+    if(action==="approve"){
+      workspace.status="approved";
+      workspace.revisionNote="";
+      workspace.approvedAt=new Date();
+      await workspace.save();
+      await Earning.findOneAndUpdate(
+        {applicationId:workspace.applicationId,studentId:workspace.studentId,status:"pending"},
+        {$set:{status:"paid"}},
+        {new:true}
+      );
+      const student=await User.findById(workspace.studentId);
+      if(student?.email){
+        sendEmail(student.email,`Work approved — ${workspace.jobTitle}`,
+          `<div style="font-family:Arial,sans-serif;padding:20px;max-width:520px;margin:0 auto">
+            <h2 style="color:#0a7c44">Work approved</h2>
+            <p>Hi ${student.firstName||"there"}, your submission for <b>${workspace.jobTitle}</b> has been approved.</p>
+            <p>Your pending earning has been marked as paid in NextGenGrowth.</p>
+          </div>`);
+      }
+      return res.json({success:true,message:"Work approved and student earning released.",workspace});
+    }
+
+    workspace.status="revision_requested";
+    workspace.revisionNote=safeMessage(revisionNote,1500);
+    await workspace.save();
+    res.json({success:true,message:"Revision requested.",workspace});
+  }catch(err){
+    res.status(500).json({success:false,message:"Server error."});
+  }
+});
+
+app.get("/api/student/workspaces",verifyToken,async(req,res)=>{
+  try{
+    if(req.user.role!=="student")return res.status(403).json({success:false,message:"Student only."});
+    const workspaces=await ProjectWorkspace.find({studentId:req.user.id})
+      .populate("brandId","firstName lastName companyName email")
+      .sort({updatedAt:-1});
+    res.json({success:true,workspaces});
+  }catch(err){
+    res.status(500).json({success:false,message:"Server error."});
+  }
+});
+
+app.post("/api/student/workspace/:applicationId/submit",verifyToken,async(req,res)=>{
+  try{
+    if(req.user.role!=="student")return res.status(403).json({success:false,message:"Student only."});
+    const workspace=await ProjectWorkspace.findOne({applicationId:req.params.applicationId,studentId:req.user.id});
+    if(!workspace)return res.status(404).json({success:false,message:"Workspace not found."});
+    if(!["in_progress","revision_requested","submitted"].includes(workspace.status)){
+      return res.status(400).json({success:false,message:"You can submit after the brand adds project resources."});
+    }
+    const submissionLink=String(req.body.submissionLink||"").trim();
+    if(!isValidUrl(submissionLink))return res.status(400).json({success:false,message:"Add a valid final work link."});
+
+    workspace.submissionLink=submissionLink;
+    workspace.submissionNote=safeMessage(req.body.submissionNote,1500);
+    workspace.status="submitted";
+    workspace.submittedAt=new Date();
+    await workspace.save();
+
+    const brand=await User.findById(workspace.brandId);
+    if(brand?.email){
+      sendEmail(brand.email,`Work submitted — ${workspace.jobTitle}`,
+        `<div style="font-family:Arial,sans-serif;padding:20px;max-width:520px;margin:0 auto">
+          <h2 style="color:#0a7c44">Student submitted work</h2>
+          <p>The student has submitted final work for <b>${workspace.jobTitle}</b>.</p>
+          <p><a href="${submissionLink}">Open submission</a></p>
+          <a href="${BASE_URL}/brand-dashboard" style="display:inline-block;background:#0a7c44;color:white;padding:12px 20px;border-radius:9px;text-decoration:none;font-weight:bold">Review Submission</a>
+        </div>`);
+    }
+
+    res.json({success:true,message:"Work submitted for brand review.",workspace});
+  }catch(err){
+    res.status(500).json({success:false,message:"Server error."});
+  }
+});
+
 // ═══════════════════════════════════════════
 // RAZORPAY PAYMENT ROUTES
 // ═══════════════════════════════════════════
@@ -814,11 +1014,14 @@ app.post("/api/payment/verify",verifyToken,async(req,res)=>{
       paidAmount:payment.amount,
     });
 
+    await ensureWorkspaceForApplication(payment.applicationId,payment.brandId);
+
     await Earning.create({
       studentId:payment.studentId,
+      applicationId:payment.applicationId,
       amount:payment.amount,
       description:payment.description,
-      status:"paid",
+      status:"pending",
     });
 
     const student=await User.findById(payment.studentId);
@@ -828,11 +1031,11 @@ app.post("/api/payment/verify",verifyToken,async(req,res)=>{
         "💰 Payment Received — NextGenGrowth",
         `<div style="font-family:Arial,sans-serif;padding:20px;max-width:500px;margin:0 auto">
         <div style="background:linear-gradient(135deg,#0a7c44,#064e2b);border-radius:16px;padding:24px;text-align:center;color:white;margin-bottom:20px">
-          <h2 style="margin:0 0 8px">💰 Payment Received!</h2>
+          <h2 style="margin:0 0 8px">💰 Payment Secured!</h2>
           <p style="font-size:2rem;font-weight:bold;margin:0">₹${payment.amount.toLocaleString('en-IN')}</p>
           <p style="margin:6px 0 0;opacity:.85">${payment.description}</p>
         </div>
-        <p style="color:#2d5a3d;font-size:15px">Hi ${student.firstName}! Your payment has been processed and credited to your NextGenGrowth earnings. 🎉</p>
+        <p style="color:#2d5a3d;font-size:15px">Hi ${student.firstName}! The brand payment is secured. It will be released after your submitted work is approved.</p>
         <a href="${BASE_URL}/dashboard" style="display:inline-block;background:#0a7c44;color:white;padding:12px 24px;border-radius:10px;text-decoration:none;margin-top:8px;font-weight:bold">View Earnings →</a>
         </div>`
       );
