@@ -12,6 +12,8 @@ const passport   = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const session    = require("express-session");
 const { GoogleGenerativeAI } = require('@google/generative-ai');
+const Razorpay   = require("razorpay");
+const crypto     = require("crypto");
 
 const app        = express();
 const PORT       = process.env.PORT             || 3000;
@@ -23,6 +25,13 @@ const GOOGLE_CLIENT_ID     = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 const GOOGLE_CALLBACK_URL  = process.env.GOOGLE_CALLBACK_URL || "http://localhost:3000/auth/google/callback";
 const BASE_URL   = process.env.BASE_URL || "https://nextgengrowth-production.up.railway.app";
+
+const razorpay = process.env.RAZORPAY_KEY_ID&&process.env.RAZORPAY_KEY_SECRET
+  ? new Razorpay({
+      key_id:process.env.RAZORPAY_KEY_ID,
+      key_secret:process.env.RAZORPAY_KEY_SECRET,
+    })
+  : null;
 
 // ═══════════════════════════════════════════
 // MONGODB
@@ -70,6 +79,8 @@ const applicationSchema = new mongoose.Schema({
   brandId:{type:mongoose.Schema.Types.ObjectId,ref:"User"},
   pay:{type:String,required:true},
   status:{type:String,enum:["review","accepted","rejected"],default:"review"},
+  paymentStatus:{type:String,enum:["unpaid","paid"],default:"unpaid"},
+  paidAmount:{type:Number,default:0},
 },{timestamps:true});
 
 const earningSchema = new mongoose.Schema({
@@ -92,11 +103,24 @@ const jobSchema = new mongoose.Schema({
   status:{type:String,enum:["open","closed"],default:"open"},
 },{timestamps:true});
 
+const paymentSchema = new mongoose.Schema({
+  applicationId:{type:mongoose.Schema.Types.ObjectId,ref:"Application",required:true},
+  studentId:{type:mongoose.Schema.Types.ObjectId,ref:"User",required:true},
+  brandId:{type:mongoose.Schema.Types.ObjectId,ref:"User",required:true},
+  razorpayOrderId:{type:String,required:true},
+  razorpayPaymentId:{type:String,default:""},
+  razorpaySignature:{type:String,default:""},
+  amount:{type:Number,required:true},
+  status:{type:String,enum:["created","paid","failed"],default:"created"},
+  description:{type:String,default:"Project payment"},
+},{timestamps:true});
+
 const User        = mongoose.model("User",userSchema);
 const OTP         = mongoose.model("OTP",otpSchema);
 const Application = mongoose.model("Application",applicationSchema);
 const Earning     = mongoose.model("Earning",earningSchema);
 const Job         = mongoose.model("Job",jobSchema);
+const Payment     = mongoose.model("Payment",paymentSchema);
 
 console.log("✅ All models loaded!");
 
@@ -662,6 +686,155 @@ app.put("/api/brand/application/:id",verifyToken,async(req,res)=>{
   }catch(err){res.status(500).json({success:false,message:"Server error."});}
 });
 
+async function brandOwnsApplication(application,brandId){
+  if(application.brandId&&String(application.brandId)===String(brandId))return true;
+  if(mongoose.Types.ObjectId.isValid(application.jobId)){
+    const job=await Job.findOne({_id:application.jobId,brandId}).select("_id");
+    if(job)return true;
+  }
+  const brand=await User.findById(brandId).select("companyName firstName lastName");
+  const brandName=(brand?.companyName||`${brand?.firstName||""} ${brand?.lastName||""}`.trim()).trim();
+  return !!brandName&&String(application.brandName||"").trim().toLowerCase()===brandName.toLowerCase();
+}
+
+// ═══════════════════════════════════════════
+// RAZORPAY PAYMENT ROUTES
+// ═══════════════════════════════════════════
+app.post("/api/payment/create-order",verifyToken,async(req,res)=>{
+  try{
+    if(req.user.role!=="brand")return res.status(403).json({success:false,message:"Brand only."});
+    if(!razorpay){
+      return res.status(500).json({success:false,message:"Razorpay credentials are not configured."});
+    }
+
+    const{applicationId,amount,description}=req.body;
+    if(!applicationId||amount===undefined)return res.status(400).json({success:false,message:"Application ID and amount required."});
+
+    const application=await Application.findById(applicationId).populate("studentId","firstName lastName email");
+    if(!application)return res.status(404).json({success:false,message:"Application not found."});
+    if(!(await brandOwnsApplication(application,req.user.id)))return res.status(403).json({success:false,message:"You can only pay for your own applications."});
+    if(application.status!=="accepted")return res.status(400).json({success:false,message:"Application must be accepted before payment."});
+    if(application.paymentStatus==="paid")return res.status(400).json({success:false,message:"This application is already paid."});
+
+    const numericAmount=Number(amount);
+    const amountInPaise=Math.round(numericAmount*100);
+    if(!Number.isFinite(numericAmount)||amountInPaise<100)return res.status(400).json({success:false,message:"Minimum payment is ₹1."});
+
+    const order=await razorpay.orders.create({
+      amount:amountInPaise,
+      currency:"INR",
+      receipt:`ngg_${String(applicationId).slice(-10)}_${String(Date.now()).slice(-8)}`,
+      notes:{
+        applicationId:String(applicationId),
+        jobTitle:application.jobTitle,
+        studentName:`${application.studentId.firstName} ${application.studentId.lastName}`.trim(),
+        description:description||application.jobTitle,
+      },
+    });
+
+    await Payment.create({
+      applicationId,
+      studentId:application.studentId._id,
+      brandId:req.user.id,
+      razorpayOrderId:order.id,
+      amount:numericAmount,
+      description:description||application.jobTitle,
+    });
+
+    res.json({
+      success:true,
+      orderId:order.id,
+      amount:amountInPaise,
+      currency:"INR",
+      key:process.env.RAZORPAY_KEY_ID,
+      studentName:`${application.studentId.firstName} ${application.studentId.lastName}`.trim(),
+      jobTitle:application.jobTitle,
+    });
+  }catch(err){
+    console.error("Payment create-order error:",err);
+    res.status(500).json({success:false,message:"Could not create payment order. Check Razorpay credentials."});
+  }
+});
+
+app.post("/api/payment/verify",verifyToken,async(req,res)=>{
+  try{
+    if(req.user.role!=="brand")return res.status(403).json({success:false,message:"Brand only."});
+    if(!process.env.RAZORPAY_KEY_SECRET)return res.status(500).json({success:false,message:"Razorpay credentials are not configured."});
+    const{razorpay_order_id,razorpay_payment_id,razorpay_signature}=req.body;
+    if(!razorpay_order_id||!razorpay_payment_id||!razorpay_signature){
+      return res.status(400).json({success:false,message:"Missing payment verification fields."});
+    }
+
+    const expectedSig=crypto
+      .createHmac("sha256",process.env.RAZORPAY_KEY_SECRET)
+      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
+      .digest("hex");
+
+    if(expectedSig!==razorpay_signature){
+      return res.status(400).json({success:false,message:"Payment signature mismatch. Verification failed."});
+    }
+
+    const payment=await Payment.findOne({razorpayOrderId:razorpay_order_id});
+    if(!payment)return res.status(404).json({success:false,message:"Payment record not found."});
+    if(String(payment.brandId)!==String(req.user.id))return res.status(403).json({success:false,message:"You can only verify your own payments."});
+    if(payment.status==="paid")return res.json({success:true,message:"Payment already verified."});
+
+    payment.razorpayPaymentId=razorpay_payment_id;
+    payment.razorpaySignature=razorpay_signature;
+    payment.status="paid";
+    await payment.save();
+
+    await Application.findByIdAndUpdate(payment.applicationId,{
+      paymentStatus:"paid",
+      paidAmount:payment.amount,
+    });
+
+    await Earning.create({
+      studentId:payment.studentId,
+      amount:payment.amount,
+      description:payment.description,
+      status:"paid",
+    });
+
+    const student=await User.findById(payment.studentId);
+    if(student?.email){
+      sendEmail(
+        student.email,
+        "💰 Payment Received — NextGenGrowth",
+        `<div style="font-family:Arial,sans-serif;padding:20px;max-width:500px;margin:0 auto">
+        <div style="background:linear-gradient(135deg,#0a7c44,#064e2b);border-radius:16px;padding:24px;text-align:center;color:white;margin-bottom:20px">
+          <h2 style="margin:0 0 8px">💰 Payment Received!</h2>
+          <p style="font-size:2rem;font-weight:bold;margin:0">₹${payment.amount.toLocaleString('en-IN')}</p>
+          <p style="margin:6px 0 0;opacity:.85">${payment.description}</p>
+        </div>
+        <p style="color:#2d5a3d;font-size:15px">Hi ${student.firstName}! Your payment has been processed and credited to your NextGenGrowth earnings. 🎉</p>
+        <a href="${BASE_URL}/dashboard" style="display:inline-block;background:#0a7c44;color:white;padding:12px 24px;border-radius:10px;text-decoration:none;margin-top:8px;font-weight:bold">View Earnings →</a>
+        </div>`
+      );
+    }
+
+    res.json({success:true,message:"Payment verified! Student has been notified. ✅"});
+  }catch(err){
+    console.error("Payment verify error:",err);
+    res.status(500).json({success:false,message:"Payment verification failed."});
+  }
+});
+
+app.get("/api/payment/status/:applicationId",verifyToken,async(req,res)=>{
+  try{
+    const application=await Application.findById(req.params.applicationId);
+    if(!application)return res.status(404).json({success:false,message:"Application not found."});
+    const canView=req.user.role==="student"
+      ? String(application.studentId)===String(req.user.id)
+      : req.user.role==="brand"&&await brandOwnsApplication(application,req.user.id);
+    if(!canView)return res.status(403).json({success:false,message:"You cannot view this payment status."});
+    const payment=await Payment.findOne({applicationId:req.params.applicationId,status:"paid"});
+    res.json({success:true,paid:!!payment,amount:payment?.amount||0});
+  }catch(err){
+    res.status(500).json({success:false,message:"Server error."});
+  }
+});
+
 // ═══════════════════════════════════════════
 // ADMIN ROUTES
 // ═══════════════════════════════════════════
@@ -797,7 +970,7 @@ app.get("/admin",(req,res)=>res.sendFile(path.join(__dirname,"public","admin.htm
 app.get("/api/health",async(req,res)=>{
   const userCount=await User.countDocuments();
   const jobCount=await Job.countDocuments();
-  res.json({success:true,message:"NextGenGrowth API 🚀 v3",users:userCount,jobs:jobCount,email:GMAIL_USER?"configured":"not configured",google:GOOGLE_CLIENT_ID?"configured":"not configured"});
+  res.json({success:true,message:"NextGenGrowth API 🚀 v4",users:userCount,jobs:jobCount,email:GMAIL_USER?"configured":"not configured",google:GOOGLE_CLIENT_ID?"configured":"not configured",razorpay:process.env.RAZORPAY_KEY_ID?"configured":"not configured"});
 });
 // --- NEXTGEN GROWTH AI LOGIC START ---
 
@@ -868,5 +1041,6 @@ app.listen(PORT,()=>{
   console.log(`\n🚀 Server: http://localhost:${PORT}`);
   console.log(`📧 Email:  ${GMAIL_USER||"Not configured"}`);
   console.log(`🔑 Google: ${GOOGLE_CLIENT_ID?"Configured":"Not configured"}`);
+  console.log(`💳 Razorpay: ${process.env.RAZORPAY_KEY_ID?"Configured ✅":"Not configured ❌"}`);
   console.log(`🗄️  DB:    MongoDB Atlas\n`);
 });

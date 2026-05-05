@@ -2,16 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <title>Brand Dashboard – NextGenGrowth</title>
   <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{--gd:#064e2b;--gm:#0a7c44;--gb:#00c96b;--gg:#00ff88;--gl:#e8fdf2;--gp:#f0fdf6;--white:#fff;--off:#f7fdf9;--td:#0a1f12;--tm:#2d5a3d;--ts:#6b8f77;--br:#d1ead9;--sw:250px}
     html,body{height:100%;font-family:'Outfit',sans-serif;background:var(--off);color:var(--td);overflow:hidden}
-    .app{display:flex;height:100vh;overflow:hidden}
+    .app{display:flex;height:100vh;height:100dvh;overflow:hidden}
     .sidebar{width:var(--sw);background:#1d4ed8;display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;z-index:20;position:relative}
     .sidebar::after{content:'';position:absolute;bottom:-60px;left:-60px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.05);pointer-events:none}
     .sb-logo{padding:20px 18px 16px;display:flex;align-items:center;gap:9px;font-family:'Clash Display',sans-serif;font-size:1.1rem;font-weight:700;color:white;border-bottom:1px solid rgba(255,255,255,.15);flex-shrink:0;text-decoration:none}
@@ -33,7 +34,7 @@
     .promo h4{font-family:'Clash Display',sans-serif;font-size:.82rem;margin-bottom:3px}
     .promo p{font-size:.7rem;opacity:.8;margin-bottom:9px;line-height:1.4}
     .pb{display:block;background:white;color:#1d4ed8;text-align:center;padding:6px;border-radius:7px;font-size:.76rem;font-weight:700;border:none;cursor:pointer;width:100%}
-    .main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+    .main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
     .topbar{background:var(--white);border-bottom:1px solid var(--br);padding:0 24px;height:58px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;position:relative}
     .topbar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#60a5fa,#3b82f6,#1d4ed8);background-size:200%;animation:gm 3s linear infinite}
     @keyframes gm{0%{background-position:0%}100%{background-position:200%}}
@@ -43,7 +44,10 @@
     .tr_{display:flex;align-items:center;gap:9px}
     .tav{width:32px;height:32px;border-radius:8px;cursor:pointer;flex-shrink:0;background:linear-gradient(135deg,#3b82f6,#1d4ed8);display:flex;align-items:center;justify-content:center;font-family:'Clash Display',sans-serif;font-size:.76rem;font-weight:700;color:white}
     .mb{display:none;background:none;border:none;cursor:pointer;color:var(--td);padding:4px}
-    .content{flex:1;overflow-y:auto}
+    .sb-close{display:none;position:absolute;top:13px;right:13px;width:34px;height:34px;border:none;border-radius:9px;background:rgba(255,255,255,.13);color:white;align-items:center;justify-content:center;cursor:pointer;z-index:3}
+    .drawer-overlay{position:fixed;inset:0;background:rgba(10,31,18,.48);opacity:0;pointer-events:none;transition:opacity .25s ease;z-index:900}
+    .drawer-overlay.show{opacity:1;pointer-events:auto}
+    .content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
     .page{display:none;padding:22px 26px 40px;animation:fs .3s ease both}
     .page.active{display:block}
     @keyframes fs{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
@@ -67,6 +71,8 @@
     .bpri:hover{transform:translateY(-1px)}
     .bgre{background:linear-gradient(135deg,var(--gm),var(--gd));color:white;box-shadow:0 3px 12px rgba(10,124,68,.2)}
     .bgre:hover{transform:translateY(-1px)}
+    .bpay{background:linear-gradient(135deg,#0a7c44,#064e2b);color:white;box-shadow:0 3px 12px rgba(10,124,68,.18)}
+    .bpay:hover{transform:translateY(-1px)}
     .bout{background:transparent;border:1.5px solid var(--br);color:var(--tm)}
     .bout:hover{background:var(--gp);border-color:var(--gb);color:var(--gm)}
     .bdan{background:#fef2f2;border:1.5px solid #fecaca;color:#dc2626}
@@ -102,6 +108,12 @@
     .app-bio{font-size:.8rem;color:var(--ts);margin-bottom:12px;line-height:1.5;background:var(--off);border-radius:8px;padding:10px;border:1px solid var(--br)}
     .app-actions{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
     .app-date{font-size:.73rem;color:var(--ts);margin-left:auto}
+    .pay-box{width:100%;background:#f8fffb;border:1px solid var(--br);border-radius:10px;padding:11px;margin-top:2px}
+    .pay-box label{display:block;font-size:.72rem;font-weight:700;color:var(--tm);margin-bottom:6px}
+    .pay-row{display:grid;grid-template-columns:minmax(120px,1fr) auto;gap:8px;align-items:center}
+    .pay-input{width:100%;background:white;border:1.5px solid var(--br);border-radius:8px;padding:8px 10px;color:var(--td);font-family:'Outfit',sans-serif;font-size:.82rem;outline:none}
+    .pay-input:focus{border-color:var(--gb);box-shadow:0 0 0 3px rgba(0,201,107,.1)}
+    .paid-note{display:inline-flex;align-items:center;gap:5px;background:var(--gl);border:1px solid var(--br);color:var(--gm);border-radius:100px;padding:5px 11px;font-size:.78rem;font-weight:700}
     .ftabs{display:flex;gap:3px;background:var(--gp);border:1px solid var(--br);border-radius:10px;padding:3px;margin-bottom:16px;width:fit-content}
     .ftab{padding:7px 16px;border-radius:7px;font-size:.82rem;font-weight:500;color:var(--ts);cursor:pointer;border:none;background:transparent;transition:all .2s;white-space:nowrap}
     .ftab.active{background:white;color:#1d4ed8;font-weight:700;box-shadow:0 2px 7px rgba(0,0,0,.07)}
@@ -150,6 +162,8 @@
     .toast.success{background:var(--gd);color:white}
     .toast.error{background:#dc2626;color:white}
     .toast.info{background:var(--td);color:white}
+    .overlay{position:fixed;inset:0;background:rgba(10,31,18,.45);opacity:0;pointer-events:none;transition:opacity .25s ease;z-index:9999}
+    .overlay.show{opacity:1;pointer-events:auto}
     .content::-webkit-scrollbar{width:3px}
     .content::-webkit-scrollbar-thumb{background:var(--br);border-radius:100px}
     /* ══ AI CHAT WIDGET STYLES ══ */
@@ -164,6 +178,39 @@
 .ai-chat-input input { flex: 1; padding: 10px 14px; border: 1px solid var(--br); border-radius: 9px; outline: none; font-family: 'Outfit', sans-serif; font-size: .85rem; }
 .ai-chat-input button { background: var(--gm); color: white; border: none; padding: 0 16px; border-radius: 9px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
 .ai-chat-input button:hover { background: var(--gd); }
+    @media(max-width:860px){
+      .sidebar{position:fixed;top:0;left:0;bottom:0;height:100dvh;width:min(92vw,320px);max-width:320px;transform:translateX(-104%);transition:transform .28s ease;z-index:1000;box-shadow:0 20px 50px rgba(0,0,0,.2)}
+      .sidebar.open{transform:translateX(0)}
+      .sb-close{display:flex}
+      .main{width:100%}
+      .topbar{padding:0 14px;height:60px}
+      .mb{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border:1px solid var(--br);border-radius:9px;background:var(--white)}
+      .tr_>.btn{display:none}
+      .tt{font-size:.98rem}
+      .ts_{font-size:.68rem}
+      .page{padding:18px 14px 34px}
+      .g2,.g3,.g4{grid-template-columns:1fr}
+      .wb{padding:20px;align-items:flex-start}
+      .sc{padding:14px}
+      .ftabs{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+      .ftab{flex-shrink:0}
+      .price-grid{grid-template-columns:1fr}
+      .pj-card{align-items:flex-start}
+      .pj-meta{flex-wrap:wrap;gap:6px}
+      .app-top,.app-job{flex-direction:column;gap:10px;align-items:flex-start}
+      .app-date{width:100%;margin-left:0}
+      .pay-row{grid-template-columns:1fr}
+      .pay-row .btn{justify-content:center;width:100%}
+      .ai-chat-window{left:12px;right:12px;width:auto;height:min(72vh,460px)}
+    }
+    @media(max-width:560px){
+      .sidebar{width:100vw;max-width:none}
+      .sb-nm{max-width:68vw}
+      .ph h2{font-size:1.22rem}
+      .ph p{font-size:.8rem}
+      .app-student{align-items:flex-start}
+      .toast{white-space:normal;text-align:center;border-radius:14px}
+    }
   </style>
 </head>
 <body>
@@ -171,6 +218,9 @@
 
 <aside class="sidebar" id="sidebar">
   <a href="#" class="sb-logo"><div class="ld"></div>NextGenGrowth</a>
+  <button class="sb-close" onclick="closeMenu()" aria-label="Close menu">
+    <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
   <div class="sb-user">
     <div class="av" id="sbAv">?</div>
     <div style="overflow:hidden;min-width:0">
@@ -197,10 +247,14 @@
     </div>
   </div>
 </aside>
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeMenu()"></div>
 
 <div class="main">
   <header class="topbar">
     <div class="tl">
+      <button class="mb" onclick="toggleMenu()" aria-label="Open menu">
+        <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
       <div><div class="tt" id="pgT">Dashboard</div><div class="ts_" id="pgD">Loading...</div></div>
     </div>
     <div class="tr_">
@@ -525,6 +579,16 @@ if(_u&&_u.role&&_u.role!=='brand'){window.location.href='/login';}
 // STATE
 let myProjects=[], brandApps=[], curAppFilter='all';
 
+function getAppId(app){return app?._id||app?.id||'';}
+function parsePayAmount(pay){
+  const match=String(pay||'').replace(/,/g,'').match(/(\d+(?:\.\d+)?)/);
+  return match?Number(match[1]):'';
+}
+function formatINR(amount){
+  const n=Number(amount||0);
+  return n>0?`₹${n.toLocaleString('en-IN')}`:'';
+}
+
 // LOAD BRAND DATA
 function loadBrandData(){
   if(!_u)return;
@@ -609,8 +673,11 @@ function renderBrandApps(){
   const emojiMap={'Video Editing':'🎬','Graphic Design':'🎨','Web Development':'💻','Content Writing':'✍️','Social Media':'📱','Photography':'📸','Audio':'🎵','Data & Excel':'📊','AI Tools':'🤖'};
   el.innerHTML=list.map(a=>{
     const s=a.student||{};
+    const appId=getAppId(a);
     const ini=s.name?s.name.split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase():'??';
     const skills=s.skills&&s.skills.length?s.skills.map(sk=>`<span class="app-sk">${emojiMap[sk]||'•'} ${sk}</span>`).join(''):'<span style="color:var(--ts);font-size:.78rem">No skills listed</span>';
+    const isPaid=a.paymentStatus==='paid'||Number(a.paidAmount)>0;
+    const defaultAmount=Number(a.paidAmount)||parsePayAmount(a.pay);
     return`
     <div class="app-card">
       <div class="app-top">
@@ -635,10 +702,22 @@ function renderBrandApps(){
       ${s.linkedin?`<div style="font-size:.78rem;margin-bottom:12px"><a href="${s.linkedin}" target="_blank" style="color:#1d4ed8;font-weight:600">🔗 View LinkedIn Profile →</a></div>`:''}
       <div class="app-actions">
         ${a.status==='review'?`
-          <button class="btn bout bsm" onclick="viewStudentProfile('${a._id||a.id}')">👤 View Profile</button> 
-          <button class="btn bgre bsm" onclick="handleApp('${a._id||a.id}','accepted',this)">✅ Accept</button>
-          <button class="btn bdan bsm" onclick="handleApp('${a._id||a.id}','rejected',this)">❌ Reject</button>
-        `:a.status==='accepted'?`<span style="color:var(--gm);font-weight:600;font-size:.83rem">✅ You accepted this application</span>`:
+          <button class="btn bout bsm" onclick="viewStudentProfile('${appId}')">👤 View Profile</button>
+          <button class="btn bgre bsm" onclick="handleApp('${appId}','accepted',this)">✅ Accept</button>
+          <button class="btn bdan bsm" onclick="handleApp('${appId}','rejected',this)">❌ Reject</button>
+        `:a.status==='accepted'?`
+          <button class="btn bout bsm" onclick="viewStudentProfile('${appId}')">👤 View Profile</button>
+          <span style="color:var(--gm);font-weight:600;font-size:.83rem">✅ You accepted this application</span>
+          ${isPaid?`<span class="paid-note">💳 ${Number(a.paidAmount)>0?`Paid ${formatINR(a.paidAmount)}`:'Paid'}</span>`:`
+            <div class="pay-box">
+              <label for="pay-${appId}">Payment Amount</label>
+              <div class="pay-row">
+                <input class="pay-input" id="pay-${appId}" type="number" min="1" step="1" value="${defaultAmount||''}" placeholder="Enter amount in ₹">
+                <button class="btn bpay bsm" onclick="startPayment('${appId}',this)">💳 Pay Student</button>
+              </div>
+            </div>
+          `}
+        `:
         `<span style="color:#dc2626;font-weight:600;font-size:.83rem">❌ You rejected this application</span>`}
         <span class="app-date">Applied ${new Date(a.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</span>
       </div>
@@ -672,6 +751,89 @@ async function handleApp(id, status, btn){
     }else showToast(data.message,'error');
   }catch{showToast('Action failed. Check connection.','error');}
   btn.innerHTML=orig;btn.disabled=false;
+}
+
+async function startPayment(appId, btn){
+  const app=brandApps.find(a=>getAppId(a)===appId);
+  if(!app){showToast('Application not found. Refresh and try again.','error');return;}
+  if(app.paymentStatus==='paid'||Number(app.paidAmount)>0){showToast('This application is already paid.','info');return;}
+  const input=document.getElementById(`pay-${appId}`);
+  const amount=Number(String(input?.value||'').replace(/,/g,''));
+  if(!Number.isFinite(amount)||amount<1){
+    showToast('Enter a valid payment amount of ₹1 or more.','error');
+    if(input)input.focus();
+    return;
+  }
+  if(!window.Razorpay){
+    showToast('Razorpay checkout could not load. Check your internet connection.','error');
+    return;
+  }
+
+  const orig=btn.innerHTML;
+  btn.innerHTML='<span class="spin"></span>Creating order...';
+  btn.disabled=true;
+  try{
+    const orderRes=await fetch('/api/payment/create-order',{
+      method:'POST',
+      headers:{'Authorization':'Bearer '+_tk,'Content-Type':'application/json'},
+      body:JSON.stringify({applicationId:appId,amount,description:app.jobTitle||'Project payment'})
+    });
+    const order=await orderRes.json();
+    if(!order.success){
+      showToast(order.message||'Could not create payment order.','error');
+      btn.innerHTML=orig;btn.disabled=false;
+      return;
+    }
+
+    const resetButton=()=>{btn.innerHTML=orig;btn.disabled=false;};
+    const checkout=new Razorpay({
+      key:order.key,
+      amount:order.amount,
+      currency:order.currency||'INR',
+      name:'NextGenGrowth',
+      description:order.jobTitle||app.jobTitle||'Project payment',
+      order_id:order.orderId,
+      prefill:{
+        name:order.studentName||app.student?.name||'',
+        email:app.student?.email||''
+      },
+      notes:{
+        applicationId:appId,
+        jobTitle:app.jobTitle||''
+      },
+      theme:{color:'#0a7c44'},
+      modal:{ondismiss:()=>{showToast('Payment cancelled.','info');resetButton();}},
+      handler:async(response)=>{
+        btn.innerHTML='<span class="spin"></span>Verifying payment...';
+        try{
+          const verifyRes=await fetch('/api/payment/verify',{
+            method:'POST',
+            headers:{'Authorization':'Bearer '+_tk,'Content-Type':'application/json'},
+            body:JSON.stringify({...response,applicationId:appId})
+          });
+          const data=await verifyRes.json();
+          if(data.success){
+            showToast('Payment successful! Student notified. ✅','success');
+            await loadBrandApplications();
+          }else{
+            showToast(data.message||'Payment verification failed.','error');
+          }
+        }catch{
+          showToast('Could not verify payment. Please contact support.','error');
+        }
+        resetButton();
+      }
+    });
+    checkout.on('payment.failed',response=>{
+      showToast(response.error?.description||'Payment failed. Please try again.','error');
+      resetButton();
+    });
+    checkout.open();
+  }catch(e){
+    console.log('Payment error:',e);
+    showToast('Payment could not start. Check server and Razorpay credentials.','error');
+    btn.innerHTML=orig;btn.disabled=false;
+  }
 }
 
 // POST PROJECT
@@ -719,6 +881,22 @@ async function saveBrandProfile(){
   }catch{showToast('Saved locally!','info');}
 }
 
+function openMenu(){
+  document.getElementById('sidebar')?.classList.add('open');
+  document.getElementById('drawerOverlay')?.classList.add('show');
+  document.body.classList.add('menu-open');
+}
+function closeMenu(){
+  document.getElementById('sidebar')?.classList.remove('open');
+  document.getElementById('drawerOverlay')?.classList.remove('show');
+  document.body.classList.remove('menu-open');
+}
+function toggleMenu(){
+  const sidebar=document.getElementById('sidebar');
+  if(sidebar?.classList.contains('open'))closeMenu();
+  else openMenu();
+}
+
 // NAVIGATION
 const PT={home:'Dashboard',post:'Post a Project',projects:'My Projects',applications:'Applications',students:'Browse Students',profile:'Brand Profile'};
 function goTo(pg,navBtn){
@@ -730,6 +908,7 @@ function goTo(pg,navBtn){
   document.getElementById('pgT').textContent=PT[pg]||'Dashboard';
   document.getElementById('mc').scrollTop=0;
   if(pg==='applications')renderBrandApps();
+  if(window.innerWidth<=860)closeMenu();
   gsap.fromTo('#page-'+pg,{opacity:0,y:10},{opacity:1,y:0,duration:.28,ease:'power2.out'});
 }
 
@@ -747,6 +926,8 @@ window.addEventListener('DOMContentLoaded',()=>{
     .fromTo('.topbar',{y:-10,opacity:0},{y:0,opacity:1,duration:.4},'-=.3')
     .fromTo('#page-home',{y:14,opacity:0},{y:0,opacity:1,duration:.4},'-=.2');
 });
+window.addEventListener('resize',()=>{if(window.innerWidth>860)closeMenu();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeMenu();closeStudentProfile();}});
 // ✅ OPEN STUDENT PROFILE MODAL
 function viewStudentProfile(appId) {
   // Find the exact application in the brandApps array
