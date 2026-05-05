@@ -124,6 +124,16 @@ const Payment     = mongoose.model("Payment",paymentSchema);
 
 console.log("✅ All models loaded!");
 
+function getMinimumAmount(value){
+  const matches=String(value||"").replace(/,/g,"").match(/\d+(?:\.\d+)?/g);
+  const amount=matches?.length?Number(matches[0]):0;
+  return Number.isFinite(amount)&&amount>0?amount:1;
+}
+
+function formatINR(amount){
+  return `₹${Number(amount||0).toLocaleString("en-IN")}`;
+}
+
 // ═══════════════════════════════════════════
 // EMAIL
 // ═══════════════════════════════════════════
@@ -673,6 +683,18 @@ app.put("/api/brand/application/:id",verifyToken,async(req,res)=>{
     if(!["accepted","rejected"].includes(status))return res.status(400).json({success:false,message:"Invalid status."});
     const app=await Application.findById(req.params.id).populate("studentId","firstName lastName email");
     if(!app)return res.status(404).json({success:false,message:"Not found."});
+    if(!(await brandOwnsApplication(app,req.user.id)))return res.status(403).json({success:false,message:"You can only update applications for your own projects."});
+    if(status==="accepted"){
+      const alreadyAccepted=await Application.findOne({
+        _id:{$ne:app._id},
+        jobId:app.jobId,
+        status:"accepted",
+      }).populate("studentId","firstName lastName");
+      if(alreadyAccepted){
+        const selectedName=`${alreadyAccepted.studentId?.firstName||""} ${alreadyAccepted.studentId?.lastName||""}`.trim()||"another student";
+        return res.status(409).json({success:false,message:`You already approved ${selectedName} for this project. Only one student can be approved per project.`});
+      }
+    }
     app.status=status;await app.save();
     const student=app.studentId;
     if(student?.email){
@@ -718,7 +740,10 @@ app.post("/api/payment/create-order",verifyToken,async(req,res)=>{
 
     const numericAmount=Number(amount);
     const amountInPaise=Math.round(numericAmount*100);
-    if(!Number.isFinite(numericAmount)||amountInPaise<100)return res.status(400).json({success:false,message:"Minimum payment is ₹1."});
+    const minimumAmount=getMinimumAmount(application.pay);
+    if(!Number.isFinite(numericAmount)||amountInPaise<minimumAmount*100){
+      return res.status(400).json({success:false,message:`Minimum payment for this project is ${formatINR(minimumAmount)}.`});
+    }
 
     const order=await razorpay.orders.create({
       amount:amountInPaise,

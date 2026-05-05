@@ -114,6 +114,7 @@
     .pay-input{width:100%;background:white;border:1.5px solid var(--br);border-radius:8px;padding:8px 10px;color:var(--td);font-family:'Outfit',sans-serif;font-size:.82rem;outline:none}
     .pay-input:focus{border-color:var(--gb);box-shadow:0 0 0 3px rgba(0,201,107,.1)}
     .paid-note{display:inline-flex;align-items:center;gap:5px;background:var(--gl);border:1px solid var(--br);color:var(--gm);border-radius:100px;padding:5px 11px;font-size:.78rem;font-weight:700}
+    .locked-note{display:inline-flex;align-items:center;gap:5px;background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;border-radius:100px;padding:5px 11px;font-size:.78rem;font-weight:700}
     .ftabs{display:flex;gap:3px;background:var(--gp);border:1px solid var(--br);border-radius:10px;padding:3px;margin-bottom:16px;width:fit-content}
     .ftab{padding:7px 16px;border-radius:7px;font-size:.82rem;font-weight:500;color:var(--ts);cursor:pointer;border:none;background:transparent;transition:all .2s;white-space:nowrap}
     .ftab.active{background:white;color:#1d4ed8;font-weight:700;box-shadow:0 2px 7px rgba(0,0,0,.07)}
@@ -677,7 +678,10 @@ function renderBrandApps(){
     const ini=s.name?s.name.split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase():'??';
     const skills=s.skills&&s.skills.length?s.skills.map(sk=>`<span class="app-sk">${emojiMap[sk]||'•'} ${sk}</span>`).join(''):'<span style="color:var(--ts);font-size:.78rem">No skills listed</span>';
     const isPaid=a.paymentStatus==='paid'||Number(a.paidAmount)>0;
-    const defaultAmount=Number(a.paidAmount)||parsePayAmount(a.pay);
+    const projectMinimum=parsePayAmount(a.pay)||1;
+    const defaultAmount=Number(a.paidAmount)||projectMinimum;
+    const selectedForProject=brandApps.find(other=>getAppId(other)!==appId&&String(other.jobId||'')===String(a.jobId||'')&&other.status==='accepted');
+    const selectedName=selectedForProject?.student?.name||'A student';
     return`
     <div class="app-card">
       <div class="app-top">
@@ -703,16 +707,16 @@ function renderBrandApps(){
       <div class="app-actions">
         ${a.status==='review'?`
           <button class="btn bout bsm" onclick="viewStudentProfile('${appId}')">👤 View Profile</button>
-          <button class="btn bgre bsm" onclick="handleApp('${appId}','accepted',this)">✅ Accept</button>
+          ${selectedForProject?`<span class="locked-note">✅ ${selectedName} already selected</span>`:`<button class="btn bgre bsm" onclick="handleApp('${appId}','accepted',this)">✅ Accept</button>`}
           <button class="btn bdan bsm" onclick="handleApp('${appId}','rejected',this)">❌ Reject</button>
         `:a.status==='accepted'?`
           <button class="btn bout bsm" onclick="viewStudentProfile('${appId}')">👤 View Profile</button>
           <span style="color:var(--gm);font-weight:600;font-size:.83rem">✅ You accepted this application</span>
           ${isPaid?`<span class="paid-note">💳 ${Number(a.paidAmount)>0?`Paid ${formatINR(a.paidAmount)}`:'Paid'}</span>`:`
             <div class="pay-box">
-              <label for="pay-${appId}">Payment Amount</label>
+              <label for="pay-${appId}">Payment Amount (minimum ${formatINR(projectMinimum)})</label>
               <div class="pay-row">
-                <input class="pay-input" id="pay-${appId}" type="number" min="1" step="1" value="${defaultAmount||''}" placeholder="Enter amount in ₹">
+                <input class="pay-input" id="pay-${appId}" type="number" min="${projectMinimum}" step="1" value="${defaultAmount||''}" placeholder="Enter amount in ₹">
                 <button class="btn bpay bsm" onclick="startPayment('${appId}',this)">💳 Pay Student</button>
               </div>
             </div>
@@ -759,8 +763,9 @@ async function startPayment(appId, btn){
   if(app.paymentStatus==='paid'||Number(app.paidAmount)>0){showToast('This application is already paid.','info');return;}
   const input=document.getElementById(`pay-${appId}`);
   const amount=Number(String(input?.value||'').replace(/,/g,''));
-  if(!Number.isFinite(amount)||amount<1){
-    showToast('Enter a valid payment amount of ₹1 or more.','error');
+  const minimumAmount=parsePayAmount(app.pay)||1;
+  if(!Number.isFinite(amount)||amount<minimumAmount){
+    showToast(`Minimum payment for this project is ${formatINR(minimumAmount)}.`,'error');
     if(input)input.focus();
     return;
   }
