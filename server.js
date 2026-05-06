@@ -598,6 +598,7 @@ app.get("/api/jobs",verifyToken,async(req,res)=>{
     const jobs=await Job.find({status:"open"}).populate("brandId","firstName lastName companyName").sort({createdAt:-1});
     const result=jobs.map(j=>({
       id:j._id,
+      brandId:j.brandId?._id||j.brandId,
       ico:"🏢",
       brand:j.brandName||`${j.brandId?.firstName||""} ${j.brandId?.lastName||""}`.trim(),
       title:j.title,
