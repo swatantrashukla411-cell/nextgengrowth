@@ -205,10 +205,10 @@
 .ai-chat-input button { background: var(--gm); color: white; border: none; padding: 0 16px; border-radius: 9px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
 .ai-chat-input button:hover { background: var(--gd); }
     @media(max-width:860px){
-      .sidebar{position:fixed;top:0;left:0;bottom:0;height:100dvh;width:min(92vw,320px);max-width:320px;transform:translateX(-104%);transition:transform .28s ease;z-index:1000;box-shadow:0 20px 50px rgba(0,0,0,.2)}
-      .sidebar.open{transform:translateX(0)}
+      .sidebar{position:fixed;top:0;left:0;bottom:0;height:100dvh;width:min(92vw,320px);max-width:320px;transform:translate3d(-104%,0,0)!important;transition:transform .28s ease;z-index:1000;box-shadow:0 20px 50px rgba(0,0,0,.2);will-change:transform}
+      .sidebar.open{transform:translate3d(0,0,0)!important}
       .sb-close{display:flex}
-      .main{width:100%}
+      .main{width:100%;flex:1 1 auto;min-width:0}
       .topbar{padding:0 14px;height:60px}
       .mb{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border:1px solid var(--br);border-radius:9px;background:var(--white)}
       .tr_>.btn{display:none}
@@ -1020,6 +1020,10 @@ function toggleMenu(){
   if(sidebar?.classList.contains('open'))closeMenu();
   else openMenu();
 }
+function resetMobileDrawer(){
+  gsap.set('#sidebar',{clearProps:'transform,opacity'});
+  closeMenu();
+}
 
 // NAVIGATION
 const PT={home:'Dashboard',post:'Post a Project',projects:'My Projects',applications:'Applications',students:'Browse Students',profile:'Brand Profile'};
@@ -1045,12 +1049,20 @@ window.addEventListener('DOMContentLoaded',()=>{
   loadBrandData();
   loadBrandStats();
   loadBrandApplications(); // ✅ Load real applications
-  gsap.timeline({defaults:{ease:'power3.out'}})
-    .fromTo('.sidebar',{x:-20,opacity:0},{x:0,opacity:1,duration:.5})
-    .fromTo('.topbar',{y:-10,opacity:0},{y:0,opacity:1,duration:.4},'-=.3')
-    .fromTo('#page-home',{y:14,opacity:0},{y:0,opacity:1,duration:.4},'-=.2');
+  const intro=gsap.timeline({defaults:{ease:'power3.out'}});
+  if(window.innerWidth>860){
+    intro.fromTo('.sidebar',{x:-20,opacity:0},{x:0,opacity:1,duration:.5});
+  }else{
+    resetMobileDrawer();
+  }
+  intro
+    .fromTo('.topbar',{y:-10,opacity:0},{y:0,opacity:1,duration:.4},window.innerWidth>860?'-.3':0)
+    .fromTo('#page-home',{y:14,opacity:0},{y:0,opacity:1,duration:.4},'-.2');
 });
-window.addEventListener('resize',()=>{if(window.innerWidth>860)closeMenu();});
+window.addEventListener('resize',()=>{
+  if(window.innerWidth<=860)resetMobileDrawer();
+  else{gsap.set('#sidebar',{clearProps:'transform,opacity'});closeMenu();}
+});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeMenu();closeStudentProfile();}});
 // ✅ OPEN STUDENT PROFILE MODAL
 async function viewStudentProfile(appId) {
