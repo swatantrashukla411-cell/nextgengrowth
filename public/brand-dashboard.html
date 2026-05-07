@@ -173,8 +173,13 @@
     .std-av{width:52px;height:52px;border-radius:50%;margin:0 auto 10px;background:linear-gradient(135deg,var(--gb),var(--gd));display:flex;align-items:center;justify-content:center;font-family:'Clash Display',sans-serif;font-size:1.1rem;font-weight:700;color:white}
     .std-nm{font-family:'Clash Display',sans-serif;font-size:.9rem;font-weight:700;text-align:center;margin-bottom:2px}
     .std-cl{font-size:.75rem;color:var(--ts);text-align:center;margin-bottom:10px}
+    .std-bio{font-size:.74rem;color:var(--ts);line-height:1.45;text-align:center;margin:0 0 11px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:32px}
     .std-skills{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-bottom:12px}
     .std-sk{padding:3px 9px;background:var(--gp);border:1px solid var(--br);border-radius:100px;font-size:.67rem;color:var(--tm)}
+    .std-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px}
+    .std-stat{background:var(--gp);border:1px solid var(--br);border-radius:9px;padding:7px;text-align:center}
+    .std-stat strong{display:block;font-family:'Clash Display',sans-serif;font-size:.9rem;color:var(--td)}
+    .std-stat span{font-size:.62rem;color:var(--ts);font-weight:600}
     .hire-btn{width:100%;padding:8px;background:var(--gp);border:1.5px solid var(--br);border-radius:8px;color:var(--gm);font-family:'Outfit',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s}
     .hire-btn:hover{background:var(--gm);color:white}
     .empty-s{text-align:center;padding:40px 20px;color:var(--ts)}
@@ -474,12 +479,9 @@
 
     <!-- BROWSE STUDENTS -->
     <div class="page" id="page-students">
-      <div class="ph"><h2>Browse Students 🎓</h2><p>Find talented students and invite them to your projects.</p></div>
-      <div class="std-grid">
-        <div class="std-card"><div class="std-av">AS</div><div class="std-nm">Aryan Sharma</div><div class="std-cl">Delhi University · 2nd Year</div><div class="std-skills"><span class="std-sk">🎬 Video Editing</span><span class="std-sk">📱 Social Media</span></div><button class="hire-btn" onclick="showToast('Invite coming soon! 📨','info')">📨 Invite to Project</button></div>
-        <div class="std-card"><div class="std-av" style="background:linear-gradient(135deg,#f59e0b,#b45309)">SG</div><div class="std-nm">Sneha Gupta</div><div class="std-cl">IIT Delhi · 3rd Year</div><div class="std-skills"><span class="std-sk">🎨 Graphic Design</span><span class="std-sk">💻 Web Dev</span></div><button class="hire-btn" onclick="showToast('Invite coming soon! 📨','info')">📨 Invite to Project</button></div>
-        <div class="std-card"><div class="std-av" style="background:linear-gradient(135deg,#8b5cf6,#6d28d9)">RK</div><div class="std-nm">Rahul Kumar</div><div class="std-cl">Amity University · 1st Year</div><div class="std-skills"><span class="std-sk">✍️ Content Writing</span><span class="std-sk">📊 Data & Excel</span></div><button class="hire-btn" onclick="showToast('Invite coming soon! 📨','info')">📨 Invite to Project</button></div>
-        <div class="std-card"><div class="std-av" style="background:linear-gradient(135deg,#ec4899,#be185d)">PM</div><div class="std-nm">Priya Mehta</div><div class="std-cl">Miranda House · 2nd Year</div><div class="std-skills"><span class="std-sk">📸 Photography</span><span class="std-sk">🎨 Design</span></div><button class="hire-btn" onclick="showToast('Invite coming soon! 📨','info')">📨 Invite to Project</button></div>
+      <div class="ph"><h2>Browse Students 🎓</h2><p>Live student profiles from your NextGenGrowth community.</p></div>
+      <div class="std-grid" id="studentGrid">
+        <div class="empty-s" style="grid-column:1/-1"><div class="ei">🎓</div><h3>Loading students...</h3><p>Fetching live student profiles.</p></div>
       </div>
     </div>
 
@@ -613,10 +615,11 @@ if(!_tk||!_u){window.location.href='/login';}
 if(_u&&_u.role&&_u.role!=='brand'){window.location.href='/login';}
 
 // STATE
-let myProjects=[], brandApps=[], brandWorkspaces=[], curAppFilter='all';
+let myProjects=[], brandApps=[], brandWorkspaces=[], brandStudents=[], curAppFilter='all';
 
 function getAppId(app){return app?._id||app?.id||'';}
 function esc(value){return String(value??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function getInitials(name){return String(name||'Student').split(' ').filter(Boolean).map(p=>p[0]).join('').slice(0,2).toUpperCase()||'?';}
 function parsePayAmount(pay){
   const match=String(pay||'').replace(/,/g,'').match(/(\d+(?:\.\d+)?)/);
   return match?Number(match[1]):'';
@@ -698,6 +701,49 @@ async function loadBrandApplications(){
     }
     renderBrandApps();
   }catch(e){console.log('Brand apps error:',e);}
+}
+
+async function loadBrandStudents(){
+  const grid=document.getElementById('studentGrid');
+  try{
+    if(grid)grid.innerHTML='<div class="empty-s" style="grid-column:1/-1"><div class="ei">🎓</div><h3>Loading students...</h3><p>Fetching live student profiles.</p></div>';
+    const data=await fetch('/api/brand/students',{headers:{'Authorization':'Bearer '+_tk}}).then(r=>r.json());
+    if(!data.success)throw new Error(data.message||'Could not load students');
+    brandStudents=data.students||[];
+    renderBrowseStudents();
+  }catch(e){
+    console.log('Brand students error:',e);
+    if(grid)grid.innerHTML='<div class="empty-s" style="grid-column:1/-1"><div class="ei">⚠️</div><h3>Could not load students</h3><p>Please refresh and try again.</p></div>';
+  }
+}
+
+function renderBrowseStudents(){
+  const el=document.getElementById('studentGrid');
+  if(!el)return;
+  if(!brandStudents.length){
+    el.innerHTML='<div class="empty-s" style="grid-column:1/-1"><div class="ei">🎓</div><h3>No students yet</h3><p>Students will appear here after they create profiles.</p></div>';
+    return;
+  }
+  const emojiMap={'Video Editing':'🎬','Graphic Design':'🎨','Web Development':'💻','Content Writing':'✍️','Social Media':'📱','Photography':'📸','Audio':'🎵','Data & Excel':'📊','AI Tools':'🤖'};
+  el.innerHTML=brandStudents.map(s=>{
+    const name=s.name||'Student';
+    const skills=(s.skills||[]).slice(0,4).map(sk=>`<span class="std-sk">${emojiMap[sk]||'•'} ${esc(sk)}</span>`).join('')||'<span style="color:var(--ts);font-size:.76rem">No skills added yet</span>';
+    const stats=s.stats||{};
+    return`
+      <div class="std-card">
+        <div class="std-av">${getInitials(name)}</div>
+        <div class="std-nm">${esc(name)}</div>
+        <div class="std-cl">${esc(s.college||'College not listed')}${s.year?` · ${esc(s.year)}`:''}</div>
+        <p class="std-bio">${esc(s.bio||'Profile is being built. Skills and portfolio will appear as the student updates it.')}</p>
+        <div class="std-skills">${skills}</div>
+        <div class="std-stats">
+          <div class="std-stat"><strong>${stats.rating?Number(stats.rating).toFixed(1):'New'}</strong><span>Rating</span></div>
+          <div class="std-stat"><strong>${stats.completed||0}</strong><span>Works</span></div>
+        </div>
+        <button class="hire-btn" onclick="viewBrowseStudentProfile('${esc(s.id)}')">👤 View Profile</button>
+      </div>
+    `;
+  }).join('');
 }
 
 function renderHomeProjList(projs){
@@ -1071,6 +1117,7 @@ function goTo(pg,navBtn){
   document.getElementById('pgT').textContent=PT[pg]||'Dashboard';
   document.getElementById('mc').scrollTop=0;
   if(pg==='applications')renderBrandApps();
+  if(pg==='students')loadBrandStudents();
   if(window.innerWidth<=860)closeMenu();
   gsap.fromTo('#page-'+pg,{opacity:0,y:10},{opacity:1,y:0,duration:.28,ease:'power2.out'});
 }
@@ -1118,6 +1165,19 @@ async function viewStudentProfile(appId) {
   }
 }
 
+function viewBrowseStudentProfile(studentId){
+  const student=brandStudents.find(s=>String(s.id)===String(studentId));
+  if(!student)return showToast('Student profile is not available yet.','error');
+  document.getElementById('studentProfileModal').style.display='block';
+  renderStudentProfile({
+    student,
+    stats:student.stats||{},
+    recentApplications:[],
+    recentWorks:[],
+    isBrowseProfile:true
+  });
+}
+
 function renderStudentProfile(data){
   const s=data.student||{};
   const st=data.stats||{};
@@ -1131,7 +1191,7 @@ function renderStudentProfile(data){
       <div class="sp-bigav">${initials}</div>
       <div style="flex:1">
         <div class="sp-name">${esc(name)}</div>
-        <div class="sp-meta"><span>🎓 ${esc(s.college||'College not listed')}</span><span>${esc(s.year||'Year not set')}</span><span>${esc(s.email||'')}</span></div>
+        <div class="sp-meta"><span>🎓 ${esc(s.college||'College not listed')}</span><span>${esc(s.year||'Year not set')}</span>${s.email?`<span>${esc(s.email)}</span>`:''}</div>
         <div class="app-skills" style="margin-top:12px">${skills}</div>
       </div>
       <button class="sp-close" onclick="closeStudentProfile()">×</button>

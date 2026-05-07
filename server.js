@@ -713,6 +713,50 @@ app.get("/api/brand/applications",verifyToken,async(req,res)=>{
   }catch(err){res.status(500).json({success:false,message:"Server error."});}
 });
 
+app.get("/api/brand/students",verifyToken,async(req,res)=>{
+  try{
+    if(req.user.role!=="brand")return res.status(403).json({success:false,message:"Brand only."});
+    const students=await User.find({role:"student"})
+      .select("firstName lastName college year skills bio linkedin portfolioLink avatar createdAt updatedAt")
+      .sort({updatedAt:-1,createdAt:-1})
+      .limit(80);
+    const ids=students.map(s=>s._id);
+    const[acceptedData,completedData,earningData]=await Promise.all([
+      Application.aggregate([{$match:{studentId:{$in:ids},status:"accepted"}},{$group:{_id:"$studentId",count:{$sum:1}}}]),
+      ProjectWorkspace.aggregate([{$match:{studentId:{$in:ids},status:{$in:["approved","completed"]}}},{$group:{_id:"$studentId",count:{$sum:1}}}]),
+      Earning.aggregate([{$match:{studentId:{$in:ids},status:"paid"}},{$group:{_id:"$studentId",total:{$sum:"$amount"}}}]),
+    ]);
+    const acceptedMap=new Map(acceptedData.map(x=>[String(x._id),x.count]));
+    const completedMap=new Map(completedData.map(x=>[String(x._id),x.count]));
+    const earningMap=new Map(earningData.map(x=>[String(x._id),x.total]));
+    const result=students.map(s=>{
+      const id=String(s._id);
+      const completed=completedMap.get(id)||0;
+      const acceptedApps=acceptedMap.get(id)||0;
+      const rating=completed?Math.min(5,4.6+Math.min(.4,completed*.06)):null;
+      return{
+        id,
+        name:`${s.firstName||""} ${s.lastName||""}`.trim()||"Student",
+        firstName:s.firstName||"",
+        lastName:s.lastName||"",
+        college:s.college||"",
+        year:s.year||"",
+        skills:s.skills||[],
+        bio:s.bio||"",
+        linkedin:s.linkedin||"",
+        portfolioLink:s.portfolioLink||"",
+        avatar:s.avatar||"",
+        createdAt:s.createdAt,
+        stats:{rating,completed,acceptedApps,totalEarned:earningMap.get(id)||0},
+      };
+    });
+    res.json({success:true,students:result});
+  }catch(err){
+    console.error("Brand students error:",err);
+    res.status(500).json({success:false,message:"Server error."});
+  }
+});
+
 app.get("/api/brand/student/:id/profile",verifyToken,async(req,res)=>{
   try{
     if(req.user.role!=="brand")return res.status(403).json({success:false,message:"Brand only."});
