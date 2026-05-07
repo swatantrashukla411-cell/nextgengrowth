@@ -7,7 +7,6 @@ const bodyParser = require("body-parser");
 const rateLimit  = require("express-rate-limit");
 const path       = require("path");
 const mongoose   = require("mongoose");
-const nodemailer = require("nodemailer");
 const passport   = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const session    = require("express-session");
@@ -19,8 +18,6 @@ const app        = express();
 const PORT       = process.env.PORT             || 3000;
 const JWT_SECRET = process.env.JWT_SECRET       || "nextgengrowth_secret_2026";
 const MONGO_URI  = process.env.MONGODB_URI;
-const GMAIL_USER = process.env.GMAIL_USER;
-const GMAIL_PASS = process.env.GMAIL_PASS;
 const GOOGLE_CLIENT_ID     = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 const GOOGLE_CALLBACK_URL  = process.env.GOOGLE_CALLBACK_URL || "http://localhost:3000/auth/google/callback";
@@ -1239,7 +1236,7 @@ app.get("/admin",(req,res)=>res.sendFile(path.join(__dirname,"public","admin.htm
 app.get("/api/health",async(req,res)=>{
   const userCount=await User.countDocuments();
   const jobCount=await Job.countDocuments();
-  res.json({success:true,message:"NextGenGrowth API 🚀 v4",users:userCount,jobs:jobCount,email:GMAIL_USER?"configured":"not configured",google:GOOGLE_CLIENT_ID?"configured":"not configured",razorpay:process.env.RAZORPAY_KEY_ID?"configured":"not configured"});
+  res.json({success:true,message:"NextGenGrowth API 🚀 v4",users:userCount,jobs:jobCount,email:process.env.RESEND_API_KEY?"configured":"not configured",google:GOOGLE_CLIENT_ID?"configured":"not configured",razorpay:process.env.RAZORPAY_KEY_ID?"configured":"not configured"});
 });
 // --- NEXTGEN GROWTH AI LOGIC START ---
 
@@ -1308,7 +1305,7 @@ app.post('/api/ask-ai', async (req, res) => {
 // --- NEXTGEN GROWTH AI LOGIC END ---
 app.listen(PORT,()=>{
   console.log(`\n🚀 Server: http://localhost:${PORT}`);
-  console.log(`📧 Email:  ${GMAIL_USER||"Not configured"}`);
+  console.log(`📧 Email:  ${process.env.RESEND_API_KEY?"Configured ✅":"Not configured ❌"}`);
   console.log(`🔑 Google: ${GOOGLE_CLIENT_ID?"Configured":"Not configured"}`);
   console.log(`💳 Razorpay: ${process.env.RAZORPAY_KEY_ID?"Configured ✅":"Not configured ❌"}`);
   console.log(`🗄️  DB:    MongoDB Atlas\n`);
