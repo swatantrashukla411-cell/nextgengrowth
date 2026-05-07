@@ -90,6 +90,11 @@
   .nav-links a { color: var(--ink-700); text-decoration: none; font-weight: 500; font-size: 14.5px; transition: color .2s; }
   .nav-links a:hover { color: var(--green-600); }
   .nav-cta { display: flex; gap: 10px; align-items: center; }
+  .mobile-login {
+    display:none;align-items:center;justify-content:center;height:40px;padding:0 15px;border-radius:999px;
+    background:var(--green-50);border:1px solid var(--border);color:var(--green-800);
+    text-decoration:none;font-size:13px;font-weight:800;white-space:nowrap;
+  }
   .nav-toggle {
     display:none;width:44px;height:44px;border:1px solid var(--border);border-radius:14px;background:#fff;
     align-items:center;justify-content:center;flex-direction:column;gap:5px;cursor:pointer;color:var(--green-800);flex:0 0 44px;
@@ -450,16 +455,48 @@
     background: linear-gradient(90deg, var(--green-400), var(--green-700));
     z-index: 200; width: 0%; box-shadow: 0 0 12px var(--green-500);
   }
+  .landing-ai-btn {
+    position:fixed;right:22px;bottom:22px;width:58px;height:58px;border:0;border-radius:18px;
+    background:linear-gradient(135deg,var(--green-500),var(--green-800));color:white;display:grid;place-items:center;
+    font-weight:900;font-size:14px;letter-spacing:.04em;box-shadow:0 18px 38px -14px rgba(6,95,70,.55);
+    z-index:160;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease;
+  }
+  .landing-ai-btn:hover{transform:translateY(-2px);box-shadow:0 22px 44px -12px rgba(6,95,70,.62)}
+  .landing-ai-btn::after{content:"";position:absolute;top:10px;right:10px;width:9px;height:9px;border-radius:50%;background:var(--green-200);box-shadow:0 0 0 4px rgba(209,250,229,.25)}
+  .landing-ai-window {
+    display:none;position:fixed;right:22px;bottom:92px;width:min(360px,calc(100vw - 32px));height:460px;
+    background:#fff;border:1px solid var(--border);border-radius:22px;box-shadow:var(--shadow-lg);z-index:170;
+    overflow:hidden;flex-direction:column;
+  }
+  .landing-ai-window.show{display:flex}
+  .landing-ai-head{background:linear-gradient(135deg,var(--green-600),var(--green-900));color:white;padding:14px 16px;display:flex;align-items:center;justify-content:space-between}
+  .landing-ai-title{display:flex;align-items:center;gap:10px;font-weight:800}
+  .landing-ai-mark{width:34px;height:34px;border-radius:11px;background:rgba(255,255,255,.16);display:grid;place-items:center;font-size:12px}
+  .landing-ai-close{width:32px;height:32px;border:0;border-radius:9px;background:rgba(255,255,255,.14);color:white;cursor:pointer;font-size:18px}
+  .landing-ai-body{flex:1;background:var(--bg-soft);padding:14px;overflow-y:auto;display:flex;flex-direction:column;gap:10px}
+  .landing-ai-msg,.landing-user-msg{max-width:88%;border:1px solid var(--border);border-radius:14px;padding:10px 12px;font-size:14px;line-height:1.45}
+  .landing-ai-msg{align-self:flex-start;background:white;color:var(--ink-700);border-bottom-left-radius:4px}
+  .landing-user-msg{align-self:flex-end;background:var(--green-50);color:var(--green-900);border-bottom-right-radius:4px}
+  .landing-ai-input{display:flex;gap:8px;padding:12px;border-top:1px solid var(--border);background:white}
+  .landing-ai-input input{flex:1;min-width:0;border:1px solid var(--border);border-radius:12px;padding:11px 12px;font:inherit;font-size:14px;outline:none}
+  .landing-ai-input input:focus{border-color:var(--green-400);box-shadow:0 0 0 3px rgba(16,185,129,.1)}
+  .landing-ai-input button{border:0;border-radius:12px;background:var(--green-700);color:white;padding:0 15px;font-weight:800;cursor:pointer}
 
   @media (max-width: 900px) {
     nav {
       top:0;left:0;right:auto;transform:none;width:100vw;border-radius:0;border-left:0;border-right:0;border-top:0;
-      padding:10px 14px;background:rgba(255,255,255,.96);max-width:100vw;box-sizing:border-box;
+      padding:10px 14px;background:#fff;max-width:100vw;box-sizing:border-box;backdrop-filter:none;-webkit-backdrop-filter:none;
     }
-    .logo{max-width:calc(100% - 58px)}
+    .logo{max-width:calc(100% - 118px)}
     .logo span{font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .nav-links,.nav-cta{display:none}
+    .mobile-login{display:inline-flex;margin-left:auto;margin-right:8px}
     .nav-toggle{display:flex!important}
+    .mobile-menu{backdrop-filter:none;-webkit-backdrop-filter:none}
+    .bg-decor{display:none}
+    .logo-mark::after{display:none}
+    .gradient-text,.eyebrow .dot{animation:none}
+    .btn-primary::before{display:none}
     .container{width:100%;max-width:calc(100vw - 36px);overflow:hidden}
     section{padding:72px 18px}
     .hero{padding-top:116px;padding-bottom:52px}
@@ -470,19 +507,26 @@
     .hero-trust{gap:12px}
     .trust-item{width:100%;background:#fff;border:1px solid var(--border);border-radius:14px;padding:10px 12px}
     .hero-visual{height:430px;margin-top:4px;overflow:hidden;border-radius:22px;width:100%;max-width:100%}
+    .panel{backdrop-filter:none;-webkit-backdrop-filter:none}
     .panel-main{left:0;right:0;width:100%;height:318px;top:12px}
     .panel-card-1{top:auto;bottom:72px;right:8px;width:min(260px,calc(100% - 16px));overflow-wrap:anywhere}
     .panel-card-2{bottom:0;left:0;width:min(240px,72vw)}
+    .panel-main,.panel-card-1,.panel-card-2{animation:none}
+    .bar{animation:none;transform:scaleY(1)}
     .stat-mini{gap:8px}
     .stat-mini .icon{width:34px;height:34px}
     .stat-mini .num{font-size:18px}
     .marquee{margin-top:48px}
+    .marquee-track{animation:none}
+    .reveal{transition:opacity .35s ease,transform .35s ease}
     .section-head{margin-bottom:34px;text-align:left}
     .section-head .lead{margin-left:0}
     .stats-band,.cta-band{border-radius:22px;padding:34px 20px}
     .footer-grid{grid-template-columns:1fr;gap:24px}
     .footer-bottom{margin-top:28px}
     .cursor-glow{display:none}
+    .landing-ai-btn{right:16px;bottom:16px;width:52px;height:52px;border-radius:16px}
+    .landing-ai-window{right:12px;left:12px;bottom:78px;width:auto;height:min(70vh,460px)}
   }
 
   @media (max-width: 560px) {
@@ -505,6 +549,7 @@
     .compare-list li{font-size:14px}
     .footer-bottom{display:block}
     .footer-bottom div+div{margin-top:10px}
+    .landing-ai-window{height:min(68vh,420px)}
   }
 
   ::selection { background: var(--green-200); color: var(--green-900); }
@@ -535,11 +580,12 @@
     <a href="#stats">Impact</a>
   </div>
   <div class="nav-cta">
-    <a href="/login" class="btn btn-ghost">Sign in</a>
+    <a href="/login" class="btn btn-ghost">Login</a>
     <a href="/register" class="btn btn-primary">Get Started
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
     </a>
   </div>
+  <a href="/login" class="mobile-login">Login</a>
   <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false" onclick="toggleMobileMenu()">
     <span></span><span></span><span></span>
   </button>
@@ -554,7 +600,7 @@
     <a href="#stats" onclick="closeMobileMenu()">Impact <span>→</span></a>
     <div class="mobile-actions">
       <a href="/register" class="btn btn-primary">Get Started</a>
-      <a href="/login" class="btn btn-outline">Sign in</a>
+      <a href="/login" class="btn btn-outline">Login</a>
     </div>
   </div>
 </div>
@@ -581,6 +627,7 @@
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </a>
           <a href="/register" class="btn btn-outline">Join as Student</a>
+          <a href="/login" class="btn btn-ghost">Login</a>
         </div>
         <div class="hero-trust">
           <div class="trust-item">
@@ -971,9 +1018,25 @@
   </div>
 </footer>
 
+<button class="landing-ai-btn" onclick="toggleLandingAI()" aria-label="Open NextGen AI Assistant">AI</button>
+<div class="landing-ai-window" id="landingAIWindow" aria-live="polite">
+  <div class="landing-ai-head">
+    <div class="landing-ai-title"><span class="landing-ai-mark">AI</span><span>NextGen Guide</span></div>
+    <button class="landing-ai-close" onclick="toggleLandingAI()" aria-label="Close AI chat">×</button>
+  </div>
+  <div class="landing-ai-body" id="landingAIBody">
+    <div class="landing-ai-msg">Hi! I can help you choose student or brand signup, explain payments, or guide you through NextGenGrowth.</div>
+  </div>
+  <div class="landing-ai-input">
+    <input id="landingAIInput" type="text" placeholder="Ask about NextGenGrowth..." onkeypress="handleLandingAIKey(event)">
+    <button onclick="sendLandingAI()">Send</button>
+  </div>
+</div>
+
 <script>
   const mobileMenu = document.getElementById('mobileMenu');
   const navToggle = document.getElementById('navToggle');
+  const reduceMotion = window.matchMedia('(max-width: 900px), (pointer: coarse), (prefers-reduced-motion: reduce)').matches;
   function toggleMobileMenu() {
     const open = mobileMenu.classList.toggle('show');
     navToggle.classList.toggle('open', open);
@@ -994,24 +1057,32 @@
   // Scroll progress bar
   const bar = document.getElementById('scrollBar');
   const nav = document.getElementById('nav');
+  let scrollTicking = false;
   window.addEventListener('scroll', () => {
-    const h = document.documentElement;
-    const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
-    bar.style.width = pct + '%';
-    nav.classList.toggle('scrolled', h.scrollTop > 20);
-  });
+    if (scrollTicking) return;
+    scrollTicking = true;
+    requestAnimationFrame(() => {
+      const h = document.documentElement;
+      const pct = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100;
+      bar.style.width = pct + '%';
+      nav.classList.toggle('scrolled', h.scrollTop > 20);
+      scrollTicking = false;
+    });
+  }, { passive: true });
 
   // Cursor glow
   const glow = document.getElementById('cursorGlow');
-  let mx = -500, my = -500, cx = -500, cy = -500;
-  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
-  function loop() {
-    cx += (mx - cx) * 0.12;
-    cy += (my - cy) * 0.12;
-    glow.style.transform = `translate(${cx}px, ${cy}px) translate(-50%,-50%)`;
-    requestAnimationFrame(loop);
+  if (glow && !reduceMotion) {
+    let mx = -500, my = -500, cx = -500, cy = -500;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; }, { passive: true });
+    function loop() {
+      cx += (mx - cx) * 0.12;
+      cy += (my - cy) * 0.12;
+      glow.style.transform = `translate(${cx}px, ${cy}px) translate(-50%,-50%)`;
+      requestAnimationFrame(loop);
+    }
+    loop();
   }
-  loop();
 
   // Reveal on scroll
   const io = new IntersectionObserver((entries) => {
@@ -1022,13 +1093,52 @@
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
   // Card hover spotlight
-  document.querySelectorAll('.feat-card').forEach(card => {
-    card.addEventListener('mousemove', e => {
-      const r = card.getBoundingClientRect();
-      card.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
-      card.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+  if (!reduceMotion && window.matchMedia('(hover: hover)').matches) {
+    document.querySelectorAll('.feat-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const r = card.getBoundingClientRect();
+        card.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+        card.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+      });
     });
-  });
+  }
+
+  function landingEsc(value) {
+    return String(value ?? '').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+  function toggleLandingAI() {
+    const win = document.getElementById('landingAIWindow');
+    win.classList.toggle('show');
+    if (win.classList.contains('show')) setTimeout(() => document.getElementById('landingAIInput')?.focus(), 80);
+  }
+  async function sendLandingAI() {
+    const input = document.getElementById('landingAIInput');
+    const body = document.getElementById('landingAIBody');
+    const msg = input.value.trim();
+    if (!msg) return;
+    body.innerHTML += `<div class="landing-user-msg">${landingEsc(msg)}</div>`;
+    input.value = '';
+    const loadingId = 'landing-loading-' + Date.now();
+    body.innerHTML += `<div class="landing-ai-msg" id="${loadingId}">Thinking...</div>`;
+    body.scrollTop = body.scrollHeight;
+    try {
+      const response = await fetch('/api/ask-ai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userType: 'student', userMessage: `Landing page visitor asks: ${msg}` })
+      });
+      const data = await response.json();
+      document.getElementById(loadingId)?.remove();
+      body.innerHTML += `<div class="landing-ai-msg">${landingEsc(data.reply || data.error || 'I could not answer that right now.')}</div>`;
+    } catch {
+      document.getElementById(loadingId)?.remove();
+      body.innerHTML += '<div class="landing-ai-msg">Connection failed. Please try again after the server is awake.</div>';
+    }
+    body.scrollTop = body.scrollHeight;
+  }
+  function handleLandingAIKey(e) {
+    if (e.key === 'Enter') sendLandingAI();
+  }
 
   // Counters
   const counters = document.querySelectorAll('.counter');
@@ -1061,7 +1171,12 @@
       }
     });
   });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMobileMenu(); });
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      closeMobileMenu();
+      document.getElementById('landingAIWindow')?.classList.remove('show');
+    }
+  });
 </script>
 </body>
 </html>

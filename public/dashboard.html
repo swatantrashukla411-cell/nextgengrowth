@@ -372,8 +372,9 @@
     .nav::-webkit-scrollbar{width:3px}
     .nav::-webkit-scrollbar-thumb{background:var(--br);border-radius:100px}
     /* ══ AI CHAT WIDGET STYLES ══ */
-.ai-chat-btn { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, var(--gm), var(--gd)); color: white; border: none; padding: 12px 20px; border-radius: 100px; font-family: 'Clash Display', sans-serif; font-size: .9rem; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 10000; transition: transform 0.2s; }
-.ai-chat-btn:hover { transform: translateY(-2px); }
+.ai-chat-btn { position: fixed; bottom: 18px; right: 18px; width: 52px; height: 52px; background: linear-gradient(135deg, var(--gm), var(--gd)); color: white; border: none; padding: 0; border-radius: 16px; font-family: 'Clash Display', sans-serif; font-size: .78rem; font-weight: 800; letter-spacing:.04em; cursor: pointer; box-shadow: 0 14px 28px rgba(6,78,43,.24); z-index: 10000; transition: transform 0.2s, box-shadow .2s; display:grid; place-items:center; }
+.ai-chat-btn:hover { transform: translateY(-2px); box-shadow:0 18px 34px rgba(6,78,43,.3); }
+.ai-chat-btn::after{content:"";position:absolute;top:8px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--gg);box-shadow:0 0 0 4px rgba(0,255,136,.15)}
 .ai-chat-window { display: none; position: fixed; bottom: 80px; right: 20px; width: 340px; height: 450px; background: white; border: 1px solid var(--br); border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); z-index: 10000; flex-direction: column; overflow: hidden; }
 .ai-chat-header { background: linear-gradient(135deg, var(--gm), var(--gd)); color: white; padding: 14px 18px; font-family: 'Clash Display', sans-serif; display: flex; justify-content: space-between; align-items: center; }
 .ai-chat-body { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: var(--off); }
@@ -397,6 +398,10 @@
 .ai-msg li { margin-bottom: 5px; }
 /* Optional: Makes the bold text pop with your brand color! */
 .ai-msg strong { color: var(--gm); font-weight: 700; }
+@media(max-width:768px){
+  .ai-chat-btn{bottom:82px;right:14px;width:48px;height:48px;border-radius:15px}
+  .ai-chat-window{left:10px;right:10px;width:auto;bottom:140px;height:min(64vh,430px)}
+}
   </style>
 </head>
 <body>
@@ -1284,7 +1289,7 @@ function closeWelcomePopup() {
 }
 </script>
 <!-- ══ FLOATING AI CHAT WIDGET ══ -->
-<button class="ai-chat-btn" onclick="toggleAIChat()">✨ Ask AI</button>
+<button class="ai-chat-btn" onclick="toggleAIChat()" aria-label="Open NextGen AI Assistant" title="Ask AI">AI</button>
 <div class="ai-chat-window" id="aiChatWindow">
   <div class="ai-chat-header">
     <strong id="aiChatTitle">NextGen AI Assistant</strong>
@@ -1315,7 +1320,7 @@ function closeWelcomePopup() {
     if(!msg) return;
 
     const body = document.getElementById('aiChatBody');
-    body.innerHTML += `<div class="user-msg">${msg}</div>`;
+    body.innerHTML += `<div class="user-msg">${esc(msg)}</div>`;
     input.value = '';
     body.scrollTop = body.scrollHeight;
 

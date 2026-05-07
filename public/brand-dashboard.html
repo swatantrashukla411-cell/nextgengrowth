@@ -193,8 +193,13 @@
     .content::-webkit-scrollbar{width:3px}
     .content::-webkit-scrollbar-thumb{background:var(--br);border-radius:100px}
     /* ══ AI CHAT WIDGET STYLES ══ */
-.ai-chat-btn { position: fixed; bottom: 20px; right: 20px; background: linear-gradient(135deg, var(--gm), var(--gd)); color: white; border: none; padding: 12px 20px; border-radius: 100px; font-family: 'Clash Display', sans-serif; font-size: .9rem; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 10000; transition: transform 0.2s; }
-.ai-chat-btn:hover { transform: translateY(-2px); }
+.bottom-nav{display:none;position:fixed;left:0;right:0;bottom:0;background:white;border-top:1px solid var(--br);padding:6px 0;padding-bottom:calc(6px + env(safe-area-inset-bottom,0px));z-index:300;grid-template-columns:repeat(5,1fr)}
+.bn-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:0;background:transparent;color:var(--ts);font-family:'Outfit',sans-serif;font-size:.66rem;font-weight:700;min-height:48px;cursor:pointer}
+.bn-item svg{width:19px;height:19px;stroke:currentColor}
+.bn-item.active{color:#1d4ed8}
+.ai-chat-btn { position: fixed; bottom: 18px; right: 18px; width:52px; height:52px; background: linear-gradient(135deg, var(--gm), var(--gd)); color: white; border: none; padding: 0; border-radius: 16px; font-family: 'Clash Display', sans-serif; font-size: .78rem; letter-spacing:.04em; font-weight: 800; cursor: pointer; box-shadow: 0 14px 28px rgba(6,78,43,.24); z-index: 10000; transition: transform 0.2s, box-shadow .2s; display:grid; place-items:center; }
+.ai-chat-btn:hover { transform: translateY(-2px); box-shadow:0 18px 34px rgba(6,78,43,.3); }
+.ai-chat-btn::after{content:"";position:absolute;top:8px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--gg);box-shadow:0 0 0 4px rgba(0,255,136,.15)}
 .ai-chat-window { display: none; position: fixed; bottom: 80px; right: 20px; width: 340px; height: 450px; background: white; border: 1px solid var(--br); border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); z-index: 10000; flex-direction: column; overflow: hidden; }
 .ai-chat-header { background: linear-gradient(135deg, var(--gm), var(--gd)); color: white; padding: 14px 18px; font-family: 'Clash Display', sans-serif; display: flex; justify-content: space-between; align-items: center; }
 .ai-chat-body { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: var(--off); }
@@ -214,7 +219,8 @@
       .tr_>.btn{display:none}
       .tt{font-size:.98rem}
       .ts_{font-size:.68rem}
-      .page{padding:18px 14px 34px}
+      .page{padding:18px 14px 96px}
+      .bottom-nav{display:grid}
       .g2,.g3,.g4{grid-template-columns:1fr}
       .wb{padding:20px;align-items:flex-start}
       .sc{padding:14px}
@@ -232,7 +238,8 @@
       .sp-hero{flex-direction:column}
       .sp-close{position:absolute;top:18px;right:18px}
       .sp-stats,.sp-layout{grid-template-columns:1fr}
-      .ai-chat-window{left:12px;right:12px;width:auto;height:min(72vh,460px)}
+      .ai-chat-btn{bottom:82px;right:14px;width:48px;height:48px;border-radius:15px}
+      .ai-chat-window{left:12px;right:12px;width:auto;bottom:140px;height:min(62vh,430px)}
     }
     @media(max-width:560px){
       .sidebar{width:100vw;max-width:none}
@@ -240,7 +247,7 @@
       .ph h2{font-size:1.22rem}
       .ph p{font-size:.8rem}
       .app-student{align-items:flex-start}
-      .toast{white-space:normal;text-align:center;border-radius:14px}
+      .toast{white-space:normal;text-align:center;border-radius:14px;bottom:82px}
     }
   </style>
 </head>
@@ -505,6 +512,28 @@
 
   </div>
 </div>
+  <nav class="bottom-nav" id="bottomNav">
+    <button class="bn-item active" id="bn-home" onclick="goTo('home',null)">
+      <svg fill="none" viewBox="0 0 24 24" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <span>Home</span>
+    </button>
+    <button class="bn-item" id="bn-post" onclick="goTo('post',null)">
+      <svg fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" d="M12 4v16m8-8H4"/></svg>
+      <span>Post</span>
+    </button>
+    <button class="bn-item" id="bn-projects" onclick="goTo('projects',null)">
+      <svg fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+      <span>Projects</span>
+    </button>
+    <button class="bn-item" id="bn-applications" onclick="goTo('applications',null)">
+      <svg fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      <span>Apps</span>
+    </button>
+    <button class="bn-item" id="bn-profile" onclick="goTo('profile',null)">
+      <svg fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+      <span>Profile</span>
+    </button>
+  </nav>
 </div>
 <div class="student-profile-page" id="studentProfileModal">
   <div class="sp-shell" id="studentProfileContent"></div>
@@ -531,7 +560,7 @@ async function sendAIMessage() {
   const body = document.getElementById('aiChatBody');
   
   // 1. Show the user's message
-  body.innerHTML += `<div class="user-msg">${msg}</div>`;
+  body.innerHTML += `<div class="user-msg">${esc(msg)}</div>`;
   input.value = '';
   body.scrollTop = body.scrollHeight;
 
@@ -1027,12 +1056,18 @@ function resetMobileDrawer(){
 
 // NAVIGATION
 const PT={home:'Dashboard',post:'Post a Project',projects:'My Projects',applications:'Applications',students:'Browse Students',profile:'Brand Profile'};
+function setBottomNav(page){
+  document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('active'));
+  const el=document.getElementById('bn-'+page);
+  if(el)el.classList.add('active');
+}
 function goTo(pg,navBtn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   const el=document.getElementById('page-'+pg);if(el)el.classList.add('active');
   document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
   if(navBtn)navBtn.classList.add('active');
   else document.querySelectorAll('.ni').forEach(n=>{if((n.getAttribute('onclick')||'').includes("'"+pg+"'"))n.classList.add('active');});
+  setBottomNav(pg);
   document.getElementById('pgT').textContent=PT[pg]||'Dashboard';
   document.getElementById('mc').scrollTop=0;
   if(pg==='applications')renderBrandApps();
@@ -1124,7 +1159,7 @@ function closeStudentProfile() {
 }
 </script>
 <!-- ══ FLOATING AI CHAT WIDGET ══ -->
-<button class="ai-chat-btn" onclick="toggleAIChat()">✨ Ask AI</button>
+<button class="ai-chat-btn" onclick="toggleAIChat()" aria-label="Open NextGen AI Assistant" title="Ask AI">AI</button>
 <div class="ai-chat-window" id="aiChatWindow">
   <div class="ai-chat-header">
     <strong id="aiChatTitle">NextGen AI Assistant</strong>
