@@ -324,6 +324,9 @@ const authLimiter=rateLimit({windowMs:15*60*1000,max:20,message:{success:false,m
 function generateToken(user){
   return jwt.sign({id:user._id,email:user.email,role:user.role,name:`${user.firstName} ${user.lastName}`},JWT_SECRET,{expiresIn:"7d"});
 }
+function normalizeRole(role){
+  return role==="brand"?"brand":"student";
+}
 function verifyToken(req,res,next){
   const token=(req.headers["authorization"]||"").split(" ")[1];
   if(!token)return res.status(401).json({success:false,message:"No token."});
@@ -369,9 +372,12 @@ if(GOOGLE_CLIENT_ID && GOOGLE_CLIENT_SECRET){
 
   // Google auth routes
   app.get("/auth/google",(req,res,next)=>{
-    const role=req.query.role||"student";
+    const role=normalizeRole(req.query.role);
     req.session.googleRole=role;
-    passport.authenticate("google",{scope:["profile","email"],state:role})(req,res,next);
+    req.session.save((err)=>{
+      if(err)return next(err);
+      passport.authenticate("google",{scope:["profile","email"],state:role})(req,res,next);
+    });
   });
 
   app.get("/auth/google/callback",
@@ -379,9 +385,11 @@ if(GOOGLE_CLIENT_ID && GOOGLE_CLIENT_SECRET){
     async(req,res)=>{
       try{
         const u=req.user;
+        const requestedRoleRaw=req.query.state||req.session.googleRole;
+        const requestedRole=["student","brand"].includes(requestedRoleRaw)?requestedRoleRaw:"";
         if(u.isNew||u.googleProfile){
           // New user — redirect to complete profile
-          const role=req.session.googleRole||"student";
+          const role=normalizeRole(requestedRoleRaw);
           const profile=u.googleProfile;
           
           // ✅ FIXED: Better name extraction so it doesn't fail if Google gives empty names
@@ -394,7 +402,7 @@ if(GOOGLE_CLIENT_ID && GOOGLE_CLIENT_SECRET){
             email:profile.emails[0].value.toLowerCase(),
             password:"",role,
             googleId:profile.id,
-            avatar:profile.photos[0]?.value||"",
+            avatar:profile.photos?.[0]?.value||"",
             isVerified:true,
           });
           const token=generateToken(newUser);
@@ -407,6 +415,9 @@ if(GOOGLE_CLIENT_ID && GOOGLE_CLIENT_SECRET){
           }
 
           return res.redirect(`/auth/success?token=${token}&user=${encodeURIComponent(JSON.stringify(safeUser(newUser)))}`);
+        }
+        if(requestedRole&&u.role!==requestedRole){
+          return res.redirect(`/login?error=role_mismatch&selected=${encodeURIComponent(requestedRole)}&actual=${encodeURIComponent(u.role)}`);
         }
         const token=generateToken(u);
         res.redirect(`/auth/success?token=${token}&user=${encodeURIComponent(JSON.stringify(safeUser(u)))}`);

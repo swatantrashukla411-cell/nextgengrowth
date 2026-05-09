@@ -753,7 +753,14 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       const params = new URLSearchParams(location.search);
-      if (params.get('error')) showAlert('Google login failed. Please try again.');
+      const error = params.get('error');
+      if (error === 'role_mismatch') {
+        const actual = params.get('actual') || 'another role';
+        const selected = params.get('selected') || 'this role';
+        showAlert(`This Google account is already registered as ${actual}. Continue as ${actual}, or use a different Google account for ${selected}.`);
+      } else if (error) {
+        showAlert('Google login failed. Please try again.');
+      }
 
       const savedEmail = localStorage.getItem('ngg_saved_email');
       if (savedEmail) {
