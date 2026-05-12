@@ -814,6 +814,7 @@ function renderBrandApps(){
     const isPaid=a.paymentStatus==='paid'||Number(a.paidAmount)>0;
     const projectMinimum=parsePayAmount(a.pay)||1;
     const defaultAmount=Number(a.paidAmount)||projectMinimum;
+    const pendingPayment=getPendingPayment(appId);
     const selectedForProject=brandApps.find(other=>getAppId(other)!==appId&&String(other.jobId||'')===String(a.jobId||'')&&other.status==='accepted');
     const selectedName=selectedForProject?.student?.name||'A student';
     return`
@@ -846,7 +847,15 @@ function renderBrandApps(){
         `:a.status==='accepted'?`
           <button class="btn bout bsm" onclick="viewStudentProfile('${appId}')">👤 View Profile</button>
           <span style="color:var(--gm);font-weight:600;font-size:.83rem">✅ You accepted this application</span>
-          ${isPaid?`<span class="paid-note">💳 ${Number(a.paidAmount)>0?`Paid ${formatINR(a.paidAmount)}`:'Paid'}</span>`:`
+          ${isPaid?`<span class="paid-note">💳 ${Number(a.paidAmount)>0?`Paid ${formatINR(a.paidAmount)}`:'Paid'}</span>`:pendingPayment?`
+            <div class="pay-box">
+              <label>Payment verification pending</label>
+              <div style="font-size:.74rem;color:var(--ts);margin-bottom:8px">Payment ID: ${esc(pendingPayment.razorpay_payment_id||'saved')}</div>
+              <div class="pay-row">
+                <button class="btn bpay bsm" onclick="retryPendingPayment('${appId}',this)">↻ Verify Last Payment</button>
+              </div>
+            </div>
+          `:`
             <div class="pay-box">
               <label for="pay-${appId}">Payment Amount (minimum ${formatINR(projectMinimum)})</label>
               <div class="pay-row">
@@ -872,6 +881,29 @@ function filterBrandApps(f,btn){
 }
 
 function wait(ms){return new Promise(resolve=>setTimeout(resolve,ms));}
+
+const PENDING_PAYMENTS_KEY='ngg_pending_razorpay_payments';
+
+function getPendingPayments(){
+  try{return JSON.parse(localStorage.getItem(PENDING_PAYMENTS_KEY)||'{}')||{};}
+  catch{return {};}
+}
+
+function getPendingPayment(appId){
+  return getPendingPayments()[appId]||null;
+}
+
+function savePendingPayment(appId,payload){
+  const pending=getPendingPayments();
+  pending[appId]={...payload,savedAt:Date.now()};
+  localStorage.setItem(PENDING_PAYMENTS_KEY,JSON.stringify(pending));
+}
+
+function clearPendingPayment(appId){
+  const pending=getPendingPayments();
+  delete pending[appId];
+  localStorage.setItem(PENDING_PAYMENTS_KEY,JSON.stringify(pending));
+}
 
 async function readApiResponse(res){
   const text=await res.text();
@@ -904,6 +936,55 @@ async function verifyRazorpayPayment(payload){
     data:{success:false,message:`Payment completed in Razorpay, but verification could not reach the server. Save payment ID: ${payload.razorpay_payment_id||'not available'}.`},
     error:lastError,
   };
+}
+
+async function reconcileRazorpayPayment(appId,payload){
+  const res=await fetch('/api/payment/reconcile',{
+    method:'POST',
+    headers:{'Authorization':'Bearer '+_tk,'Content-Type':'application/json'},
+    body:JSON.stringify({applicationId:appId,razorpay_payment_id:payload.razorpay_payment_id})
+  });
+  const data=await readApiResponse(res);
+  return {ok:res.ok&&data.success,data,status:res.status};
+}
+
+async function completeRazorpayVerification(appId,payload){
+  savePendingPayment(appId,payload);
+  const verified=await verifyRazorpayPayment({...payload,applicationId:appId});
+  if(verified.ok){
+    clearPendingPayment(appId);
+    return verified;
+  }
+  if(payload.razorpay_payment_id){
+    try{
+      const reconciled=await reconcileRazorpayPayment(appId,payload);
+      if(reconciled.ok){
+        clearPendingPayment(appId);
+        return reconciled;
+      }
+      return reconciled;
+    }catch(err){
+      return verified;
+    }
+  }
+  return verified;
+}
+
+async function retryPendingPayment(appId,btn){
+  const pending=getPendingPayment(appId);
+  if(!pending){showToast('No saved payment found. Refresh and try again.','error');return;}
+  const orig=btn.innerHTML;
+  btn.innerHTML='<span class="spin"></span>Verifying...';
+  btn.disabled=true;
+  const result=await completeRazorpayVerification(appId,pending);
+  if(result.ok){
+    showToast('Payment verified successfully. ✅','success');
+    await loadBrandApplications();
+  }else{
+    showToast(result.data?.message||'Still could not verify payment. Check Razorpay dashboard.','error');
+  }
+  btn.innerHTML=orig;
+  btn.disabled=false;
 }
 
 // ✅ ACCEPT or REJECT — sends email to student automatically!
@@ -980,7 +1061,7 @@ async function startPayment(appId, btn){
       modal:{ondismiss:()=>{showToast('Payment cancelled.','info');resetButton();}},
       handler:async(response)=>{
         btn.innerHTML='<span class="spin"></span>Verifying payment...';
-        const result=await verifyRazorpayPayment({...response,applicationId:appId});
+        const result=await completeRazorpayVerification(appId,response);
         if(result.ok){
           showToast('Payment successful! Student notified. ✅','success');
           await loadBrandApplications();

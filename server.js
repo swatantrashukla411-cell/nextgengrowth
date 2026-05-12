@@ -1259,6 +1259,48 @@ app.post("/api/payment/verify",verifyToken,async(req,res)=>{
   }
 });
 
+app.post("/api/payment/reconcile",verifyToken,async(req,res)=>{
+  try{
+    if(req.user.role!=="brand")return res.status(403).json({success:false,message:"Brand only."});
+    const{applicationId,razorpay_payment_id}=req.body;
+    if(!applicationId||!razorpay_payment_id){
+      return res.status(400).json({success:false,message:"Application ID and Razorpay payment ID required."});
+    }
+
+    const payment=await Payment.findOne({applicationId,brandId:req.user.id}).sort({createdAt:-1});
+    if(!payment)return res.status(404).json({success:false,message:"Payment record not found for this application."});
+    if(payment.status==="paid"){
+      await finalizeVerifiedPayment(payment);
+      return res.json({success:true,message:"Payment already verified."});
+    }
+
+    const razorpayPayment=await getRazorpayClient().payments.fetch(razorpay_payment_id);
+    if(!razorpayPayment||String(razorpayPayment.order_id)!==String(payment.razorpayOrderId)){
+      return res.status(400).json({success:false,message:"Razorpay payment does not match this order."});
+    }
+    if(Number(razorpayPayment.amount)!==Math.round(Number(payment.amount)*100)){
+      return res.status(400).json({success:false,message:"Razorpay payment amount does not match this application."});
+    }
+    if(!["captured","authorized"].includes(razorpayPayment.status)){
+      return res.status(400).json({success:false,message:`Razorpay payment is ${razorpayPayment.status}.`});
+    }
+
+    payment.razorpayPaymentId=razorpay_payment_id;
+    payment.status="paid";
+    await payment.save();
+    await finalizeVerifiedPayment(payment);
+    notifyStudentPaymentSecured(payment).catch(err=>console.error("Payment email error:",err.message));
+
+    res.json({success:true,message:"Payment reconciled successfully."});
+  }catch(err){
+    console.error("Payment reconcile error:",err);
+    res.status(getRazorpayErrorStatus(err)).json({
+      success:false,
+      message:getRazorpayErrorStatus(err)===401?"Razorpay authentication failed. Check credentials.":"Could not reconcile payment.",
+    });
+  }
+});
+
 app.get("/api/payment/status/:applicationId",verifyToken,async(req,res)=>{
   try{
     const application=await Application.findById(req.params.applicationId);
