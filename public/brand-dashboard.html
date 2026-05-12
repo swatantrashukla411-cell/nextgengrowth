@@ -932,7 +932,7 @@ async function startPayment(appId, btn){
       currency:order.currency||'INR',
       name:'NextGenGrowth',
       description:order.jobTitle||app.jobTitle||'Project payment',
-      order_id:order.orderId,
+      order_id:order.orderId||order.order_id,
       prefill:{
         name:order.studentName||app.student?.name||'',
         email:app.student?.email||''

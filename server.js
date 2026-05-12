@@ -29,6 +29,7 @@ const razorpay = process.env.RAZORPAY_KEY_ID&&process.env.RAZORPAY_KEY_SECRET
       key_secret:process.env.RAZORPAY_KEY_SECRET,
     })
   : null;
+const RAZORPAY_MIN_AMOUNT_PAISE = 100;
 
 // ═══════════════════════════════════════════
 // MONGODB
@@ -150,6 +151,42 @@ function formatINR(amount){
   return `₹${Number(amount||0).toLocaleString("en-IN")}`;
 }
 
+function getRazorpayErrorStatus(err){
+  const status=err?.statusCode||err?.status||err?.error?.statusCode;
+  return Number(status)===401?401:500;
+}
+
+async function createRazorpayOrder({amount,currency="INR",receipt,notes={}}){
+  if(!razorpay){
+    const err=new Error("Razorpay credentials are not configured.");
+    err.statusCode=401;
+    throw err;
+  }
+  const amountInPaise=Number(amount);
+  if(!Number.isInteger(amountInPaise)||amountInPaise<RAZORPAY_MIN_AMOUNT_PAISE){
+    const err=new Error("Minimum order amount is 100 paise.");
+    err.statusCode=400;
+    throw err;
+  }
+  return razorpay.orders.create({
+    amount:amountInPaise,
+    currency:currency||"INR",
+    receipt:receipt||`ngg_${Date.now()}`,
+    notes,
+  });
+}
+
+function isValidRazorpaySignature(orderId,paymentId,signature){
+  if(!process.env.RAZORPAY_KEY_SECRET)return false;
+  const expectedSig=crypto
+    .createHmac("sha256",process.env.RAZORPAY_KEY_SECRET)
+    .update(`${orderId}|${paymentId}`)
+    .digest("hex");
+  const expected=Buffer.from(expectedSig,"hex");
+  const received=Buffer.from(String(signature||""),"hex");
+  return expected.length===received.length&&crypto.timingSafeEqual(expected,received);
+}
+
 function isValidUrl(value){
   try{
     const url=new URL(String(value||"").trim());
@@ -179,10 +216,14 @@ function safeMessage(value,max=3000){
 // EMAIL (RESEND API)
 // ═══════════════════════════════════════════
 const { Resend } = require("resend");
-const resend = new Resend(process.env.RESEND_API_KEY);
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 async function sendEmail(to, subject, html) {
   try {
+    if(!resend){
+      console.warn(`⚠️ Email skipped for ${to}: RESEND_API_KEY is not configured.`);
+      return;
+    }
     const { data, error } = await resend.emails.send({
       // DHYAN DE: Jab tak Resend me domain verify nahi hota, 
       // yahan 'onboarding@resend.dev' hi rahega aur OTP sirf tere account wale email par hi jayega.
@@ -1015,12 +1056,53 @@ app.post("/api/student/workspace/:applicationId/submit",verifyToken,async(req,re
 // ═══════════════════════════════════════════
 // RAZORPAY PAYMENT ROUTES
 // ═══════════════════════════════════════════
+app.post("/api/create-order",authLimiter,async(req,res)=>{
+  try{
+    const{amount,currency="INR",receipt}=req.body;
+    const order=await createRazorpayOrder({
+      amount:Number(amount),
+      currency,
+      receipt,
+    });
+    res.json({
+      success:true,
+      order_id:order.id,
+      orderId:order.id,
+      amount:order.amount,
+      currency:order.currency,
+      key:process.env.RAZORPAY_KEY_ID,
+    });
+  }catch(err){
+    if(err.statusCode===400){
+      return res.status(400).json({success:false,message:err.message});
+    }
+    console.error("Razorpay order error:",err);
+    res.status(getRazorpayErrorStatus(err)).json({
+      success:false,
+      message:getRazorpayErrorStatus(err)===401?"Razorpay authentication failed. Check credentials.":"Could not create Razorpay order.",
+    });
+  }
+});
+
+app.post("/api/verify-payment",authLimiter,async(req,res)=>{
+  try{
+    const{razorpay_order_id,razorpay_payment_id,razorpay_signature}=req.body;
+    if(!razorpay_order_id||!razorpay_payment_id||!razorpay_signature){
+      return res.status(400).json({success:false,message:"Missing payment verification fields."});
+    }
+    if(!isValidRazorpaySignature(razorpay_order_id,razorpay_payment_id,razorpay_signature)){
+      return res.status(400).json({success:false,message:"Payment signature mismatch. Verification failed."});
+    }
+    res.json({success:true,message:"Payment signature verified."});
+  }catch(err){
+    console.error("Razorpay verify error:",err);
+    res.status(500).json({success:false,message:"Payment verification failed."});
+  }
+});
+
 app.post("/api/payment/create-order",verifyToken,async(req,res)=>{
   try{
     if(req.user.role!=="brand")return res.status(403).json({success:false,message:"Brand only."});
-    if(!razorpay){
-      return res.status(500).json({success:false,message:"Razorpay credentials are not configured."});
-    }
 
     const{applicationId,amount,description}=req.body;
     if(!applicationId||amount===undefined)return res.status(400).json({success:false,message:"Application ID and amount required."});
@@ -1038,7 +1120,7 @@ app.post("/api/payment/create-order",verifyToken,async(req,res)=>{
       return res.status(400).json({success:false,message:`Minimum payment for this project is ${formatINR(minimumAmount)}.`});
     }
 
-    const order=await razorpay.orders.create({
+    const order=await createRazorpayOrder({
       amount:amountInPaise,
       currency:"INR",
       receipt:`ngg_${String(applicationId).slice(-10)}_${String(Date.now()).slice(-8)}`,
@@ -1062,6 +1144,7 @@ app.post("/api/payment/create-order",verifyToken,async(req,res)=>{
     res.json({
       success:true,
       orderId:order.id,
+      order_id:order.id,
       amount:amountInPaise,
       currency:"INR",
       key:process.env.RAZORPAY_KEY_ID,
@@ -1070,25 +1153,25 @@ app.post("/api/payment/create-order",verifyToken,async(req,res)=>{
     });
   }catch(err){
     console.error("Payment create-order error:",err);
-    res.status(500).json({success:false,message:"Could not create payment order. Check Razorpay credentials."});
+    if(err.statusCode===400){
+      return res.status(400).json({success:false,message:err.message});
+    }
+    res.status(getRazorpayErrorStatus(err)).json({
+      success:false,
+      message:getRazorpayErrorStatus(err)===401?"Razorpay authentication failed. Check credentials.":"Could not create payment order. Check Razorpay credentials.",
+    });
   }
 });
 
 app.post("/api/payment/verify",verifyToken,async(req,res)=>{
   try{
     if(req.user.role!=="brand")return res.status(403).json({success:false,message:"Brand only."});
-    if(!process.env.RAZORPAY_KEY_SECRET)return res.status(500).json({success:false,message:"Razorpay credentials are not configured."});
     const{razorpay_order_id,razorpay_payment_id,razorpay_signature}=req.body;
     if(!razorpay_order_id||!razorpay_payment_id||!razorpay_signature){
       return res.status(400).json({success:false,message:"Missing payment verification fields."});
     }
 
-    const expectedSig=crypto
-      .createHmac("sha256",process.env.RAZORPAY_KEY_SECRET)
-      .update(`${razorpay_order_id}|${razorpay_payment_id}`)
-      .digest("hex");
-
-    if(expectedSig!==razorpay_signature){
+    if(!isValidRazorpaySignature(razorpay_order_id,razorpay_payment_id,razorpay_signature)){
       return res.status(400).json({success:false,message:"Payment signature mismatch. Verification failed."});
     }
 
