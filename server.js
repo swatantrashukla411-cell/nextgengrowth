@@ -932,6 +932,45 @@ async function ensureWorkspaceForApplication(applicationId,brandId){
   );
 }
 
+async function notifyStudentPaymentSecured(payment){
+  const student=await User.findById(payment.studentId);
+  if(!student?.email)return;
+  sendEmail(
+    student.email,
+    "💰 Payment Received — NextGenGrowth",
+    `<div style="font-family:Arial,sans-serif;padding:20px;max-width:500px;margin:0 auto">
+    <div style="background:linear-gradient(135deg,#0a7c44,#064e2b);border-radius:16px;padding:24px;text-align:center;color:white;margin-bottom:20px">
+      <h2 style="margin:0 0 8px">💰 Payment Secured!</h2>
+      <p style="font-size:2rem;font-weight:bold;margin:0">₹${payment.amount.toLocaleString('en-IN')}</p>
+      <p style="margin:6px 0 0;opacity:.85">${payment.description}</p>
+    </div>
+    <p style="color:#2d5a3d;font-size:15px">Hi ${student.firstName}! The brand payment is secured. It will be released after your submitted work is approved.</p>
+    <a href="${BASE_URL}/dashboard" style="display:inline-block;background:#0a7c44;color:white;padding:12px 24px;border-radius:10px;text-decoration:none;margin-top:8px;font-weight:bold">View Earnings →</a>
+    </div>`
+  );
+}
+
+async function finalizeVerifiedPayment(payment){
+  await Application.findByIdAndUpdate(payment.applicationId,{
+    paymentStatus:"paid",
+    paidAmount:payment.amount,
+  });
+
+  await ensureWorkspaceForApplication(payment.applicationId,payment.brandId);
+
+  await Earning.findOneAndUpdate(
+    {applicationId:payment.applicationId,studentId:payment.studentId},
+    {$setOnInsert:{
+      studentId:payment.studentId,
+      applicationId:payment.applicationId,
+      amount:payment.amount,
+      description:payment.description,
+      status:"pending",
+    }},
+    {new:true,upsert:true,setDefaultsOnInsert:true}
+  );
+}
+
 // ═══════════════════════════════════════════
 // PROJECT WORKSPACE ROUTES
 // ═══════════════════════════════════════════
@@ -1200,44 +1239,18 @@ app.post("/api/payment/verify",verifyToken,async(req,res)=>{
     const payment=await Payment.findOne({razorpayOrderId:razorpay_order_id});
     if(!payment)return res.status(404).json({success:false,message:"Payment record not found."});
     if(String(payment.brandId)!==String(req.user.id))return res.status(403).json({success:false,message:"You can only verify your own payments."});
-    if(payment.status==="paid")return res.json({success:true,message:"Payment already verified."});
+    if(payment.status==="paid"){
+      await finalizeVerifiedPayment(payment);
+      return res.json({success:true,message:"Payment already verified."});
+    }
 
     payment.razorpayPaymentId=razorpay_payment_id;
     payment.razorpaySignature=razorpay_signature;
     payment.status="paid";
     await payment.save();
 
-    await Application.findByIdAndUpdate(payment.applicationId,{
-      paymentStatus:"paid",
-      paidAmount:payment.amount,
-    });
-
-    await ensureWorkspaceForApplication(payment.applicationId,payment.brandId);
-
-    await Earning.create({
-      studentId:payment.studentId,
-      applicationId:payment.applicationId,
-      amount:payment.amount,
-      description:payment.description,
-      status:"pending",
-    });
-
-    const student=await User.findById(payment.studentId);
-    if(student?.email){
-      sendEmail(
-        student.email,
-        "💰 Payment Received — NextGenGrowth",
-        `<div style="font-family:Arial,sans-serif;padding:20px;max-width:500px;margin:0 auto">
-        <div style="background:linear-gradient(135deg,#0a7c44,#064e2b);border-radius:16px;padding:24px;text-align:center;color:white;margin-bottom:20px">
-          <h2 style="margin:0 0 8px">💰 Payment Secured!</h2>
-          <p style="font-size:2rem;font-weight:bold;margin:0">₹${payment.amount.toLocaleString('en-IN')}</p>
-          <p style="margin:6px 0 0;opacity:.85">${payment.description}</p>
-        </div>
-        <p style="color:#2d5a3d;font-size:15px">Hi ${student.firstName}! The brand payment is secured. It will be released after your submitted work is approved.</p>
-        <a href="${BASE_URL}/dashboard" style="display:inline-block;background:#0a7c44;color:white;padding:12px 24px;border-radius:10px;text-decoration:none;margin-top:8px;font-weight:bold">View Earnings →</a>
-        </div>`
-      );
-    }
+    await finalizeVerifiedPayment(payment);
+    notifyStudentPaymentSecured(payment).catch(err=>console.error("Payment email error:",err.message));
 
     res.json({success:true,message:"Payment verified! Student has been notified. ✅"});
   }catch(err){

@@ -871,6 +871,41 @@ function filterBrandApps(f,btn){
   renderBrandApps();
 }
 
+function wait(ms){return new Promise(resolve=>setTimeout(resolve,ms));}
+
+async function readApiResponse(res){
+  const text=await res.text();
+  try{
+    return text?JSON.parse(text):{};
+  }catch{
+    return {success:false,message:`Server returned ${res.status}. ${text.replace(/<[^>]*>/g,' ').trim().slice(0,140)||'Please try again.'}`};
+  }
+}
+
+async function verifyRazorpayPayment(payload){
+  let lastError=null;
+  for(let attempt=1;attempt<=3;attempt++){
+    try{
+      const verifyRes=await fetch('/api/payment/verify',{
+        method:'POST',
+        headers:{'Authorization':'Bearer '+_tk,'Content-Type':'application/json'},
+        body:JSON.stringify(payload)
+      });
+      const data=await readApiResponse(verifyRes);
+      return {ok:verifyRes.ok&&data.success,data,status:verifyRes.status};
+    }catch(err){
+      lastError=err;
+      if(attempt<3)await wait(900*attempt);
+    }
+  }
+  return {
+    ok:false,
+    status:0,
+    data:{success:false,message:`Payment completed in Razorpay, but verification could not reach the server. Save payment ID: ${payload.razorpay_payment_id||'not available'}.`},
+    error:lastError,
+  };
+}
+
 // ✅ ACCEPT or REJECT — sends email to student automatically!
 async function handleApp(id, status, btn){
   const action=status==='accepted'?'Accept':'Reject';
@@ -945,21 +980,13 @@ async function startPayment(appId, btn){
       modal:{ondismiss:()=>{showToast('Payment cancelled.','info');resetButton();}},
       handler:async(response)=>{
         btn.innerHTML='<span class="spin"></span>Verifying payment...';
-        try{
-          const verifyRes=await fetch('/api/payment/verify',{
-            method:'POST',
-            headers:{'Authorization':'Bearer '+_tk,'Content-Type':'application/json'},
-            body:JSON.stringify({...response,applicationId:appId})
-          });
-          const data=await verifyRes.json();
-          if(data.success){
-            showToast('Payment successful! Student notified. ✅','success');
-            await loadBrandApplications();
-          }else{
-            showToast(data.message||'Payment verification failed.','error');
-          }
-        }catch{
-          showToast('Could not verify payment. Please contact support.','error');
+        const result=await verifyRazorpayPayment({...response,applicationId:appId});
+        if(result.ok){
+          showToast('Payment successful! Student notified. ✅','success');
+          await loadBrandApplications();
+        }else{
+          console.log('Payment verification failed:',result);
+          showToast(result.data?.message||'Payment verification failed. Please refresh and check payment status.','error');
         }
         resetButton();
       }
