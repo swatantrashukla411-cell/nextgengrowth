@@ -23,13 +23,39 @@ const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 const GOOGLE_CALLBACK_URL  = process.env.GOOGLE_CALLBACK_URL || "http://localhost:3000/auth/google/callback";
 const BASE_URL   = process.env.BASE_URL || "https://nextgengrowth-production.up.railway.app";
 
-const razorpay = process.env.RAZORPAY_KEY_ID&&process.env.RAZORPAY_KEY_SECRET
-  ? new Razorpay({
-      key_id:process.env.RAZORPAY_KEY_ID,
-      key_secret:process.env.RAZORPAY_KEY_SECRET,
-    })
-  : null;
 const RAZORPAY_MIN_AMOUNT_PAISE = 100;
+
+function cleanEnv(name){
+  return String(process.env[name]||"").trim();
+}
+
+function getRazorpayConfig(){
+  const keyId=cleanEnv("RAZORPAY_KEY_ID");
+  const keySecret=cleanEnv("RAZORPAY_KEY_SECRET");
+  const missing=[];
+  if(!keyId)missing.push("RAZORPAY_KEY_ID");
+  if(!keySecret)missing.push("RAZORPAY_KEY_SECRET");
+  return{
+    keyId,
+    keySecret,
+    configured:missing.length===0,
+    missing,
+    mode:keyId.startsWith("rzp_live_")?"live":keyId.startsWith("rzp_test_")?"test":"unknown",
+  };
+}
+
+function getRazorpayClient(){
+  const config=getRazorpayConfig();
+  if(!config.configured){
+    const err=new Error(`Razorpay credentials are not configured. Missing: ${config.missing.join(", ")}`);
+    err.statusCode=401;
+    throw err;
+  }
+  return new Razorpay({
+    key_id:config.keyId,
+    key_secret:config.keySecret,
+  });
+}
 
 // ═══════════════════════════════════════════
 // MONGODB
@@ -157,18 +183,13 @@ function getRazorpayErrorStatus(err){
 }
 
 async function createRazorpayOrder({amount,currency="INR",receipt,notes={}}){
-  if(!razorpay){
-    const err=new Error("Razorpay credentials are not configured.");
-    err.statusCode=401;
-    throw err;
-  }
   const amountInPaise=Number(amount);
   if(!Number.isInteger(amountInPaise)||amountInPaise<RAZORPAY_MIN_AMOUNT_PAISE){
     const err=new Error("Minimum order amount is 100 paise.");
     err.statusCode=400;
     throw err;
   }
-  return razorpay.orders.create({
+  return getRazorpayClient().orders.create({
     amount:amountInPaise,
     currency:currency||"INR",
     receipt:receipt||`ngg_${Date.now()}`,
@@ -177,9 +198,10 @@ async function createRazorpayOrder({amount,currency="INR",receipt,notes={}}){
 }
 
 function isValidRazorpaySignature(orderId,paymentId,signature){
-  if(!process.env.RAZORPAY_KEY_SECRET)return false;
+  const {keySecret}=getRazorpayConfig();
+  if(!keySecret)return false;
   const expectedSig=crypto
-    .createHmac("sha256",process.env.RAZORPAY_KEY_SECRET)
+    .createHmac("sha256",keySecret)
     .update(`${orderId}|${paymentId}`)
     .digest("hex");
   const expected=Buffer.from(expectedSig,"hex");
@@ -1070,7 +1092,7 @@ app.post("/api/create-order",authLimiter,async(req,res)=>{
       orderId:order.id,
       amount:order.amount,
       currency:order.currency,
-      key:process.env.RAZORPAY_KEY_ID,
+      key:getRazorpayConfig().keyId,
     });
   }catch(err){
     if(err.statusCode===400){
@@ -1147,7 +1169,7 @@ app.post("/api/payment/create-order",verifyToken,async(req,res)=>{
       order_id:order.id,
       amount:amountInPaise,
       currency:"INR",
-      key:process.env.RAZORPAY_KEY_ID,
+      key:getRazorpayConfig().keyId,
       studentName:`${application.studentId.firstName} ${application.studentId.lastName}`.trim(),
       jobTitle:application.jobTitle,
     });
@@ -1374,7 +1396,22 @@ app.get("/admin",(req,res)=>res.sendFile(path.join(__dirname,"public","admin.htm
 app.get("/api/health",async(req,res)=>{
   const userCount=await User.countDocuments();
   const jobCount=await Job.countDocuments();
-  res.json({success:true,message:"NextGenGrowth API 🚀 v4",users:userCount,jobs:jobCount,email:process.env.RESEND_API_KEY?"configured":"not configured",google:GOOGLE_CLIENT_ID?"configured":"not configured",razorpay:process.env.RAZORPAY_KEY_ID?"configured":"not configured"});
+  const razorpayConfig=getRazorpayConfig();
+  res.json({
+    success:true,
+    message:"NextGenGrowth API 🚀 v4",
+    users:userCount,
+    jobs:jobCount,
+    email:process.env.RESEND_API_KEY?"configured":"not configured",
+    google:GOOGLE_CLIENT_ID?"configured":"not configured",
+    razorpay:razorpayConfig.configured?"configured":"not configured",
+    razorpayStatus:{
+      keyId:razorpayConfig.keyId?"configured":"missing",
+      keySecret:razorpayConfig.keySecret?"configured":"missing",
+      mode:razorpayConfig.mode,
+      missing:razorpayConfig.missing,
+    },
+  });
 });
 // --- NEXTGEN GROWTH AI LOGIC START ---
 
@@ -1442,9 +1479,10 @@ app.post('/api/ask-ai', async (req, res) => {
 });
 // --- NEXTGEN GROWTH AI LOGIC END ---
 app.listen(PORT,()=>{
+  const razorpayConfig=getRazorpayConfig();
   console.log(`\n🚀 Server: http://localhost:${PORT}`);
   console.log(`📧 Email:  ${process.env.RESEND_API_KEY?"Configured ✅":"Not configured ❌"}`);
   console.log(`🔑 Google: ${GOOGLE_CLIENT_ID?"Configured":"Not configured"}`);
-  console.log(`💳 Razorpay: ${process.env.RAZORPAY_KEY_ID?"Configured ✅":"Not configured ❌"}`);
+  console.log(`💳 Razorpay: ${razorpayConfig.configured?`Configured ✅ (${razorpayConfig.mode})`:`Not configured ❌ missing ${razorpayConfig.missing.join(", ")}`}`);
   console.log(`🗄️  DB:    MongoDB Atlas\n`);
 });
