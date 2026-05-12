@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Contact - NextGenGrowth</title>
+<meta name="description" content="Contact NextGenGrowth for brand, student, payment, payout KYC, and platform support." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/legal.css" />
+</head>
+<body>
+<div class="site-shell">
+  <header class="nav">
+    <div class="nav-inner">
+      <a href="/" class="brand" aria-label="NextGenGrowth home"><div class="brand-mark">N</div><span>NextGen<span>Growth</span></span></a>
+      <div class="nav-links">
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+        <a href="/login" class="primary-link">Login</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="hero">
+      <div class="eyebrow">Contact NextGenGrowth</div>
+      <h1>Need help with a project, payment, or account?</h1>
+      <p>Tell us what you need. We will route your message to the right support workflow for students, brands, payouts, payments, or platform access.</p>
+      <div class="meta-row">
+        <span class="meta-pill">Support email: hello@nextgengrowth.in</span>
+        <span class="meta-pill">Typical reply: 24-48 hours</span>
+      </div>
+    </div>
+
+    <div class="content-wrap">
+      <aside class="toc">
+        <strong>Support areas</strong>
+        <a href="#quick-contact">Quick contact</a>
+        <a href="#form">Send a message</a>
+        <a href="#expect">What to include</a>
+        <a href="#legal">Legal pages</a>
+      </aside>
+
+      <article class="doc-card">
+        <section id="quick-contact">
+          <h2>Quick contact</h2>
+          <p>For the fastest support, use the right subject line and include your account email, project title, and payment reference when relevant.</p>
+          <div class="contact-grid">
+            <div class="contact-card">
+              <strong>General support</strong>
+              <a href="mailto:hello@nextgengrowth.in">hello@nextgengrowth.in</a>
+              <p>Account access, dashboard issues, profile updates, and general help.</p>
+            </div>
+            <div class="contact-card">
+              <strong>Brand help</strong>
+              <a href="mailto:hello@nextgengrowth.in?subject=Brand%20Support%20-%20NextGenGrowth">Brand support email</a>
+              <p>Project posting, brand verification, applications, and workspaces.</p>
+            </div>
+            <div class="contact-card">
+              <strong>Student help</strong>
+              <a href="mailto:hello@nextgengrowth.in?subject=Student%20Support%20-%20NextGenGrowth">Student support email</a>
+              <p>Applications, profile, submissions, earnings, and payout KYC.</p>
+            </div>
+            <div class="contact-card">
+              <strong>Payments and refunds</strong>
+              <a href="mailto:hello@nextgengrowth.in?subject=Payment%20or%20Refund%20Support%20-%20NextGenGrowth">Payment support email</a>
+              <p>Razorpay payment IDs, failed verification, duplicate payments, and refund review.</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="form">
+          <h2>Send a message</h2>
+          <p>This form opens your email app with the message prepared, so you can review and send it from your own email account.</p>
+          <form class="contact-form" id="contactForm">
+            <div class="field">
+              <label for="name">Your name</label>
+              <input id="name" name="name" type="text" placeholder="Your full name" required />
+            </div>
+            <div class="field">
+              <label for="email">Your email</label>
+              <input id="email" name="email" type="email" placeholder="you@example.com" required />
+            </div>
+            <div class="field">
+              <label for="topic">Topic</label>
+              <select id="topic" name="topic">
+                <option>General support</option>
+                <option>Brand verification</option>
+                <option>Student account</option>
+                <option>Project or workspace</option>
+                <option>Payment or refund</option>
+                <option>Payout KYC</option>
+                <option>Partnership</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="message">Message</label>
+              <textarea id="message" name="message" placeholder="Share the project title, account email, payment ID, or any important context." required></textarea>
+            </div>
+            <div class="button-row">
+              <button type="submit" class="btn">Prepare email</button>
+              <a class="btn secondary" href="/login">Open dashboard</a>
+            </div>
+          </form>
+        </section>
+
+        <section id="expect">
+          <h2>What to include</h2>
+          <ul>
+            <li>Your registered email address and role: student or brand.</li>
+            <li>Project title, student name, or brand name if the issue is project-related.</li>
+            <li>Razorpay payment ID, order ID, amount, and date for payment issues.</li>
+            <li>Screenshots or links that help us understand the issue quickly.</li>
+          </ul>
+        </section>
+
+        <section id="legal">
+          <h2>Legal and policy pages</h2>
+          <p>Before making payments or submitting payout details, please review our policies.</p>
+          <div class="button-row">
+            <a class="btn secondary" href="/privacy">Privacy Policy</a>
+            <a class="btn secondary" href="/terms">Terms and Conditions</a>
+            <a class="btn secondary" href="/refund-policy">Refund Policy</a>
+          </div>
+        </section>
+      </article>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div>© 2026 NextGenGrowth. Built with care in India.</div>
+      <div class="footer-links">
+        <a href="/privacy">Privacy</a>
+        <a href="/terms">Terms</a>
+        <a href="/refund-policy">Refunds</a>
+        <a href="/contact">Contact</a>
+      </div>
+    </div>
+  </footer>
+</div>
+
+<script>
+document.getElementById('contactForm').addEventListener('submit', function(event) {
+  event.preventDefault();
+  const name = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
+  const topic = document.getElementById('topic').value;
+  const message = document.getElementById('message').value.trim();
+  const subject = encodeURIComponent(topic + ' - NextGenGrowth');
+  const body = encodeURIComponent(
+    'Name: ' + name + '\n' +
+    'Email: ' + email + '\n' +
+    'Topic: ' + topic + '\n\n' +
+    message
+  );
+  window.location.href = 'mailto:hello@nextgengrowth.in?subject=' + subject + '&body=' + body;
+});
+</script>
+</body>
+</html>
