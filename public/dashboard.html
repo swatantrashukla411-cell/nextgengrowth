@@ -330,6 +330,14 @@
     .sk-opt{padding:6px 12px;border-radius:100px;font-size:.77rem;font-weight:500;border:1.5px solid var(--br);background:var(--white);color:var(--ts);cursor:pointer;transition:all .2s;user-select:none}
     .sk-opt:hover{border-color:var(--gb);color:var(--gm)}
     .sk-opt.sel{background:var(--gm);color:white;border-color:var(--gm)}
+    .kyc-status{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:100px;background:var(--gl);border:1px solid var(--br);color:var(--gm);font-size:.72rem;font-weight:700}
+    .kyc-status.pending{background:#fff7ed;border-color:#fed7aa;color:#c2410c}
+    .kyc-status.missing{background:#fef2f2;border-color:#fecaca;color:#dc2626}
+    .kyc-box{background:var(--gp);border:1px solid var(--br);border-radius:12px;padding:14px;margin-bottom:14px}
+    .kyc-box p{font-size:.8rem;color:var(--ts);line-height:1.5}
+    .kyc-note{font-size:.74rem;color:var(--ts);line-height:1.45;background:white;border:1px solid var(--br);border-radius:10px;padding:10px}
+    .check-row{display:flex;align-items:flex-start;gap:9px;font-size:.78rem;color:var(--tm);line-height:1.45}
+    .check-row input{margin-top:3px;accent-color:var(--gm)}
 
     /* ══ GETTING STARTED ══ */
     .gs-card{background:var(--gp);border:1.5px dashed var(--br);border-radius:12px;padding:18px;margin-bottom:14px}
@@ -432,6 +440,7 @@
     <button class="ni" onclick="goTo('mentors',this)"><span class="nicon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg></span>Mentors</button>
     <div class="nl">Account</div>
     <button class="ni" onclick="goTo('profile',this)"><span class="nicon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg></span>My Profile</button>
+    <button class="ni" onclick="goTo('kyc',this)"><span class="nicon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 14l2 2 4-4M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z"/></svg></span>Payout KYC<span class="nb" id="kycNavBadge">New</span></button>
     <button class="ni" onclick="logout()"><span class="nicon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg></span>Logout</button>
   </nav>
   <div class="sbf">
@@ -597,6 +606,15 @@
           </div>
         </div>
       </div>
+      <div class="kyc-box">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+          <div>
+            <div style="font-weight:700;color:var(--td);margin-bottom:3px">Payout KYC</div>
+            <p id="earnKycText">Add bank details before payouts are released.</p>
+          </div>
+          <button class="btn bout" onclick="goTo('kyc',null)">Open KYC →</button>
+        </div>
+      </div>
       <div class="card">
         <div class="st" style="margin-bottom:12px">Transaction History</div>
         <div id="txList"><div class="empty-s" style="padding:22px 10px"><div class="ei">💸</div><h3>No transactions yet</h3><p>Complete your first project!</p><button class="btn bpri" style="font-size:.79rem" onclick="goTo('projects',null)">Find Projects →</button></div></div>
@@ -688,6 +706,41 @@
       </div>
     </div>
 
+    <!-- PAYOUT KYC -->
+    <div class="page" id="page-kyc">
+      <div class="ph"><h2>Payout KYC 🛡️</h2><p>Add your payout details so NextGenGrowth can release project earnings.</p></div>
+      <div class="g2">
+        <div class="card">
+          <div class="st">KYC Status <span class="kyc-status missing" id="kycStatusBadge">Not Submitted</span></div>
+          <div class="kyc-box">
+            <p id="kycStatusText">Submit your bank details once. Account number is stored securely and shown only as masked digits.</p>
+          </div>
+          <div class="kyc-note">This is payout detail collection for NextGenGrowth. Later, these details can be mapped to RazorpayX Contact/Fund Account for automated payouts.</div>
+        </div>
+        <div class="card">
+          <div class="st" style="margin-bottom:14px">Bank & UPI Details</div>
+          <div class="fg"><label>Legal Full Name</label><input class="fi" id="kycLegalName" placeholder="Name as per bank account"></div>
+          <div class="fg"><label>Preferred Payout</label><select class="fi" id="kycPreferred"><option value="bank">Bank Transfer</option><option value="upi">UPI</option></select></div>
+          <div class="fg"><label>UPI ID (optional)</label><input class="fi" id="kycUpi" placeholder="name@upi"></div>
+          <div class="g2">
+            <div class="fg"><label>Account Holder Name</label><input class="fi" id="kycHolder" placeholder="Name on bank account"></div>
+            <div class="fg"><label>Bank Name</label><input class="fi" id="kycBank" placeholder="e.g. HDFC Bank"></div>
+          </div>
+          <div class="g2">
+            <div class="fg"><label>Account Number</label><input class="fi" id="kycAccount" inputmode="numeric" placeholder="Enter to add or update"></div>
+            <div class="fg"><label>Confirm Account Number</label><input class="fi" id="kycAccountConfirm" inputmode="numeric" placeholder="Re-enter account number"></div>
+          </div>
+          <div class="fg"><label>IFSC Code</label><input class="fi" id="kycIfsc" placeholder="ABCD0123456" style="text-transform:uppercase"></div>
+          <div class="fg" id="kycMaskedRow" style="display:none"><label>Saved Account</label><input class="fi" id="kycMasked" readonly style="opacity:.72;cursor:not-allowed"></div>
+          <label class="check-row"><input type="checkbox" id="kycConsent"> I confirm these payout details are correct and belong to me. Wrong details can delay payouts.</label>
+          <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:14px">
+            <button class="btn bpri" id="kycSaveBtn" onclick="saveKyc()">💾 Submit KYC</button>
+            <button class="btn bout" onclick="loadKyc()">Reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div><!-- /content -->
 
   <!-- MOBILE BOTTOM NAV -->
@@ -753,7 +806,7 @@ async function loadLiveJobs() {
   }
 }
 let curFilter='ai',curCat='all',curSearch='';
-let aiJobs=[],realApps=[],studentWorkspaces=[],studentTransactions=[],userSkills=[],appliedJobIds=new Set();
+let aiJobs=[],realApps=[],studentWorkspaces=[],studentTransactions=[],userSkills=[],appliedJobIds=new Set(),studentKyc=null;
 
 function esc(value){return String(value??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 function getJobId(value){return String(value?._id||value?.id||value||'');}
@@ -799,6 +852,70 @@ function workspaceStatusText(status){
     approved:'Approved',
     completed:'Completed'
   }[status]||'Workspace';
+}
+
+function kycLabel(status){
+  return {
+    not_submitted:'Not Submitted',
+    submitted:'Submitted',
+    verified:'Verified',
+    rejected:'Rejected'
+  }[status||'not_submitted']||'Not Submitted';
+}
+
+function updateKycStatus(kyc){
+  studentKyc=kyc||studentKyc||{};
+  const status=studentKyc.status||'not_submitted';
+  const badge=document.getElementById('kycStatusBadge');
+  const navBadge=document.getElementById('kycNavBadge');
+  const text=document.getElementById('kycStatusText');
+  const earnText=document.getElementById('earnKycText');
+  if(badge){
+    badge.textContent=kycLabel(status);
+    badge.className='kyc-status '+(status==='verified'?'':status==='submitted'?'pending':'missing');
+  }
+  if(navBadge){
+    navBadge.textContent=status==='verified'?'✓':status==='submitted'?'Pending':'New';
+  }
+  const message=status==='verified'
+    ? 'Your payout details are verified and ready for payouts.'
+    : status==='submitted'
+      ? 'Your payout details are submitted. Admin review is pending.'
+      : status==='rejected'
+        ? `KYC rejected. ${studentKyc.rejectionReason||'Please update details and submit again.'}`
+        : 'Submit your bank details once. Account number is stored securely and shown only as masked digits.';
+  if(text)text.textContent=message;
+  if(earnText)earnText.textContent=status==='verified'?'Payout details verified.':'Add bank details before payouts are released.';
+}
+
+function fillKycForm(kyc={}){
+  const map={
+    kycLegalName:kyc.legalName||'',
+    kycPreferred:kyc.preferredPayout||'bank',
+    kycUpi:kyc.upiId||'',
+    kycHolder:kyc.bankAccountHolder||'',
+    kycBank:kyc.bankName||'',
+    kycIfsc:kyc.ifsc||'',
+    kycMasked:kyc.bankAccountMasked||''
+  };
+  Object.entries(map).forEach(([id,val])=>{const el=document.getElementById(id);if(el)el.value=val;});
+  ['kycAccount','kycAccountConfirm'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  const consent=document.getElementById('kycConsent');if(consent)consent.checked=false;
+  const maskedRow=document.getElementById('kycMaskedRow');
+  if(maskedRow)maskedRow.style.display=kyc.bankAccountMasked?'block':'none';
+  updateKycStatus(kyc);
+}
+
+async function loadKyc(){
+  try{
+    const res=await fetch('/api/student/kyc',{headers:{'Authorization':'Bearer '+_tk}});
+    const data=await res.json();
+    if(data.success){
+      fillKycForm(data.kyc||{});
+    }
+  }catch(e){
+    console.log('KYC load failed:',e);
+  }
 }
 
 // AI MATCHING
@@ -1051,6 +1168,11 @@ function loadUserData(userData){
   if(skills.length>0){const m=matchJobs(skills,ALL_JOBS).filter(j=>j.isMatch).length;wbDesc.textContent=`${m} projects match your skills! Apply and start earning 💰`;}
   else wbDesc.textContent='Add your skills in Profile to get matched with brand projects!';
   runAiMatching();
+  if(u.payoutKyc){
+    fillKycForm(u.payoutKyc);
+  }else{
+    updateKycStatus({status:'not_submitted'});
+  }
 }
 
 // ✅ FETCH FRESH DATA FROM SERVER — fixes bio/linkedin refresh issue
@@ -1203,8 +1325,47 @@ async function saveProfile(){
   btn.innerHTML='💾 Save Changes';btn.disabled=false;
 }
 
+async function saveKyc(){
+  const btn=document.getElementById('kycSaveBtn');
+  const orig=btn.innerHTML;
+  btn.innerHTML='<span class="spin"></span>Submitting...';
+  btn.disabled=true;
+  const body={
+    legalName:document.getElementById('kycLegalName').value.trim(),
+    preferredPayout:document.getElementById('kycPreferred').value,
+    upiId:document.getElementById('kycUpi').value.trim(),
+    bankAccountHolder:document.getElementById('kycHolder').value.trim(),
+    bankName:document.getElementById('kycBank').value.trim(),
+    bankAccountNumber:document.getElementById('kycAccount').value.trim(),
+    confirmAccountNumber:document.getElementById('kycAccountConfirm').value.trim(),
+    ifsc:document.getElementById('kycIfsc').value.trim(),
+    consent:document.getElementById('kycConsent').checked
+  };
+  try{
+    const res=await fetch('/api/student/kyc',{
+      method:'PUT',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+_tk},
+      body:JSON.stringify(body)
+    });
+    const data=await res.json();
+    if(data.success){
+      const updated={..._u,...data.user,payoutKyc:data.kyc};
+      localStorage.setItem('ngg_user',JSON.stringify(updated));
+      Object.assign(_u,updated);
+      fillKycForm(data.kyc||{});
+      showToast('Payout KYC submitted. ✅','success');
+    }else{
+      showToast(data.message||'Could not submit KYC.','error');
+    }
+  }catch{
+    showToast('Could not submit KYC. Check connection.','error');
+  }
+  btn.innerHTML=orig;
+  btn.disabled=false;
+}
+
 // NAVIGATION
-const PT={home:'Dashboard',projects:'Browse Projects',applications:'My Applications',portfolio:'My Portfolio',earnings:'My Earnings',courses:'Skill Courses',mentors:'Mentors',profile:'My Profile'};
+const PT={home:'Dashboard',projects:'Browse Projects',applications:'My Applications',portfolio:'My Portfolio',earnings:'My Earnings',courses:'Skill Courses',mentors:'Mentors',profile:'My Profile',kyc:'Payout KYC'};
 function goTo(pg,navBtn){
   closeNotifications();
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -1215,6 +1376,7 @@ function goTo(pg,navBtn){
   document.getElementById('pgT').textContent=PT[pg]||'Dashboard';
   if(pg==='projects')renderProjects();
   if(pg==='applications'){renderAppList(realApps,'all');loadStudentWorkspaces();}
+  if(pg==='kyc')loadKyc();
   window.scrollTo({top:0,behavior:'smooth'});
   closeSidebar();
   gsap.fromTo('#page-'+pg,{opacity:0,y:10},{opacity:1,y:0,duration:.28,ease:'power2.out'});
@@ -1256,6 +1418,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('pgD').textContent=d.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
   loadUserData();         
   loadStats();            
+  loadKyc();
   fetchFreshProfile();    
   
   if (typeof loadLiveJobs === 'function') loadLiveJobs(); // Fetch real jobs

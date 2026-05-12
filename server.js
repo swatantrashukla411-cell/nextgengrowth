@@ -85,7 +85,21 @@ const userSchema = new mongoose.Schema({
   isVerified:{type:Boolean,default:false}, // ✅ Email verified
   avatar:{type:String,default:""},
   brandLink: { type: String, default: "" }, // LinkedIn/Website link store karne ke liye
-  isApproved: { type: Boolean, default: false }
+  isApproved: { type: Boolean, default: false },
+  payoutKyc:{
+    legalName:{type:String,default:""},
+    preferredPayout:{type:String,enum:["bank","upi"],default:"bank"},
+    upiId:{type:String,default:""},
+    bankAccountHolder:{type:String,default:""},
+    bankName:{type:String,default:""},
+    bankAccountNumberEncrypted:{type:String,default:""},
+    bankAccountLast4:{type:String,default:""},
+    ifsc:{type:String,default:""},
+    status:{type:String,enum:["not_submitted","submitted","verified","rejected"],default:"not_submitted"},
+    rejectionReason:{type:String,default:""},
+    submittedAt:{type:Date},
+    verifiedAt:{type:Date},
+  }
 },{timestamps:true});
 
 const otpSchema = new mongoose.Schema({
@@ -398,10 +412,63 @@ function verifyToken(req,res,next){
 }
 function safeUser(user){
   const u=user.toObject?user.toObject():user;
-  delete u.password;u.name=`${u.firstName} ${u.lastName}`;return u;
+  delete u.password;
+  if(u.payoutKyc){
+    u.payoutKyc=safePayoutKyc(u.payoutKyc);
+  }
+  u.name=`${u.firstName} ${u.lastName}`;return u;
 }
 function generateOTP(){
   return Math.floor(100000+Math.random()*900000).toString();
+}
+
+function encryptSensitive(value){
+  const text=String(value||"").trim();
+  if(!text)return "";
+  const key=crypto.createHash("sha256").update(cleanEnv("KYC_ENCRYPTION_KEY")||JWT_SECRET).digest();
+  const iv=crypto.randomBytes(12);
+  const cipher=crypto.createCipheriv("aes-256-gcm",key,iv);
+  const encrypted=Buffer.concat([cipher.update(text,"utf8"),cipher.final()]);
+  const tag=cipher.getAuthTag();
+  return [iv.toString("base64"),tag.toString("base64"),encrypted.toString("base64")].join(".");
+}
+
+function decryptSensitive(value){
+  try{
+    const [ivRaw,tagRaw,dataRaw]=String(value||"").split(".");
+    if(!ivRaw||!tagRaw||!dataRaw)return "";
+    const key=crypto.createHash("sha256").update(cleanEnv("KYC_ENCRYPTION_KEY")||JWT_SECRET).digest();
+    const decipher=crypto.createDecipheriv("aes-256-gcm",key,Buffer.from(ivRaw,"base64"));
+    decipher.setAuthTag(Buffer.from(tagRaw,"base64"));
+    return Buffer.concat([decipher.update(Buffer.from(dataRaw,"base64")),decipher.final()]).toString("utf8");
+  }catch{
+    return "";
+  }
+}
+
+function maskAccountNumber(last4){
+  return last4?`••••${last4}`:"";
+}
+
+function safePayoutKyc(kyc={}){
+  const plain=kyc.toObject?kyc.toObject():kyc;
+  return{
+    legalName:plain.legalName||"",
+    preferredPayout:plain.preferredPayout||"bank",
+    upiId:plain.upiId||"",
+    bankAccountHolder:plain.bankAccountHolder||"",
+    bankName:plain.bankName||"",
+    bankAccountMasked:maskAccountNumber(plain.bankAccountLast4),
+    ifsc:plain.ifsc||"",
+    status:plain.status||"not_submitted",
+    rejectionReason:plain.rejectionReason||"",
+    submittedAt:plain.submittedAt||null,
+    verifiedAt:plain.verifiedAt||null,
+  };
+}
+
+function sanitizeText(value,max=120){
+  return String(value||"").trim().slice(0,max);
 }
 
 // ═══════════════════════════════════════════
@@ -643,6 +710,71 @@ app.put("/api/profile",verifyToken,async(req,res)=>{
     const updated=await User.findByIdAndUpdate(req.user.id,{$set:updates},{new:true,runValidators:false});
     res.json({success:true,message:"Profile updated!",user:safeUser(updated)});
   }catch(err){res.status(500).json({success:false,message:"Server error."});}
+});
+
+app.get("/api/student/kyc",verifyToken,async(req,res)=>{
+  try{
+    if(req.user.role!=="student")return res.status(403).json({success:false,message:"Student only."});
+    const user=await User.findById(req.user.id).select("payoutKyc");
+    if(!user)return res.status(404).json({success:false,message:"User not found."});
+    res.json({success:true,kyc:safePayoutKyc(user.payoutKyc)});
+  }catch(err){
+    res.status(500).json({success:false,message:"Server error."});
+  }
+});
+
+app.put("/api/student/kyc",verifyToken,async(req,res)=>{
+  try{
+    if(req.user.role!=="student")return res.status(403).json({success:false,message:"Student only."});
+
+    const legalName=sanitizeText(req.body.legalName,120);
+    const preferredPayout=req.body.preferredPayout==="upi"?"upi":"bank";
+    const upiId=sanitizeText(req.body.upiId,120).toLowerCase();
+    const bankAccountHolder=sanitizeText(req.body.bankAccountHolder,120);
+    const bankName=sanitizeText(req.body.bankName,120);
+    const accountNumber=String(req.body.bankAccountNumber||"").replace(/\s+/g,"");
+    const confirmAccountNumber=String(req.body.confirmAccountNumber||"").replace(/\s+/g,"");
+    const ifsc=sanitizeText(req.body.ifsc,20).toUpperCase().replace(/\s+/g,"");
+    const consent=!!req.body.consent;
+
+    if(!legalName||legalName.length<3)return res.status(400).json({success:false,message:"Enter your full legal name."});
+    if(!bankAccountHolder||bankAccountHolder.length<3)return res.status(400).json({success:false,message:"Enter bank account holder name."});
+    if(!bankName||bankName.length<2)return res.status(400).json({success:false,message:"Enter bank name."});
+    if(!/^[A-Z]{4}0[A-Z0-9]{6}$/.test(ifsc))return res.status(400).json({success:false,message:"Enter a valid IFSC code."});
+    if(upiId&&!/^[a-z0-9.\-_]{2,}@[a-z0-9.\-_]{2,}$/i.test(upiId))return res.status(400).json({success:false,message:"Enter a valid UPI ID."});
+    if(preferredPayout==="upi"&&!upiId)return res.status(400).json({success:false,message:"Enter UPI ID or choose bank transfer."});
+    if(!consent)return res.status(400).json({success:false,message:"Please confirm that these payout details are correct."});
+
+    const user=await User.findById(req.user.id);
+    if(!user)return res.status(404).json({success:false,message:"User not found."});
+
+    const update={
+      "payoutKyc.legalName":legalName,
+      "payoutKyc.preferredPayout":preferredPayout,
+      "payoutKyc.upiId":upiId,
+      "payoutKyc.bankAccountHolder":bankAccountHolder,
+      "payoutKyc.bankName":bankName,
+      "payoutKyc.ifsc":ifsc,
+      "payoutKyc.status":"submitted",
+      "payoutKyc.rejectionReason":"",
+      "payoutKyc.submittedAt":new Date(),
+    };
+
+    if(accountNumber){
+      if(!/^\d{6,20}$/.test(accountNumber))return res.status(400).json({success:false,message:"Enter a valid bank account number."});
+      if(accountNumber!==confirmAccountNumber)return res.status(400).json({success:false,message:"Bank account numbers do not match."});
+      update["payoutKyc.bankAccountNumberEncrypted"]=encryptSensitive(accountNumber);
+      update["payoutKyc.bankAccountLast4"]=accountNumber.slice(-4);
+    }else if(!user.payoutKyc?.bankAccountNumberEncrypted){
+      return res.status(400).json({success:false,message:"Enter bank account number."});
+    }
+
+    const updated=await User.findByIdAndUpdate(req.user.id,{$set:update},{new:true});
+    res.json({success:true,message:"Payout KYC submitted for review.",kyc:safePayoutKyc(updated.payoutKyc),user:safeUser(updated)});
+  }catch(err){
+    console.error("Student KYC error:",err);
+    res.status(500).json({success:false,message:"Server error."});
+  }
 });
 
 // ═══════════════════════════════════════════
@@ -1370,6 +1502,51 @@ app.get("/api/admin/stats",adminOnly,async(req,res)=>{
     ]);
     res.json({success:true,stats:{totalUsers,totalStudents,totalBrands,totalProjects,openProjects,totalApps,acceptedApps,totalEarnings:earningsData[0]?.total||0,pendingEarnings:pendingData[0]?.total||0,todaySignups}});
   }catch(err){res.status(500).json({success:false,message:"Server error."});}
+});
+
+app.get("/api/admin/kyc",adminOnly,async(req,res)=>{
+  try{
+    const users=await User.find({role:"student","payoutKyc.status":{$ne:"not_submitted"}})
+      .select("firstName lastName email college payoutKyc createdAt updatedAt")
+      .sort({"payoutKyc.submittedAt":-1});
+    const students=users.map(u=>{
+      const k=u.payoutKyc||{};
+      return{
+        id:u._id,
+        name:`${u.firstName||""} ${u.lastName||""}`.trim()||"Student",
+        email:u.email,
+        college:u.college||"",
+        kyc:{
+          ...safePayoutKyc(k),
+          bankAccountNumber:decryptSensitive(k.bankAccountNumberEncrypted),
+        },
+        updatedAt:u.updatedAt,
+      };
+    });
+    res.json({success:true,students});
+  }catch(err){
+    console.error("Admin KYC list error:",err);
+    res.status(500).json({success:false,message:"Server error."});
+  }
+});
+
+app.put("/api/admin/kyc/:id",adminOnly,async(req,res)=>{
+  try{
+    const{status,rejectionReason}=req.body;
+    if(!["verified","rejected","submitted"].includes(status)){
+      return res.status(400).json({success:false,message:"Invalid KYC status."});
+    }
+    const update={
+      "payoutKyc.status":status,
+      "payoutKyc.rejectionReason":status==="rejected"?sanitizeText(rejectionReason,300):"",
+    };
+    if(status==="verified")update["payoutKyc.verifiedAt"]=new Date();
+    const user=await User.findOneAndUpdate({_id:req.params.id,role:"student"},{$set:update},{new:true});
+    if(!user)return res.status(404).json({success:false,message:"Student not found."});
+    res.json({success:true,message:`KYC ${status}.`,kyc:safePayoutKyc(user.payoutKyc)});
+  }catch(err){
+    res.status(500).json({success:false,message:"Server error."});
+  }
 });
 
 app.get("/api/admin/users",adminOnly,async(req,res)=>{
