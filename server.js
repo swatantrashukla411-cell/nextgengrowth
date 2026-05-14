@@ -171,6 +171,48 @@ const projectWorkspaceSchema = new mongoose.Schema({
   approvedAt:{type:Date},
 },{timestamps:true});
 
+const blogPostSchema = new mongoose.Schema({
+  title:{type:String,required:true,trim:true},
+  slug:{type:String,required:true,unique:true,lowercase:true,trim:true},
+  category:{type:String,required:true,default:"marketing",trim:true},
+  tags:{type:[String],default:[]},
+  featuredImage:{type:String,default:""},
+  excerpt:{type:String,default:""},
+  content:{type:String,default:""},
+  seoTitle:{type:String,default:""},
+  seoDescription:{type:String,default:""},
+  status:{type:String,enum:["draft","published"],default:"draft"},
+  authorName:{type:String,default:"NextGenGrowth Team"},
+  authorSlug:{type:String,default:"nextgengrowth-team"},
+  featured:{type:Boolean,default:false},
+  publishAt:{type:Date},
+  views:{type:Number,default:0},
+  ctaClicks:{type:Number,default:0},
+  shareClicks:{type:Number,default:0},
+  newsletterSignups:{type:Number,default:0},
+},{timestamps:true});
+blogPostSchema.index({status:1,publishAt:-1,createdAt:-1});
+blogPostSchema.index({category:1,status:1,publishAt:-1});
+blogPostSchema.index({title:"text",excerpt:"text",content:"text",tags:"text"});
+
+const newsletterSubscriberSchema = new mongoose.Schema({
+  email:{type:String,required:true,unique:true,lowercase:true,trim:true},
+  name:{type:String,default:""},
+  source:{type:String,default:"blog"},
+  tags:{type:[String],default:[]},
+  subscribedAt:{type:Date,default:Date.now},
+},{timestamps:true});
+
+const blogEventSchema = new mongoose.Schema({
+  postId:{type:mongoose.Schema.Types.ObjectId,ref:"BlogPost"},
+  slug:{type:String,default:""},
+  event:{type:String,enum:["view","share","cta_click","newsletter_signup","feedback","search"],required:true},
+  channel:{type:String,default:""},
+  metadata:{type:Object,default:{}},
+  ip:{type:String,default:""},
+  userAgent:{type:String,default:""},
+},{timestamps:true});
+
 const User        = mongoose.model("User",userSchema);
 const OTP         = mongoose.model("OTP",otpSchema);
 const Application = mongoose.model("Application",applicationSchema);
@@ -178,6 +220,9 @@ const Earning     = mongoose.model("Earning",earningSchema);
 const Job         = mongoose.model("Job",jobSchema);
 const Payment     = mongoose.model("Payment",paymentSchema);
 const ProjectWorkspace = mongoose.model("ProjectWorkspace",projectWorkspaceSchema);
+const BlogPost = mongoose.model("BlogPost",blogPostSchema);
+const NewsletterSubscriber = mongoose.model("NewsletterSubscriber",newsletterSubscriberSchema);
+const BlogEvent = mongoose.model("BlogEvent",blogEventSchema);
 
 console.log("✅ All models loaded!");
 
@@ -242,6 +287,841 @@ function cleanResources(resources){
 
 function safeMessage(value,max=3000){
   return String(value||"").trim().slice(0,max);
+}
+
+function escapeHtml(value){
+  return String(value??"").replace(/[&<>"']/g,ch=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[ch]));
+}
+
+function escapeAttr(value){
+  return escapeHtml(value).replace(/`/g,"&#96;");
+}
+
+function stripMarkdown(value){
+  return String(value||"")
+    .replace(/```[\s\S]*?```/g," ")
+    .replace(/!\[[^\]]*\]\([^)]+\)/g," ")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g,"$1")
+    .replace(/[#>*_`~\-]/g," ")
+    .replace(/\s+/g," ")
+    .trim();
+}
+
+function slugify(value){
+  return String(value||"")
+    .toLowerCase()
+    .trim()
+    .replace(/&/g," and ")
+    .replace(/[^a-z0-9]+/g,"-")
+    .replace(/^-+|-+$/g,"")
+    .slice(0,90)||`post-${Date.now()}`;
+}
+
+function normalizeTags(tags){
+  const raw=Array.isArray(tags)?tags:String(tags||"").split(",");
+  return [...new Set(raw.map(t=>String(t||"").trim()).filter(Boolean).slice(0,12))];
+}
+
+function estimateReadingTime(content){
+  const words=stripMarkdown(content).split(/\s+/).filter(Boolean).length;
+  return Math.max(1,Math.ceil(words/210));
+}
+
+function dbReady(){
+  return Boolean(MONGO_URI)&&mongoose.connection.readyState===1;
+}
+
+const BLOG_CATEGORIES=[
+  {slug:"marketing",name:"Marketing",description:"Digital marketing playbooks for brands that want measurable growth."},
+  {slug:"business-growth",name:"Business Growth",description:"Strategy, positioning, conversion, retention, and revenue ideas for founders."},
+  {slug:"ai-tools",name:"AI Tools",description:"Practical AI workflows, automation stacks, and tools for modern teams."},
+  {slug:"startup-growth",name:"Startup Growth",description:"Lean acquisition, launch systems, and operating habits for early teams."},
+  {slug:"automation",name:"Automation",description:"No-fluff systems that save time and make growth repeatable."},
+  {slug:"lead-generation",name:"Lead Generation",description:"Better pipelines, offers, funnels, and outreach for consistent demand."},
+  {slug:"branding",name:"Branding",description:"Trust-building brand strategy, content systems, and market positioning."},
+];
+
+const DEFAULT_BLOG_POSTS=[
+  {
+    title:"How student-powered teams help brands grow faster in 2026",
+    slug:"student-powered-teams-brand-growth-2026",
+    category:"business-growth",
+    tags:["student talent","business growth","outsourcing","creator economy"],
+    featured:true,
+    featuredImage:"https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1400&q=80",
+    excerpt:"A practical guide to using skilled student talent for content, design, websites, and growth work without slowing your core team.",
+    seoTitle:"Student-Powered Growth Teams for Brands in 2026 | NextGenGrowth",
+    seoDescription:"Learn how brands can use skilled student talent to ship marketing, content, design, and web projects faster with NextGenGrowth.",
+    authorName:"NextGenGrowth Team",
+    authorSlug:"nextgengrowth-team",
+    status:"published",
+    publishAt:new Date("2026-05-14T05:30:00.000Z"),
+    createdAt:new Date("2026-05-14T05:30:00.000Z"),
+    updatedAt:new Date("2026-05-14T05:30:00.000Z"),
+    views:220,
+    content:`## Why brands need a new growth model
+
+Most growing brands do not fail because they lack ideas. They fail because good ideas sit in a backlog for weeks. A reel campaign, a landing page refresh, a product shoot, a lead magnet, or a simple automation can create real momentum, but only if it ships.
+
+Student-powered teams solve that gap. They give brands access to energetic, digitally native talent while giving students real work, real feedback, and real income.
+
+## Where student talent works best
+
+- Short-form content and social media execution
+- Website updates, landing pages, and portfolio pages
+- Graphic design, pitch decks, and campaign creatives
+- Research, data cleanup, and lead list building
+- AI-assisted workflows and automation setup
+
+## How to make the model work
+
+Start with a clear project brief. Define the outcome, examples, timeline, budget, brand assets, and acceptance criteria. Then select one student for ownership instead of approving many people for the same task.
+
+NextGenGrowth helps brands post projects, review student profiles, create workspaces, collect submissions, and pay students after approval.
+
+## Internal growth lesson
+
+Do not treat student talent as cheap labor. Treat it as a flexible growth layer. When expectations are clear, students can help your brand test more ideas, create more assets, and learn what works faster.
+
+## Next step
+
+[Start a project on NextGenGrowth](/register) and turn one stalled growth idea into a shipped deliverable this week.`
+  },
+  {
+    title:"Digital marketing checklist for brands before they hire creators",
+    slug:"digital-marketing-checklist-before-hiring-creators",
+    category:"marketing",
+    tags:["digital marketing","creator marketing","content strategy","brand growth"],
+    featuredImage:"https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1400&q=80",
+    excerpt:"Before hiring creators or student talent, use this checklist to make your offer, audience, content angles, and success metrics clear.",
+    seoTitle:"Digital Marketing Checklist Before Hiring Creators | NextGenGrowth",
+    seoDescription:"Use this digital marketing checklist to prepare your brand before hiring creators, interns, freelancers, or student talent.",
+    authorName:"NextGenGrowth Team",
+    authorSlug:"nextgengrowth-team",
+    status:"published",
+    publishAt:new Date("2026-05-13T09:30:00.000Z"),
+    createdAt:new Date("2026-05-13T09:30:00.000Z"),
+    updatedAt:new Date("2026-05-13T09:30:00.000Z"),
+    views:165,
+    content:`## Why preparation matters
+
+Hiring creators without a clear brief usually creates average content. A little strategy before the work starts makes every reel, post, ad, and landing page stronger.
+
+## Your pre-hire checklist
+
+- Define the customer you want to attract.
+- Write the exact offer in one sentence.
+- Collect brand assets, product photos, and examples.
+- List three competitors or references.
+- Decide the platform: Instagram, LinkedIn, website, email, or ads.
+- Pick one success metric such as leads, clicks, saves, signups, or sales.
+
+## What to include in a project brief
+
+Add the goal, deliverables, deadline, budget, brand tone, examples you like, and examples you do not want. This helps students and creators make better decisions without asking for clarification every hour.
+
+## Next step
+
+Use [NextGenGrowth](/register) to post a clear marketing project and get applications from skilled students who can help you execute.`
+  },
+  {
+    title:"10 AI tools Indian startups can use to save 20 hours a week",
+    slug:"ai-tools-indian-startups-save-time",
+    category:"ai-tools",
+    tags:["AI tools","automation","startup growth","productivity"],
+    featuredImage:"https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1400&q=80",
+    excerpt:"A founder-friendly breakdown of AI tools and workflows that reduce manual work across content, research, sales, and operations.",
+    seoTitle:"10 AI Tools for Indian Startups to Save Time | NextGenGrowth",
+    seoDescription:"Explore practical AI tools and workflows Indian startups can use for content, research, marketing, sales, and automation.",
+    authorName:"NextGenGrowth Team",
+    authorSlug:"nextgengrowth-team",
+    status:"published",
+    publishAt:new Date("2026-05-13T05:30:00.000Z"),
+    createdAt:new Date("2026-05-13T05:30:00.000Z"),
+    updatedAt:new Date("2026-05-13T05:30:00.000Z"),
+    views:180,
+    content:`## The real value of AI tools
+
+AI does not replace growth strategy. It removes repeated work so founders and teams can spend more time on customers, offers, and execution.
+
+## High-impact AI workflows
+
+1. Turn customer calls into content ideas.
+2. Convert blog posts into LinkedIn posts, reels scripts, and newsletters.
+3. Summarize competitor pages and pricing.
+4. Generate first-draft outreach messages.
+5. Clean CRM notes and lead lists.
+6. Create landing page copy variations.
+7. Build FAQs from support conversations.
+8. Draft project briefs for freelancers and student talent.
+9. Make SOPs from screen recordings.
+10. Analyze ad comments and customer objections.
+
+## What to automate first
+
+Start with tasks that repeat every week and already have a clear input and output. AI works best when the process is defined.
+
+## Next step
+
+If your brand needs execution support, [post a project](/register) and hire students who understand AI-assisted creative and growth work.`
+  },
+  {
+    title:"A simple lead generation system for service businesses",
+    slug:"simple-lead-generation-system-service-businesses",
+    category:"lead-generation",
+    tags:["lead generation","sales","service business","marketing"],
+    featuredImage:"https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1400&q=80",
+    excerpt:"A clean lead generation system built around positioning, useful content, landing pages, and follow-up.",
+    seoTitle:"Simple Lead Generation System for Service Businesses | NextGenGrowth",
+    seoDescription:"Build a practical lead generation system with positioning, content, landing pages, and follow-up workflows.",
+    authorName:"NextGenGrowth Team",
+    authorSlug:"nextgengrowth-team",
+    status:"published",
+    publishAt:new Date("2026-05-12T05:30:00.000Z"),
+    createdAt:new Date("2026-05-12T05:30:00.000Z"),
+    updatedAt:new Date("2026-05-12T05:30:00.000Z"),
+    views:145,
+    content:`## Lead generation is a system, not a hack
+
+Most service businesses chase random tactics. A stronger approach is to build one simple system that makes your offer easy to understand and easy to act on.
+
+## The four-part system
+
+- A clear niche and painful problem
+- A landing page that explains the outcome
+- Helpful content that earns trust
+- Follow-up that moves interested people toward a call
+
+## Content that attracts buyers
+
+Write about the questions prospects already ask before buying. Turn those answers into blog posts, LinkedIn posts, short videos, and email sequences.
+
+## Where NextGenGrowth fits
+
+Brands can use NextGenGrowth to hire students for landing page design, content repurposing, lead research, and social media execution.
+
+## Next step
+
+[Book support through NextGenGrowth](/contact) or [start a project](/register) to build your first growth asset.`
+  },
+  {
+    title:"Startup growth loops: how small teams compound attention",
+    slug:"startup-growth-loops-small-teams-compound-attention",
+    category:"startup-growth",
+    tags:["startup growth","growth loops","content system","founders"],
+    featuredImage:"https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1400&q=80",
+    excerpt:"A simple way for early-stage teams to turn every customer question, project, and launch into repeatable growth content.",
+    seoTitle:"Startup Growth Loops for Small Teams | NextGenGrowth",
+    seoDescription:"Learn how startups can build simple growth loops from customer questions, content, launches, and student-powered execution.",
+    authorName:"NextGenGrowth Team",
+    authorSlug:"nextgengrowth-team",
+    status:"published",
+    publishAt:new Date("2026-05-11T09:30:00.000Z"),
+    createdAt:new Date("2026-05-11T09:30:00.000Z"),
+    updatedAt:new Date("2026-05-11T09:30:00.000Z"),
+    views:118,
+    content:`## Growth loops beat random posting
+
+A growth loop is a repeatable system where one action creates the next opportunity. For startups, this often starts with customer learning.
+
+## A simple startup loop
+
+1. Talk to customers.
+2. Capture their questions and objections.
+3. Turn those into articles, posts, reels, emails, and landing page sections.
+4. Use that content to attract more prospects.
+5. Learn from the new conversations and repeat.
+
+## Why small teams should use student talent
+
+Founders should not spend every week formatting posts, collecting research, or editing simple pages. With a clear brief, student talent can help convert raw founder knowledge into growth assets.
+
+## Next step
+
+[Post a growth project](/register) and turn one customer insight into a campaign this week.`
+  },
+  {
+    title:"Automation ideas that save founders time without breaking trust",
+    slug:"automation-ideas-save-founders-time-without-breaking-trust",
+    category:"automation",
+    tags:["automation","operations","AI workflows","productivity"],
+    featuredImage:"https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1400&q=80",
+    excerpt:"Use automation where it improves speed, consistency, and follow-up, while keeping human judgment in the moments that matter.",
+    seoTitle:"Automation Ideas That Save Founders Time | NextGenGrowth",
+    seoDescription:"Practical automation ideas for founders across leads, follow-up, content, onboarding, reporting, and project delivery.",
+    authorName:"NextGenGrowth Team",
+    authorSlug:"nextgengrowth-team",
+    status:"published",
+    publishAt:new Date("2026-05-10T09:30:00.000Z"),
+    createdAt:new Date("2026-05-10T09:30:00.000Z"),
+    updatedAt:new Date("2026-05-10T09:30:00.000Z"),
+    views:102,
+    content:`## Automation should feel helpful, not cold
+
+The best automation removes repeated work while keeping people in control. It should make your brand faster, clearer, and more reliable.
+
+## Good places to automate
+
+- Lead form notifications and follow-up reminders
+- Meeting notes and action items
+- Blog-to-social content repurposing
+- Weekly performance reports
+- Project brief templates
+- Customer onboarding checklists
+
+## What not to automate too early
+
+Do not automate your positioning, customer empathy, or final quality review. Those still need human judgment.
+
+## Next step
+
+If you need help building simple workflows, [book a free growth call](/contact) or post an automation project on NextGenGrowth.`
+  },
+  {
+    title:"Branding basics: how small businesses can look more trustworthy online",
+    slug:"branding-basics-small-business-trust-online",
+    category:"branding",
+    tags:["branding","trust","website","small business"],
+    featuredImage:"https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1400&q=80",
+    excerpt:"Trust-building branding fundamentals for small teams that need better first impressions online.",
+    seoTitle:"Branding Basics for Small Business Trust Online | NextGenGrowth",
+    seoDescription:"Learn how small businesses can improve online trust with stronger visuals, messaging, social proof, and consistency.",
+    authorName:"NextGenGrowth Team",
+    authorSlug:"nextgengrowth-team",
+    status:"published",
+    publishAt:new Date("2026-05-11T05:30:00.000Z"),
+    createdAt:new Date("2026-05-11T05:30:00.000Z"),
+    updatedAt:new Date("2026-05-11T05:30:00.000Z"),
+    views:130,
+    content:`## Trust is built before the sales call
+
+Your website, social profile, logo, content, and customer proof all shape whether someone believes your business can deliver.
+
+## Fix these first
+
+- A clear homepage headline
+- Real examples of work
+- Consistent colors and typography
+- Testimonials or proof points
+- A simple contact or booking path
+
+## Do not overcomplicate the brand
+
+Small businesses do not need a giant brand manual at the beginning. They need clarity, consistency, and visible proof.
+
+## Next step
+
+Use NextGenGrowth to hire students for brand refreshes, social media kits, landing pages, and content assets. [Create your brand account](/register).`
+  }
+];
+
+function getBlogCategory(slug){
+  return BLOG_CATEGORIES.find(c=>c.slug===slug)||null;
+}
+
+function normalizeBlogPost(post){
+  const p=post?.toObject?post.toObject():post;
+  const publishAt=p.publishAt||p.createdAt||new Date();
+  const category=getBlogCategory(p.category)||{slug:p.category||"marketing",name:p.category||"Marketing",description:"Growth insights"};
+  return{
+    id:String(p._id||p.id||p.slug),
+    title:p.title||"Untitled post",
+    slug:p.slug||slugify(p.title),
+    category:category.slug,
+    categoryName:category.name,
+    categoryDescription:category.description,
+    tags:normalizeTags(p.tags),
+    featuredImage:p.featuredImage||"",
+    excerpt:p.excerpt||stripMarkdown(p.content).slice(0,160),
+    content:p.content||"",
+    seoTitle:p.seoTitle||`${p.title||"NextGenGrowth Blog"} | NextGenGrowth`,
+    seoDescription:p.seoDescription||p.excerpt||stripMarkdown(p.content).slice(0,155),
+    status:p.status||"published",
+    authorName:p.authorName||"NextGenGrowth Team",
+    authorSlug:p.authorSlug||slugify(p.authorName||"NextGenGrowth Team"),
+    featured:!!p.featured,
+    publishAt:new Date(publishAt),
+    updatedAt:new Date(p.updatedAt||publishAt),
+    views:Number(p.views||0),
+    ctaClicks:Number(p.ctaClicks||0),
+    shareClicks:Number(p.shareClicks||0),
+    newsletterSignups:Number(p.newsletterSignups||0),
+    readingTime:estimateReadingTime(p.content||p.excerpt||""),
+  };
+}
+
+function filterDefaultPosts({category,tag,search,limit}={}){
+  let posts=DEFAULT_BLOG_POSTS.map(normalizeBlogPost);
+  if(category)posts=posts.filter(p=>p.category===category);
+  if(tag)posts=posts.filter(p=>p.tags.map(t=>t.toLowerCase()).includes(String(tag).toLowerCase()));
+  if(search){
+    const q=String(search).toLowerCase();
+    posts=posts.filter(p=>[p.title,p.excerpt,p.content,p.categoryName,p.tags.join(" ")].join(" ").toLowerCase().includes(q));
+  }
+  posts.sort((a,b)=>(b.featured-a.featured)||b.publishAt-a.publishAt);
+  return limit?posts.slice(0,limit):posts;
+}
+
+async function getPublishedBlogPosts({category,tag,search,limit=50}={}){
+  if(!dbReady())return filterDefaultPosts({category,tag,search,limit});
+  try{
+    const now=new Date();
+    const query={status:"published",$or:[{publishAt:{$exists:false}},{publishAt:null},{publishAt:{$lte:now}}]};
+    if(category)query.category=category;
+    if(tag)query.tags={$in:[tag]};
+    if(search)query.$text={$search:search};
+    const posts=await BlogPost.find(query).sort({featured:-1,publishAt:-1,createdAt:-1}).limit(Number(limit)||50).lean();
+    if(posts.length)return posts.map(normalizeBlogPost);
+    return filterDefaultPosts({category,tag,search,limit});
+  }catch(err){
+    console.error("Blog list error:",err.message);
+    return filterDefaultPosts({category,tag,search,limit});
+  }
+}
+
+async function getBlogPostBySlug(slug){
+  const normalized=slugify(slug);
+  if(dbReady()){
+    try{
+      const now=new Date();
+      const post=await BlogPost.findOne({slug:normalized,status:"published",$or:[{publishAt:{$exists:false}},{publishAt:null},{publishAt:{$lte:now}}]}).lean();
+      if(post)return normalizeBlogPost(post);
+    }catch(err){
+      console.error("Blog post error:",err.message);
+    }
+  }
+  return filterDefaultPosts().find(p=>p.slug===normalized)||null;
+}
+
+function inlineMarkdown(text){
+  let out=escapeHtml(text);
+  out=out.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+|\/[^)\s]+)\)/g,(m,label,url)=>`<a href="${escapeAttr(url)}">${label}</a>`);
+  out=out.replace(/\*\*([^*]+)\*\*/g,"<strong>$1</strong>");
+  out=out.replace(/\*([^*]+)\*/g,"<em>$1</em>");
+  out=out.replace(/`([^`]+)`/g,"<code>$1</code>");
+  return out;
+}
+
+function renderMarkdown(markdown){
+  const lines=String(markdown||"").replace(/\r\n/g,"\n").split("\n");
+  const html=[];
+  const toc=[];
+  let i=0;
+  let usedIds={};
+  const uniqueId=(base)=>{
+    const root=slugify(base);
+    usedIds[root]=(usedIds[root]||0)+1;
+    return usedIds[root]===1?root:`${root}-${usedIds[root]}`;
+  };
+  while(i<lines.length){
+    const line=lines[i].trim();
+    if(!line){i++;continue;}
+    const heading=line.match(/^(#{2,3})\s+(.+)$/);
+    if(heading){
+      const level=heading[1].length;
+      const text=heading[2].trim();
+      const id=uniqueId(text);
+      toc.push({level,text,id});
+      html.push(`<h${level} id="${id}">${inlineMarkdown(text)}</h${level}>`);
+      i++;
+      continue;
+    }
+    if(/^[-*]\s+/.test(line)){
+      const items=[];
+      while(i<lines.length&&/^[-*]\s+/.test(lines[i].trim())){
+        items.push(`<li>${inlineMarkdown(lines[i].trim().replace(/^[-*]\s+/,""))}</li>`);
+        i++;
+      }
+      html.push(`<ul>${items.join("")}</ul>`);
+      continue;
+    }
+    if(/^\d+\.\s+/.test(line)){
+      const items=[];
+      while(i<lines.length&&/^\d+\.\s+/.test(lines[i].trim())){
+        items.push(`<li>${inlineMarkdown(lines[i].trim().replace(/^\d+\.\s+/,""))}</li>`);
+        i++;
+      }
+      html.push(`<ol>${items.join("")}</ol>`);
+      continue;
+    }
+    if(/^>\s+/.test(line)){
+      const quote=[];
+      while(i<lines.length&&/^>\s+/.test(lines[i].trim())){
+        quote.push(inlineMarkdown(lines[i].trim().replace(/^>\s+/,"")));
+        i++;
+      }
+      html.push(`<blockquote>${quote.join("<br>")}</blockquote>`);
+      continue;
+    }
+    const para=[line];
+    i++;
+    while(i<lines.length&&lines[i].trim()&&!/^(#{2,3})\s+/.test(lines[i].trim())&&!/^[-*]\s+/.test(lines[i].trim())&&!/^\d+\.\s+/.test(lines[i].trim())){
+      para.push(lines[i].trim());
+      i++;
+    }
+    html.push(`<p>${inlineMarkdown(para.join(" "))}</p>`);
+  }
+  return{html:html.join("\n"),toc};
+}
+
+function blogImageMarkup(post,classes=""){
+  if(post.featuredImage){
+    return `<img class="${classes}" src="${escapeAttr(post.featuredImage)}" alt="${escapeAttr(post.title)}" loading="lazy" decoding="async">`;
+  }
+  return `<div class="blog-art ${classes}"><span>${escapeHtml(post.categoryName)}</span></div>`;
+}
+
+function getBaseUrl(){
+  return String(BASE_URL||"https://nextgengrowth.in").replace(/\/$/,"");
+}
+
+function blogMetaTags({title,description,url,image,type="website",publishedAt,updatedAt}){
+  const safeTitle=escapeAttr(title);
+  const safeDescription=escapeAttr(description);
+  const safeUrl=escapeAttr(url);
+  const safeImage=escapeAttr(image||`${getBaseUrl()}/favicon.ico`);
+  return`
+    <title>${safeTitle}</title>
+    <meta name="description" content="${safeDescription}">
+    <link rel="canonical" href="${safeUrl}">
+    <meta property="og:type" content="${type}">
+    <meta property="og:title" content="${safeTitle}">
+    <meta property="og:description" content="${safeDescription}">
+    <meta property="og:url" content="${safeUrl}">
+    <meta property="og:image" content="${safeImage}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="${safeTitle}">
+    <meta name="twitter:description" content="${safeDescription}">
+    <meta name="twitter:image" content="${safeImage}">
+    ${publishedAt?`<meta property="article:published_time" content="${new Date(publishedAt).toISOString()}">`:""}
+    ${updatedAt?`<meta property="article:modified_time" content="${new Date(updatedAt).toISOString()}">`:""}`;
+}
+
+function blogLayout({meta,body,schema=""}){
+  return`<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+${meta}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/blog.css">
+${schema?`<script type="application/ld+json">${schema}</script>`:""}
+</head>
+<body>
+${body}
+</body>
+</html>`;
+}
+
+function renderPostCard(post,{large=false}={}){
+  return`<article class="post-card ${large?"post-card-large":""}">
+    <a class="post-image" href="/blog/${escapeAttr(post.slug)}">${blogImageMarkup(post)}</a>
+    <div class="post-card-body">
+      <div class="post-meta"><a href="/blog/${escapeAttr(post.category)}">${escapeHtml(post.categoryName)}</a><span>${post.readingTime} min read</span></div>
+      <h3><a href="/blog/${escapeAttr(post.slug)}">${escapeHtml(post.title)}</a></h3>
+      <p>${escapeHtml(post.excerpt)}</p>
+      <div class="post-foot"><span>${new Date(post.publishAt).toLocaleDateString("en-IN",{day:"numeric",month:"short",year:"numeric"})}</span><a href="/blog/${escapeAttr(post.slug)}">Read article</a></div>
+    </div>
+  </article>`;
+}
+
+function renderBlogHome({posts,allPosts,category,search}){
+  const categoryData=category?getBlogCategory(category):null;
+  const featured=posts.find(p=>p.featured)||posts[0]||filterDefaultPosts({limit:1})[0];
+  const latest=posts.filter(p=>p.slug!==featured.slug).slice(0,9);
+  const popular=[...(allPosts?.length?allPosts:posts)].sort((a,b)=>(b.views||0)-(a.views||0)).slice(0,5);
+  const tags=[...new Set((allPosts||posts).flatMap(p=>p.tags))].slice(0,16);
+  const pageTitle=search?`Search results for "${search}"`:categoryData?`${categoryData.name} insights`:"NextGenGrowth Blog";
+  const pageDescription=search?`Articles matching ${search} from NextGenGrowth.`:categoryData?categoryData.description:"Growth strategy, digital marketing, AI tools, automation, lead generation, branding, and startup growth insights.";
+  const canonical=categoryData?`${getBaseUrl()}/blog/${categoryData.slug}`:search?`${getBaseUrl()}/blog/search?q=${encodeURIComponent(search)}`:`${getBaseUrl()}/blog`;
+  const meta=blogMetaTags({
+    title:`${pageTitle} | NextGenGrowth`,
+    description:pageDescription,
+    url:canonical,
+    image:featured.featuredImage,
+  });
+  const schema=JSON.stringify({
+    "@context":"https://schema.org",
+    "@type":"Blog",
+    name:"NextGenGrowth Blog",
+    url:`${getBaseUrl()}/blog`,
+    description:pageDescription,
+    publisher:{"@type":"Organization",name:"NextGenGrowth",url:getBaseUrl()},
+  });
+  const body=`<div class="site-shell">
+    <header class="blog-nav">
+      <a href="/" class="blog-brand"><span>N</span>NextGenGrowth</a>
+      <nav>
+        <a href="/blog">Blog</a>
+        <a href="/#services">Services</a>
+        <a href="/contact">Contact</a>
+        <a class="nav-cta" href="/register">Start Growing</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="blog-hero">
+        <div class="eyebrow">Growth Library</div>
+        <h1>${escapeHtml(pageTitle)}</h1>
+        <p>${escapeHtml(pageDescription)}</p>
+        <form class="blog-search" action="/blog/search" method="get" onsubmit="trackBlogEvent('search','blog-home',{query:this.q.value})">
+          <input name="q" value="${escapeAttr(search||"")}" placeholder="Search marketing, AI tools, branding, lead generation..." aria-label="Search blog">
+          <button type="submit">Search</button>
+        </form>
+        <div class="category-row">
+          ${BLOG_CATEGORIES.map(c=>`<a class="${category===c.slug?"active":""}" href="/blog/${escapeAttr(c.slug)}">${escapeHtml(c.name)}</a>`).join("")}
+        </div>
+      </section>
+
+      <section class="featured-section">
+        <div class="section-label">Featured article</div>
+        ${renderPostCard(featured,{large:true})}
+      </section>
+
+      <section class="content-grid">
+        <div>
+          <div class="section-headline"><h2>${search?"Matching articles":categoryData?`Latest in ${categoryData.name}`:"Latest posts"}</h2><span>${posts.length} articles</span></div>
+          <div class="posts-grid">
+            ${(latest.length?latest:posts.filter(p=>p.slug!==featured.slug)).map(p=>renderPostCard(p)).join("")||`<div class="empty-blog">No articles found. Try another search or explore all categories.</div>`}
+          </div>
+        </div>
+        <aside class="blog-sidebar">
+          <div class="side-card">
+            <h3>Popular reads</h3>
+            ${popular.map((p,i)=>`<a class="popular-link" href="/blog/${escapeAttr(p.slug)}"><span>${String(i+1).padStart(2,"0")}</span>${escapeHtml(p.title)}</a>`).join("")}
+          </div>
+          <div class="side-card">
+            <h3>Topics</h3>
+            <div class="tag-cloud">${tags.map(t=>`<a href="/blog/search?q=${encodeURIComponent(t)}">${escapeHtml(t)}</a>`).join("")}</div>
+          </div>
+          <div class="side-card side-cta">
+            <h3>Need growth execution?</h3>
+            <p>Post a project and hire skilled student talent for content, websites, AI workflows, and lead generation.</p>
+            <a href="/register">Start Growing with NextGenGrowth</a>
+          </div>
+        </aside>
+      </section>
+
+      <section class="newsletter-band">
+        <div>
+          <span class="eyebrow">Newsletter</span>
+          <h2>Get practical growth playbooks in your inbox.</h2>
+          <p>No noise. Just marketing, AI, automation, and platform growth ideas you can actually use.</p>
+        </div>
+        <form class="newsletter-form" onsubmit="subscribeNewsletter(event,'blog-home')">
+          <input name="email" type="email" placeholder="you@company.com" required>
+          <button type="submit">Subscribe</button>
+          <small>By subscribing, you agree to receive NextGenGrowth updates.</small>
+        </form>
+      </section>
+
+      <section class="bottom-cta">
+        <h2>Turn reading into execution.</h2>
+        <p>Use NextGenGrowth to find students who can help you build growth assets faster.</p>
+        <div>
+          <a href="/register">Start Growing with NextGenGrowth</a>
+          <a href="/contact">Book a Free Growth Call</a>
+        </div>
+      </section>
+    </main>
+    ${renderBlogFooter()}
+  </div>
+  ${blogClientScript()}`;
+  return blogLayout({meta,body,schema});
+}
+
+function renderBlogPost(post,related=[]){
+  const rendered=renderMarkdown(post.content);
+  const canonical=`${getBaseUrl()}/blog/${post.slug}`;
+  const meta=blogMetaTags({
+    title:post.seoTitle,
+    description:post.seoDescription,
+    url:canonical,
+    image:post.featuredImage,
+    type:"article",
+    publishedAt:post.publishAt,
+    updatedAt:post.updatedAt,
+  });
+  const schema=JSON.stringify({
+    "@context":"https://schema.org",
+    "@type":"BlogPosting",
+    headline:post.title,
+    description:post.seoDescription,
+    image:post.featuredImage?[post.featuredImage]:undefined,
+    datePublished:new Date(post.publishAt).toISOString(),
+    dateModified:new Date(post.updatedAt).toISOString(),
+    author:{"@type":"Person",name:post.authorName,url:`${getBaseUrl()}/blog/author/${post.authorSlug}`},
+    publisher:{"@type":"Organization",name:"NextGenGrowth",url:getBaseUrl()},
+    mainEntityOfPage:canonical,
+  });
+  const toc=rendered.toc.length?`<nav class="toc-card"><strong>Table of contents</strong>${rendered.toc.map(h=>`<a class="toc-l${h.level}" href="#${escapeAttr(h.id)}">${escapeHtml(h.text)}</a>`).join("")}</nav>`:"";
+  const body=`<div class="site-shell post-shell">
+    <header class="blog-nav">
+      <a href="/" class="blog-brand"><span>N</span>NextGenGrowth</a>
+      <nav>
+        <a href="/blog">Blog</a>
+        <a href="/#services">Services</a>
+        <a href="/contact">Contact</a>
+        <a class="nav-cta" href="/register">Start Growing</a>
+      </nav>
+    </header>
+
+    <main>
+      <article class="article-wrap" data-slug="${escapeAttr(post.slug)}">
+        <header class="article-hero">
+          <div class="post-meta"><a href="/blog/${escapeAttr(post.category)}">${escapeHtml(post.categoryName)}</a><span>${post.readingTime} min read</span></div>
+          <h1>${escapeHtml(post.title)}</h1>
+          <p>${escapeHtml(post.excerpt)}</p>
+          <div class="article-byline">
+            <span>By <a href="/blog/author/${escapeAttr(post.authorSlug)}">${escapeHtml(post.authorName)}</a></span>
+            <span>${new Date(post.publishAt).toLocaleDateString("en-IN",{day:"numeric",month:"long",year:"numeric"})}</span>
+          </div>
+          <div class="share-row">
+            <button onclick="sharePost('linkedin','${escapeAttr(post.slug)}')">LinkedIn</button>
+            <button onclick="sharePost('twitter','${escapeAttr(post.slug)}')">X/Twitter</button>
+            <button onclick="sharePost('facebook','${escapeAttr(post.slug)}')">Facebook</button>
+            <button onclick="sharePost('whatsapp','${escapeAttr(post.slug)}')">WhatsApp</button>
+          </div>
+          <div class="article-image">${blogImageMarkup(post)}</div>
+        </header>
+
+        <div class="article-grid">
+          <aside>${toc}<div class="toc-card growth-card"><strong>Grow faster</strong><p>Hire student talent for marketing, websites, content, and AI workflows.</p><a href="/register" onclick="trackBlogEvent('cta_click','${escapeAttr(post.slug)}',{placement:'toc'})">Start Growing</a></div></aside>
+          <div class="article-content">
+            <div class="inline-cta">
+              <strong>Need help executing this?</strong>
+              <p>Post a project on NextGenGrowth and get student talent for marketing, branding, websites, and automation.</p>
+              <a href="/register" onclick="trackBlogEvent('cta_click','${escapeAttr(post.slug)}',{placement:'inline-top'})">Start Growing with NextGenGrowth</a>
+            </div>
+            ${rendered.html}
+            <div class="feedback-box">
+              <h3>Was this useful?</h3>
+              <p>Your feedback helps us write better growth playbooks.</p>
+              <button onclick="sendFeedback('${escapeAttr(post.slug)}','yes')">Yes</button>
+              <button onclick="sendFeedback('${escapeAttr(post.slug)}','no')">Not yet</button>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <section class="related-section">
+        <div class="section-headline"><h2>Related articles</h2><a href="/blog/${escapeAttr(post.category)}">More in ${escapeHtml(post.categoryName)}</a></div>
+        <div class="posts-grid related-grid">${related.map(p=>renderPostCard(p)).join("")}</div>
+      </section>
+
+      <section class="newsletter-band">
+        <div>
+          <span class="eyebrow">Keep learning</span>
+          <h2>Get the next growth playbook.</h2>
+          <p>Marketing, AI tools, automation, branding, and lead generation ideas for serious builders.</p>
+        </div>
+        <form class="newsletter-form" onsubmit="subscribeNewsletter(event,'blog-post:${escapeAttr(post.slug)}')">
+          <input name="email" type="email" placeholder="you@company.com" required>
+          <button type="submit">Subscribe</button>
+          <small>No spam. Only practical growth notes.</small>
+        </form>
+      </section>
+
+      <section class="bottom-cta">
+        <h2>Ready to turn strategy into shipped work?</h2>
+        <p>Build your next landing page, content system, AI workflow, or lead generation campaign with NextGenGrowth.</p>
+        <div>
+          <a href="/register" onclick="trackBlogEvent('cta_click','${escapeAttr(post.slug)}',{placement:'end'})">Start Growing with NextGenGrowth</a>
+          <a href="/contact">Book a Free Growth Call</a>
+        </div>
+      </section>
+    </main>
+    ${renderBlogFooter()}
+    <div class="lead-capture" id="leadCapture">
+      <button onclick="dismissLeadCapture()" aria-label="Close">x</button>
+      <strong>Want this turned into action?</strong>
+      <p>Get student talent for growth projects.</p>
+      <a href="/register" onclick="trackBlogEvent('cta_click','${escapeAttr(post.slug)}',{placement:'scroll-popup'})">Start Growing</a>
+    </div>
+  </div>
+  ${blogClientScript(post.slug)}`;
+  return blogLayout({meta,body,schema});
+}
+
+function renderAuthorPage(authorSlug,posts){
+  const authorName=posts[0]?.authorName||"NextGenGrowth Team";
+  return renderBlogHome({
+    posts,
+    allPosts:posts,
+    search:`Author: ${authorName}`,
+  });
+}
+
+function renderBlogFooter(){
+  return`<footer class="blog-footer">
+    <div><strong>NextGenGrowth</strong><p>Student-powered growth execution for modern brands.</p></div>
+    <nav>
+      <a href="/blog">Blog</a>
+      <a href="/privacy">Privacy</a>
+      <a href="/terms">Terms</a>
+      <a href="/refund-policy">Refunds</a>
+      <a href="/contact">Contact</a>
+    </nav>
+  </footer>`;
+}
+
+function blogClientScript(slug=""){
+  return`<script>
+async function trackBlogEvent(event,slug,metadata){
+  try{await fetch('/api/blog/track',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({event,slug,metadata})});}catch(e){}
+}
+async function subscribeNewsletter(event,source){
+  event.preventDefault();
+  const form=event.currentTarget;
+  const email=form.email.value.trim();
+  if(!email)return;
+  const btn=form.querySelector('button');
+  const old=btn.textContent;
+  btn.textContent='Subscribing...';
+  btn.disabled=true;
+  try{
+    const res=await fetch('/api/newsletter',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,source})});
+    const data=await res.json();
+    form.querySelector('small').textContent=data.message||'Subscribed successfully.';
+    form.reset();
+  }catch(e){form.querySelector('small').textContent='Could not subscribe. Please try again.';}
+  btn.textContent=old;
+  btn.disabled=false;
+}
+function sharePost(channel,slug){
+  const url=encodeURIComponent(location.href);
+  const title=encodeURIComponent(document.title);
+  const links={
+    linkedin:'https://www.linkedin.com/sharing/share-offsite/?url='+url,
+    twitter:'https://twitter.com/intent/tweet?url='+url+'&text='+title,
+    facebook:'https://www.facebook.com/sharer/sharer.php?u='+url,
+    whatsapp:'https://api.whatsapp.com/send?text='+title+'%20'+url
+  };
+  trackBlogEvent('share',slug,{channel});
+  window.open(links[channel],'_blank','noopener,noreferrer,width=760,height=560');
+}
+function sendFeedback(slug,value){
+  trackBlogEvent('feedback',slug,{value});
+  alert('Thanks for the feedback.');
+}
+function dismissLeadCapture(){const el=document.getElementById('leadCapture');if(el)el.classList.remove('show');sessionStorage.setItem('ngg_blog_lead_dismissed','1');}
+${slug?`trackBlogEvent('view','${escapeAttr(slug)}',{path:location.pathname});
+let shown=false;
+window.addEventListener('scroll',()=>{
+  if(shown||sessionStorage.getItem('ngg_blog_lead_dismissed'))return;
+  const max=document.documentElement.scrollHeight-window.innerHeight;
+  if(max>0&&window.scrollY/max>.36){
+    shown=true;
+    const el=document.getElementById('leadCapture');
+    if(el)el.classList.add('show');
+  }
+});`:""}
+</script>`;
 }
 
 // ═══════════════════════════════════════════
@@ -389,7 +1269,7 @@ function rejectedEmail(studentName,jobTitle){
 // MIDDLEWARE
 // ═══════════════════════════════════════════
 app.use(cors());
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit:"1mb"}));
 app.use(express.static(path.join(__dirname,"public")));
 app.set("trust proxy",1);
 app.use(session({secret:JWT_SECRET,resave:false,saveUninitialized:false}));
@@ -1449,6 +2329,84 @@ app.get("/api/payment/status/:applicationId",verifyToken,async(req,res)=>{
 });
 
 // ═══════════════════════════════════════════
+// BLOG PUBLIC ROUTES
+// ═══════════════════════════════════════════
+app.get("/api/blog/posts",async(req,res)=>{
+  try{
+    const posts=await getPublishedBlogPosts({
+      category:req.query.category?slugify(req.query.category):"",
+      tag:req.query.tag?String(req.query.tag).trim():"",
+      search:req.query.q?String(req.query.q).trim():"",
+      limit:Number(req.query.limit)||30,
+    });
+    res.json({success:true,posts});
+  }catch(err){
+    res.status(500).json({success:false,message:"Could not load blog posts."});
+  }
+});
+
+app.get("/api/blog/posts/:slug",async(req,res)=>{
+  const post=await getBlogPostBySlug(req.params.slug);
+  if(!post)return res.status(404).json({success:false,message:"Post not found."});
+  res.json({success:true,post});
+});
+
+app.post("/api/newsletter",async(req,res)=>{
+  try{
+    const email=String(req.body.email||"").trim().toLowerCase();
+    const name=sanitizeText(req.body.name,90);
+    const source=sanitizeText(req.body.source||"blog",120);
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){
+      return res.status(400).json({success:false,message:"Enter a valid email address."});
+    }
+    if(dbReady()){
+      await NewsletterSubscriber.findOneAndUpdate(
+        {email},
+        {$set:{name,source},$addToSet:{tags:"blog"},$setOnInsert:{subscribedAt:new Date()}},
+        {new:true,upsert:true,setDefaultsOnInsert:true}
+      );
+      await BlogEvent.create({event:"newsletter_signup",channel:source,metadata:{email},ip:req.ip,userAgent:req.get("user-agent")||""});
+      const slug=String(source).startsWith("blog-post:")?String(source).split(":")[1]:"";
+      if(slug)await BlogPost.updateOne({slug},{$inc:{newsletterSignups:1}});
+    }
+    res.json({success:true,message:"You're subscribed. Welcome to the growth list."});
+  }catch(err){
+    console.error("Newsletter error:",err.message);
+    res.status(500).json({success:false,message:"Could not subscribe right now."});
+  }
+});
+
+app.post("/api/blog/track",async(req,res)=>{
+  try{
+    const event=String(req.body.event||"").trim();
+    const slug=slugify(req.body.slug||"");
+    const allowed=["view","share","cta_click","newsletter_signup","feedback","search"];
+    if(!allowed.includes(event))return res.status(400).json({success:false,message:"Invalid event."});
+    if(dbReady()){
+      const post=slug?await BlogPost.findOne({slug}).select("_id slug"):null;
+      await BlogEvent.create({
+        postId:post?._id,
+        slug,
+        event,
+        channel:sanitizeText(req.body.channel||req.body.metadata?.channel||"",60),
+        metadata:req.body.metadata||{},
+        ip:req.ip,
+        userAgent:req.get("user-agent")||"",
+      });
+      const inc={};
+      if(event==="view")inc.views=1;
+      if(event==="share")inc.shareClicks=1;
+      if(event==="cta_click")inc.ctaClicks=1;
+      if(event==="newsletter_signup")inc.newsletterSignups=1;
+      if(slug&&Object.keys(inc).length)await BlogPost.updateOne({slug},{$inc:inc});
+    }
+    res.json({success:true});
+  }catch(err){
+    res.json({success:true});
+  }
+});
+
+// ═══════════════════════════════════════════
 // ADMIN ROUTES
 // ═══════════════════════════════════════════
 const ADMIN_EMAIL=process.env.ADMIN_EMAIL||"admin@nextgengrowth.in";
@@ -1469,6 +2427,31 @@ function adminOnly(req,res,next){
   if(!token)return res.status(401).json({success:false,message:"No token."});
   try{const d=jwt.verify(token,JWT_SECRET);if(d.role!=="admin")return res.status(403).json({success:false,message:"Admin only."});req.admin=d;next();}
   catch{res.status(403).json({success:false,message:"Invalid token."});}
+}
+
+function buildBlogPayload(body){
+  const title=sanitizeText(body.title,180);
+  const content=safeMessage(body.content,60000);
+  const slug=slugify(body.slug||title);
+  const category=slugify(body.category||"marketing");
+  const status=body.status==="published"?"published":"draft";
+  const publishAt=body.publishAt?new Date(body.publishAt):status==="published"?new Date():null;
+  return{
+    title,
+    slug,
+    category:getBlogCategory(category)?category:"marketing",
+    tags:normalizeTags(body.tags),
+    featuredImage:isValidUrl(body.featuredImage)?String(body.featuredImage).trim():"",
+    excerpt:safeMessage(body.excerpt||stripMarkdown(content).slice(0,170),260),
+    content,
+    seoTitle:safeMessage(body.seoTitle||`${title} | NextGenGrowth`,190),
+    seoDescription:safeMessage(body.seoDescription||body.excerpt||stripMarkdown(content).slice(0,155),220),
+    status,
+    authorName:sanitizeText(body.authorName||"NextGenGrowth Team",90),
+    authorSlug:slugify(body.authorSlug||body.authorName||"nextgengrowth-team"),
+    featured:!!body.featured,
+    publishAt:Number.isNaN(publishAt?.getTime?.())?null:publishAt,
+  };
 }
 
 // ✅ NEW ADMIN API FOR APPROVING BRANDS
@@ -1502,6 +2485,70 @@ app.get("/api/admin/stats",adminOnly,async(req,res)=>{
     ]);
     res.json({success:true,stats:{totalUsers,totalStudents,totalBrands,totalProjects,openProjects,totalApps,acceptedApps,totalEarnings:earningsData[0]?.total||0,pendingEarnings:pendingData[0]?.total||0,todaySignups}});
   }catch(err){res.status(500).json({success:false,message:"Server error."});}
+});
+
+app.get("/api/admin/blog/posts",adminOnly,async(req,res)=>{
+  try{
+    const posts=await BlogPost.find().sort({updatedAt:-1}).lean();
+    res.json({success:true,posts:posts.map(normalizeBlogPost),categories:BLOG_CATEGORIES});
+  }catch(err){
+    res.status(500).json({success:false,message:"Could not load blog posts."});
+  }
+});
+
+app.post("/api/admin/blog/posts",adminOnly,async(req,res)=>{
+  try{
+    const payload=buildBlogPayload(req.body);
+    if(!payload.title)return res.status(400).json({success:false,message:"Title required."});
+    if(!payload.content)return res.status(400).json({success:false,message:"Content required."});
+    const exists=await BlogPost.findOne({slug:payload.slug}).select("_id");
+    if(exists)return res.status(409).json({success:false,message:"Slug already exists."});
+    const post=await BlogPost.create(payload);
+    res.status(201).json({success:true,message:"Blog post saved.",post:normalizeBlogPost(post)});
+  }catch(err){
+    console.error("Admin blog create error:",err);
+    res.status(500).json({success:false,message:"Could not save blog post."});
+  }
+});
+
+app.put("/api/admin/blog/posts/:id",adminOnly,async(req,res)=>{
+  try{
+    const payload=buildBlogPayload(req.body);
+    if(!payload.title)return res.status(400).json({success:false,message:"Title required."});
+    if(!payload.content)return res.status(400).json({success:false,message:"Content required."});
+    const exists=await BlogPost.findOne({slug:payload.slug,_id:{$ne:req.params.id}}).select("_id");
+    if(exists)return res.status(409).json({success:false,message:"Slug already exists."});
+    const post=await BlogPost.findByIdAndUpdate(req.params.id,{$set:payload},{new:true,runValidators:true});
+    if(!post)return res.status(404).json({success:false,message:"Blog post not found."});
+    res.json({success:true,message:"Blog post updated.",post:normalizeBlogPost(post)});
+  }catch(err){
+    console.error("Admin blog update error:",err);
+    res.status(500).json({success:false,message:"Could not update blog post."});
+  }
+});
+
+app.delete("/api/admin/blog/posts/:id",adminOnly,async(req,res)=>{
+  try{
+    const post=await BlogPost.findByIdAndDelete(req.params.id);
+    if(!post)return res.status(404).json({success:false,message:"Blog post not found."});
+    await BlogEvent.deleteMany({postId:post._id});
+    res.json({success:true,message:"Blog post deleted."});
+  }catch(err){
+    res.status(500).json({success:false,message:"Could not delete blog post."});
+  }
+});
+
+app.get("/api/admin/blog/analytics",adminOnly,async(req,res)=>{
+  try{
+    const[posts,events,subscribers]=await Promise.all([
+      BlogPost.countDocuments(),
+      BlogEvent.aggregate([{$group:{_id:"$event",total:{$sum:1}}}]),
+      NewsletterSubscriber.countDocuments(),
+    ]);
+    res.json({success:true,analytics:{posts,subscribers,events}});
+  }catch(err){
+    res.status(500).json({success:false,message:"Could not load blog analytics."});
+  }
 });
 
 app.get("/api/admin/kyc",adminOnly,async(req,res)=>{
@@ -1618,6 +2665,46 @@ app.post("/api/admin/earning",adminOnly,async(req,res)=>{
 // ═══════════════════════════════════════════
 // PAGE ROUTES
 // ═══════════════════════════════════════════
+app.get("/blog",async(req,res)=>{
+  const posts=await getPublishedBlogPosts({limit:40});
+  const allPosts=await getPublishedBlogPosts({limit:80});
+  res.send(renderBlogHome({posts,allPosts}));
+});
+
+app.get("/blog/search",async(req,res)=>{
+  const search=String(req.query.q||"").trim().slice(0,80);
+  const posts=await getPublishedBlogPosts({search,limit:40});
+  const allPosts=await getPublishedBlogPosts({limit:80});
+  if(search&&dbReady()){
+    BlogEvent.create({event:"search",channel:"blog-search",metadata:{query:search},ip:req.ip,userAgent:req.get("user-agent")||""}).catch(()=>{});
+  }
+  res.send(renderBlogHome({posts,allPosts,search}));
+});
+
+app.get("/blog/author/:authorSlug",async(req,res)=>{
+  const authorSlug=slugify(req.params.authorSlug);
+  const allPosts=await getPublishedBlogPosts({limit:80});
+  const posts=allPosts.filter(p=>p.authorSlug===authorSlug);
+  if(!posts.length)return res.status(404).send(renderBlogHome({posts:allPosts.slice(0,6),allPosts,search:"Author not found"}));
+  res.send(renderAuthorPage(authorSlug,posts));
+});
+
+app.get("/blog/:slug",async(req,res)=>{
+  const slug=slugify(req.params.slug);
+  const category=getBlogCategory(slug);
+  const allPosts=await getPublishedBlogPosts({limit:80});
+  if(category){
+    const posts=await getPublishedBlogPosts({category:category.slug,limit:40});
+    return res.send(renderBlogHome({posts,allPosts,category:category.slug}));
+  }
+  const post=await getBlogPostBySlug(slug);
+  if(!post)return res.status(404).send(renderBlogHome({posts:allPosts.slice(0,6),allPosts,search:"Post not found"}));
+  const related=allPosts
+    .filter(p=>p.slug!==post.slug&&(p.category===post.category||p.tags.some(t=>post.tags.includes(t))))
+    .slice(0,3);
+  res.send(renderBlogPost(post,related.length?related:allPosts.filter(p=>p.slug!==post.slug).slice(0,3)));
+});
+
 app.get("/",(req,res)=>res.sendFile(path.join(__dirname,"public","landing.html"))); // ✅ Changed this to landing.html
 app.get("/login",(req,res)=>res.sendFile(path.join(__dirname,"public","login.html")));
 app.get("/register",(req,res)=>res.sendFile(path.join(__dirname,"public","register.html")));
@@ -1629,6 +2716,28 @@ app.get("/contact",(req,res)=>res.sendFile(path.join(__dirname,"public","contact
 app.get("/dashboard",(req,res)=>res.sendFile(path.join(__dirname,"public","dashboard.html")));
 app.get("/brand-dashboard",(req,res)=>res.sendFile(path.join(__dirname,"public","brand-dashboard.html")));
 app.get("/admin",(req,res)=>res.sendFile(path.join(__dirname,"public","admin.html")));
+
+app.get("/robots.txt",(req,res)=>{
+  res.type("text/plain").send(`User-agent: *
+Allow: /
+Sitemap: ${getBaseUrl()}/sitemap.xml
+`);
+});
+
+app.get("/sitemap.xml",async(req,res)=>{
+  const posts=await getPublishedBlogPosts({limit:500});
+  const urls=[
+    "/","/login","/register","/blog","/privacy","/terms","/refund-policy","/contact",
+    ...BLOG_CATEGORIES.map(c=>`/blog/${c.slug}`),
+    ...posts.map(p=>`/blog/${p.slug}`),
+  ];
+  const unique=[...new Set(urls)];
+  const xml=`<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${unique.map(url=>`  <url><loc>${escapeHtml(`${getBaseUrl()}${url}`)}</loc><changefreq>${url.startsWith("/blog/")?"weekly":"monthly"}</changefreq><priority>${url==="/"? "1.0":url==="/blog"?"0.9":"0.7"}</priority></url>`).join("\n")}
+</urlset>`;
+  res.type("application/xml").send(xml);
+});
 
 app.get("/api/health",async(req,res)=>{
   const userCount=await User.countDocuments();

@@ -303,6 +303,12 @@ tbody tr:hover td{background:var(--gl)}
 .fi:focus{border-color:var(--gb);box-shadow:0 0 0 3px rgba(0,255,136,.08)}
 .fi::placeholder{color:var(--muted)}
 select.fi option{background:var(--bg2)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-grid .full{grid-column:1/-1}
+.blog-editor{min-height:270px;resize:vertical;line-height:1.55}
+.blog-help{font-size:.76rem;color:var(--muted);margin-top:6px;line-height:1.45}
+.check-row{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:.82rem;font-weight:700}
+.check-row input{accent-color:var(--gb)}
 
 /* ══ MODAL ══ */
 .modal-wrap{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:900;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
@@ -411,6 +417,11 @@ select.fi option{background:var(--bg2)}
         <span class="ni-txt">Projects</span>
         <span class="nb" id="nbProj">0</span>
       </button>
+      <button class="ni" onclick="goTo('blog',this)">
+        <svg class="ni-ico" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l6 6v8a2 2 0 01-2 2z"/><path stroke-linecap="round" stroke-linejoin="round" d="M14 4v6h6M8 13h8M8 16h6"/></svg>
+        <span class="ni-txt">Blog</span>
+        <span class="nb" id="nbBlog">0</span>
+      </button>
       <button class="ni" onclick="goTo('applications',this)">
         <svg class="ni-ico" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
         <span class="ni-txt">Applications</span>
@@ -514,6 +525,10 @@ select.fi option{background:var(--bg2)}
                 <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                 Manage Projects
               </button>
+              <button class="btn bsec" style="justify-content:flex-start;width:100%" onclick="goTo('blog',null)">
+                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10l6 6v8a2 2 0 01-2 2z"/><path stroke-linecap="round" stroke-linejoin="round" d="M14 4v6h6M8 13h8M8 16h6"/></svg>
+                Publish Blog Posts
+              </button>
               <button class="btn bsec" style="justify-content:flex-start;width:100%" onclick="goTo('applications',null)">
                 <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                 Review Applications
@@ -590,6 +605,57 @@ select.fi option{background:var(--bg2)}
           <table>
             <thead><tr><th>Project</th><th>Brand</th><th>Category</th><th>Budget</th><th>Status</th><th>Posted</th><th>Action</th></tr></thead>
             <tbody id="projectsTable"><tr><td colspan="7" style="text-align:center;padding:30px;color:var(--muted)">Loading projects...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- BLOG -->
+      <div class="page" id="page-blog">
+        <div class="ph"><h2>Blog Publishing ✍️</h2><p>Create SEO articles, manage drafts, and publish growth content for Google traffic.</p></div>
+        <div class="g3" style="margin-bottom:20px">
+          <div class="sc"><div class="sc-top"><div class="sc-ico ico-b">📝</div></div><span class="sc-num" id="blogTotal">0</span><div class="sc-lbl">Total Posts</div></div>
+          <div class="sc"><div class="sc-top"><div class="sc-ico ico-g">✅</div></div><span class="sc-num" id="blogPublished">0</span><div class="sc-lbl">Published</div></div>
+          <div class="sc"><div class="sc-top"><div class="sc-ico ico-a">🕒</div></div><span class="sc-num" id="blogDrafts">0</span><div class="sc-lbl">Drafts / Scheduled</div></div>
+        </div>
+
+        <div class="card" style="margin-bottom:18px">
+          <div class="st"><span id="blogFormTitle">New Blog Post</span><span class="sa" onclick="window.open('/blog','_blank')">Open Blog →</span></div>
+          <div class="form-grid">
+            <div class="fg"><label>Title *</label><input class="fi" id="blogTitle" placeholder="e.g. 7 AI Tools for Startup Growth" oninput="syncBlogSlug()"/></div>
+            <div class="fg"><label>Slug *</label><input class="fi" id="blogSlug" placeholder="ai-tools-startup-growth" oninput="blogSlugTouched=true"/></div>
+            <div class="fg"><label>Category *</label><select class="fi" id="blogCategory">
+              <option value="marketing">Marketing</option>
+              <option value="business-growth">Business Growth</option>
+              <option value="ai-tools">AI Tools</option>
+              <option value="startup-growth">Startup Growth</option>
+              <option value="automation">Automation</option>
+              <option value="lead-generation">Lead Generation</option>
+              <option value="branding">Branding</option>
+            </select></div>
+            <div class="fg"><label>Tags</label><input class="fi" id="blogTags" placeholder="AI tools, automation, marketing"/></div>
+            <div class="fg full"><label>Featured Image URL</label><input class="fi" id="blogImage" placeholder="https://..."/></div>
+            <div class="fg full"><label>Excerpt</label><textarea class="fi" id="blogExcerpt" rows="3" placeholder="Short summary shown on cards and search results."></textarea></div>
+            <div class="fg full"><label>Markdown Content *</label><textarea class="fi blog-editor" id="blogContent" placeholder="## Main heading&#10;&#10;Write your article in Markdown..."></textarea><div class="blog-help">Supports Markdown headings, lists, links, bold text, and internal links like /register or /contact.</div></div>
+            <div class="fg"><label>SEO Title</label><input class="fi" id="blogSeoTitle" placeholder="SEO title for Google"/></div>
+            <div class="fg"><label>SEO Description</label><input class="fi" id="blogSeoDescription" placeholder="Meta description under 155 characters"/></div>
+            <div class="fg"><label>Author</label><input class="fi" id="blogAuthor" value="NextGenGrowth Team"/></div>
+            <div class="fg"><label>Publish Date / Schedule</label><input class="fi" id="blogPublishAt" type="datetime-local"/></div>
+            <div class="fg"><label>Status</label><select class="fi" id="blogStatus"><option value="draft">Draft</option><option value="published">Published</option></select></div>
+            <div class="fg" style="display:flex;align-items:end"><label class="check-row"><input type="checkbox" id="blogFeatured"/> Featured article</label></div>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:4px">
+            <button class="btn bpri" id="saveBlogBtn" onclick="saveBlogPost()">Save Post</button>
+            <button class="btn bsec" onclick="resetBlogForm()">New Draft</button>
+          </div>
+        </div>
+
+        <div class="search-row">
+          <div class="srch"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="M21 21l-4.35-4.35"/></svg><input type="text" placeholder="Search blog posts..." id="blogSearch" oninput="renderBlogPosts()"/></div>
+        </div>
+        <div class="tbl-wrap">
+          <table>
+            <thead><tr><th>Post</th><th>Category</th><th>Status</th><th>Performance</th><th>Updated</th><th>Actions</th></tr></thead>
+            <tbody id="blogTable"><tr><td colspan="6" style="text-align:center;padding:30px;color:var(--muted)">Loading blog posts...</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -744,9 +810,9 @@ select.fi option{background:var(--bg2)}
 <script>
 // ════ STATE ════
 let _tok = localStorage.getItem('ngg_admin_token');
-let allUsers=[], pendingBrands=[], allProjects=[], allApps=[], allKyc=[], allTxs=[];
+let allUsers=[], pendingBrands=[], allProjects=[], allBlogPosts=[], allApps=[], allKyc=[], allTxs=[];
 let pendingAction=null;
-let curUserRole='all', curUserSearch='', curAppFilter='all', curKycFilter='all';
+let curUserRole='all', curUserSearch='', curAppFilter='all', curKycFilter='all', editingBlogId=null, blogSlugTouched=false;
 
 // ════ PARTICLES ════
 (function(){
@@ -840,7 +906,7 @@ function safeUrl(url){
 }
 
 async function loadAll(){
-  await Promise.all([loadStats(),loadUsers(),loadProjects(),loadApps(),loadKyc(),loadTxs()]);
+  await Promise.all([loadStats(),loadUsers(),loadProjects(),loadBlogPosts(),loadApps(),loadKyc(),loadTxs()]);
 }
 
 async function refreshAll(){
@@ -1008,6 +1074,147 @@ function renderProjects(){
 }
 
 function filterProjects(){renderProjects();}
+
+// ════ BLOG ════
+const BLOG_CATEGORY_NAMES={
+  marketing:'Marketing',
+  'business-growth':'Business Growth',
+  'ai-tools':'AI Tools',
+  'startup-growth':'Startup Growth',
+  automation:'Automation',
+  'lead-generation':'Lead Generation',
+  branding:'Branding'
+};
+
+function slugifyAdmin(value){
+  return String(value||'').toLowerCase().trim().replace(/&/g,' and ').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,90);
+}
+
+function syncBlogSlug(){
+  if(blogSlugTouched)return;
+  document.getElementById('blogSlug').value=slugifyAdmin(document.getElementById('blogTitle').value);
+}
+
+function toDatetimeLocal(value){
+  if(!value)return '';
+  const d=new Date(value);
+  if(Number.isNaN(d.getTime()))return '';
+  d.setMinutes(d.getMinutes()-d.getTimezoneOffset());
+  return d.toISOString().slice(0,16);
+}
+
+async function loadBlogPosts(){
+  try{
+    const data=await fetch('/api/admin/blog/posts',{headers:H()}).then(r=>r.json());
+    if(!data.success)return;
+    allBlogPosts=data.posts||[];
+    renderBlogStats();
+    renderBlogPosts();
+  }catch(e){console.log('Blog load error',e);}
+}
+
+function renderBlogStats(){
+  const total=allBlogPosts.length;
+  const published=allBlogPosts.filter(p=>p.status==='published'&&(!p.publishAt||new Date(p.publishAt)<=new Date())).length;
+  const drafts=total-published;
+  document.getElementById('blogTotal').textContent=total;
+  document.getElementById('blogPublished').textContent=published;
+  document.getElementById('blogDrafts').textContent=drafts;
+  document.getElementById('nbBlog').textContent=published;
+}
+
+function renderBlogPosts(){
+  const el=document.getElementById('blogTable');
+  const q=(document.getElementById('blogSearch')?.value||'').toLowerCase();
+  let list=allBlogPosts;
+  if(q)list=list.filter(p=>[p.title,p.slug,p.categoryName,p.tags?.join(' ')].join(' ').toLowerCase().includes(q));
+  if(!list.length){el.innerHTML='<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--muted)">No blog posts found</td></tr>';return;}
+  el.innerHTML=list.map(p=>{
+    const scheduled=p.status==='published'&&p.publishAt&&new Date(p.publishAt)>new Date();
+    const status=scheduled?'<span class="tag ta">🕒 Scheduled</span>':p.status==='published'?'<span class="tag tg">✅ Published</span>':'<span class="tag tb2">Draft</span>';
+    const tags=(p.tags||[]).slice(0,3).map(t=>`<span class="tag tg" style="font-size:.62rem">${esc(t)}</span>`).join(' ');
+    const safeTitle=String(p.title||'Post').replace(/["'\\]/g,'`');
+    return`<tr>
+      <td style="max-width:330px"><div style="font-weight:700;font-size:.9rem">${esc(p.title)}</div><div style="font-size:.72rem;color:var(--muted);margin-top:2px">/${esc(p.slug)}</div><div style="margin-top:6px">${tags||'<span style="color:var(--muted)">No tags</span>'}</div></td>
+      <td><span class="tag tb2">${esc(p.categoryName||BLOG_CATEGORY_NAMES[p.category]||p.category)}</span></td>
+      <td>${status}${p.featured?'<div style="margin-top:5px"><span class="tag ta">Featured</span></div>':''}</td>
+      <td style="font-size:.78rem;color:var(--muted)">Views: ${p.views||0}<br>Shares: ${p.shareClicks||0}<br>CTA: ${p.ctaClicks||0}</td>
+      <td style="font-size:.76rem;color:var(--muted)">${fmtDate(p.updatedAt||p.publishAt)}</td>
+      <td><div class="inline-actions"><button class="btn bsec bsm" onclick="editBlogPost('${p.id}')">Edit</button><a class="btn bsec bsm" href="/blog/${esc(p.slug)}" target="_blank">View</a><button class="btn bdan bsm" onclick="showConfirm('blog','${p.id}','${esc(safeTitle)}')">Delete</button></div></td>
+    </tr>`;
+  }).join('');
+}
+
+function resetBlogForm(){
+  editingBlogId=null;
+  blogSlugTouched=false;
+  document.getElementById('blogFormTitle').textContent='New Blog Post';
+  ['blogTitle','blogSlug','blogTags','blogImage','blogExcerpt','blogContent','blogSeoTitle','blogSeoDescription'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('blogCategory').value='marketing';
+  document.getElementById('blogAuthor').value='NextGenGrowth Team';
+  document.getElementById('blogPublishAt').value='';
+  document.getElementById('blogStatus').value='draft';
+  document.getElementById('blogFeatured').checked=false;
+  document.getElementById('saveBlogBtn').textContent='Save Post';
+}
+
+function editBlogPost(id){
+  const p=allBlogPosts.find(x=>x.id===id);
+  if(!p)return;
+  editingBlogId=id;
+  blogSlugTouched=true;
+  document.getElementById('blogFormTitle').textContent='Edit Blog Post';
+  document.getElementById('blogTitle').value=p.title||'';
+  document.getElementById('blogSlug').value=p.slug||'';
+  document.getElementById('blogCategory').value=p.category||'marketing';
+  document.getElementById('blogTags').value=(p.tags||[]).join(', ');
+  document.getElementById('blogImage').value=p.featuredImage||'';
+  document.getElementById('blogExcerpt').value=p.excerpt||'';
+  document.getElementById('blogContent').value=p.content||'';
+  document.getElementById('blogSeoTitle').value=p.seoTitle||'';
+  document.getElementById('blogSeoDescription').value=p.seoDescription||'';
+  document.getElementById('blogAuthor').value=p.authorName||'NextGenGrowth Team';
+  document.getElementById('blogPublishAt').value=toDatetimeLocal(p.publishAt);
+  document.getElementById('blogStatus').value=p.status||'draft';
+  document.getElementById('blogFeatured').checked=!!p.featured;
+  document.getElementById('saveBlogBtn').textContent='Update Post';
+  document.getElementById('mc').scrollTop=0;
+}
+
+async function saveBlogPost(){
+  const payload={
+    title:document.getElementById('blogTitle').value.trim(),
+    slug:document.getElementById('blogSlug').value.trim(),
+    category:document.getElementById('blogCategory').value,
+    tags:document.getElementById('blogTags').value.split(',').map(t=>t.trim()).filter(Boolean),
+    featuredImage:document.getElementById('blogImage').value.trim(),
+    excerpt:document.getElementById('blogExcerpt').value.trim(),
+    content:document.getElementById('blogContent').value.trim(),
+    seoTitle:document.getElementById('blogSeoTitle').value.trim(),
+    seoDescription:document.getElementById('blogSeoDescription').value.trim(),
+    authorName:document.getElementById('blogAuthor').value.trim(),
+    publishAt:document.getElementById('blogPublishAt').value,
+    status:document.getElementById('blogStatus').value,
+    featured:document.getElementById('blogFeatured').checked,
+  };
+  if(!payload.title||!payload.content){showToast('Title and content are required','error');return;}
+  if(!payload.slug)payload.slug=slugifyAdmin(payload.title);
+  const btn=document.getElementById('saveBlogBtn');
+  const old=btn.textContent;
+  btn.innerHTML='<span class="spin"></span>Saving...';btn.disabled=true;
+  try{
+    const url=editingBlogId?`/api/admin/blog/posts/${editingBlogId}`:'/api/admin/blog/posts';
+    const method=editingBlogId?'PUT':'POST';
+    const res=await fetch(url,{method,headers:H(),body:JSON.stringify(payload)});
+    const data=await res.json();
+    if(data.success){
+      showToast(data.message||'Blog saved!','success');
+      await loadBlogPosts();
+      editBlogPost(data.post.id);
+    }else showToast(data.message||'Could not save blog','error');
+  }catch{showToast('Blog save failed','error');}
+  btn.textContent=old;btn.disabled=false;
+}
 
 // ════ APPLICATIONS ════
 async function loadApps(){
@@ -1217,12 +1424,17 @@ async function doConfirm(){
       const data=await res.json();
       if(data.success){showToast('Project deleted! 🗑','success');await loadProjects();await loadStats();}
       else showToast(data.message,'error');
+    }else if(type==='blog'){
+      const res=await fetch(`/api/admin/blog/posts/${id}`,{method:'DELETE',headers:H()});
+      const data=await res.json();
+      if(data.success){showToast('Blog post deleted!','success');await loadBlogPosts();resetBlogForm();}
+      else showToast(data.message,'error');
     }else{showToast('Feature coming soon!','info');}
   }catch{showToast('Action failed','error');}
 }
 
 // ════ NAVIGATION ════
-const PT={dashboard:'Dashboard',approvals:'Brand Approvals',users:'User Management',projects:'Projects Management',applications:'Applications Overview',kyc:'Payout KYC',transactions:'Transactions & Revenue',settings:'Settings'};
+const PT={dashboard:'Dashboard',approvals:'Brand Approvals',users:'User Management',projects:'Projects Management',blog:'Blog Publishing',applications:'Applications Overview',kyc:'Payout KYC',transactions:'Transactions & Revenue',settings:'Settings'};
 function goTo(pg,navBtn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   const el=document.getElementById('page-'+pg);if(el)el.classList.add('active');
