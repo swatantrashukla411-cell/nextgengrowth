@@ -758,6 +758,9 @@
         const actual = params.get('actual') || 'another role';
         const selected = params.get('selected') || 'this role';
         showAlert(`This Google account is already registered as ${actual}. Continue as ${actual}, or use a different Google account for ${selected}.`);
+      } else if (error === 'registration_closed') {
+        const selected = params.get('selected') || 'selected';
+        showAlert(`${selected.charAt(0).toUpperCase() + selected.slice(1)} registrations are currently closed by admin.`);
       } else if (error) {
         showAlert('Google login failed. Please try again.');
       }

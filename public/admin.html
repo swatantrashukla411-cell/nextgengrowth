@@ -742,28 +742,28 @@ select.fi option{background:var(--bg2)}
               <div class="st">💰 Revenue Settings</div>
               <div class="set-row">
                 <div class="set-info"><strong>Commission Rate</strong><span>Platform cut per project (%)</span></div>
-                <input class="set-input" type="number" value="10" min="0" max="50"/>
+                <input class="set-input" id="setCommission" type="number" value="10" min="0" max="50"/>
               </div>
               <div class="set-row">
                 <div class="set-info"><strong>Minimum Project Budget</strong><span>Brands must set minimum this much</span></div>
-                <input class="set-input" type="text" value="₹500"/>
+                <input class="set-input" id="setMinBudget" type="text" value="₹500"/>
               </div>
               <div class="set-row">
                 <div class="set-info"><strong>Maximum Project Budget</strong><span>Per project limit</span></div>
-                <input class="set-input" type="text" value="₹50,000"/>
+                <input class="set-input" id="setMaxBudget" type="text" value="₹50,000"/>
               </div>
-              <button class="btn bpri" style="margin-top:16px" onclick="showToast('Revenue settings saved! ✅','success')">Save Settings</button>
+              <button class="btn bpri" id="saveSettingsBtn" style="margin-top:16px" onclick="saveSettings()">Save Settings</button>
             </div>
 
             <div class="card" style="background:rgba(255,71,87,.04);border-color:rgba(255,71,87,.2)">
               <div class="st" style="color:var(--red)">🚨 Danger Zone</div>
               <div class="set-row" style="border-color:rgba(255,71,87,.15)">
                 <div class="set-info"><strong style="color:var(--red)">Export All Data</strong><span>Download complete database backup</span></div>
-                <button class="btn bsec bsm" onclick="showToast('Export coming soon!','info')">Export</button>
+                <button class="btn bsec bsm" onclick="exportData()">Export</button>
               </div>
               <div class="set-row" style="border-bottom:none">
                 <div class="set-info"><strong style="color:var(--red)">Clear Test Data</strong><span>Delete all test users and data</span></div>
-                <button class="btn bdan bsm" onclick="showConfirm('all','','Clear all test data')">Clear All</button>
+                <button class="btn bdan bsm" onclick="showConfirm('test-data','','Clear test data')">Clear All</button>
               </div>
             </div>
           </div>
@@ -771,18 +771,18 @@ select.fi option{background:var(--bg2)}
           <div>
             <div class="card" style="margin-bottom:16px">
               <div class="st">🔧 Platform Features</div>
-              <div class="set-row"><div class="set-info"><strong>Student Registrations</strong><span>New students can register</span></div><button class="toggle on" onclick="this.classList.toggle('on');showToast('Setting updated','info')"></button></div>
-              <div class="set-row"><div class="set-info"><strong>Brand Registrations</strong><span>New brands can register</span></div><button class="toggle on" onclick="this.classList.toggle('on');showToast('Setting updated','info')"></button></div>
-              <div class="set-row"><div class="set-info"><strong>Project Posting</strong><span>Brands can post new projects</span></div><button class="toggle on" onclick="this.classList.toggle('on');showToast('Setting updated','info')"></button></div>
-              <div class="set-row"><div class="set-info"><strong>Maintenance Mode</strong><span>Temporarily close the platform</span></div><button class="toggle" onclick="this.classList.toggle('on');showToast('Maintenance mode toggled!','warn')"></button></div>
+              <div class="set-row"><div class="set-info"><strong>Student Registrations</strong><span>New students can register</span></div><button class="toggle on" id="setStudentRegistrations" onclick="toggleSetting('features','studentRegistrations')"></button></div>
+              <div class="set-row"><div class="set-info"><strong>Brand Registrations</strong><span>New brands can register</span></div><button class="toggle on" id="setBrandRegistrations" onclick="toggleSetting('features','brandRegistrations')"></button></div>
+              <div class="set-row"><div class="set-info"><strong>Project Posting</strong><span>Brands can post new projects</span></div><button class="toggle on" id="setProjectPosting" onclick="toggleSetting('features','projectPosting')"></button></div>
+              <div class="set-row"><div class="set-info"><strong>Maintenance Mode</strong><span>Temporarily close the platform</span></div><button class="toggle" id="setMaintenanceMode" onclick="toggleSetting('features','maintenanceMode')"></button></div>
             </div>
 
             <div class="card">
               <div class="st">📧 Email Notifications</div>
-              <div class="set-row"><div class="set-info"><strong>Welcome Email</strong><span>Send on new registration</span></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
-              <div class="set-row"><div class="set-info"><strong>Application Alert</strong><span>Email brand when student applies</span></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
-              <div class="set-row"><div class="set-info"><strong>Payment Confirmation</strong><span>Email student when paid</span></div><button class="toggle on" onclick="this.classList.toggle('on')"></button></div>
-              <div class="set-row"><div class="set-info"><strong>Admin Alerts</strong><span>Get email on new signups</span></div><button class="toggle" onclick="this.classList.toggle('on')"></button></div>
+              <div class="set-row"><div class="set-info"><strong>Welcome Email</strong><span>Send on new registration</span></div><button class="toggle on" id="setWelcomeEmail" onclick="toggleSetting('emails','welcomeEmail')"></button></div>
+              <div class="set-row"><div class="set-info"><strong>Application Alert</strong><span>Email brand when student applies</span></div><button class="toggle on" id="setApplicationAlert" onclick="toggleSetting('emails','applicationAlert')"></button></div>
+              <div class="set-row"><div class="set-info"><strong>Payment Confirmation</strong><span>Email student when paid</span></div><button class="toggle on" id="setPaymentConfirmation" onclick="toggleSetting('emails','paymentConfirmation')"></button></div>
+              <div class="set-row"><div class="set-info"><strong>Admin Alerts</strong><span>Get email on new signups</span></div><button class="toggle" id="setAdminAlerts" onclick="toggleSetting('emails','adminAlerts')"></button></div>
             </div>
           </div>
         </div>
@@ -811,6 +811,13 @@ select.fi option{background:var(--bg2)}
 // ════ STATE ════
 let _tok = localStorage.getItem('ngg_admin_token');
 let allUsers=[], pendingBrands=[], allProjects=[], allBlogPosts=[], allApps=[], allKyc=[], allTxs=[];
+let adminSettings={
+  commissionRate:10,
+  minProjectBudget:500,
+  maxProjectBudget:50000,
+  features:{studentRegistrations:true,brandRegistrations:true,projectPosting:true,maintenanceMode:false},
+  emails:{welcomeEmail:true,applicationAlert:true,paymentConfirmation:true,adminAlerts:false}
+};
 let pendingAction=null;
 let curUserRole='all', curUserSearch='', curAppFilter='all', curKycFilter='all', editingBlogId=null, blogSlugTouched=false;
 
@@ -906,13 +913,109 @@ function safeUrl(url){
 }
 
 async function loadAll(){
-  await Promise.all([loadStats(),loadUsers(),loadProjects(),loadBlogPosts(),loadApps(),loadKyc(),loadTxs()]);
+  await Promise.all([loadStats(),loadUsers(),loadProjects(),loadBlogPosts(),loadApps(),loadKyc(),loadTxs(),loadSettings()]);
 }
 
 async function refreshAll(){
   showToast('Refreshing data...','info');
   await loadAll();
   showToast('All data refreshed! ✅','success');
+}
+
+function parseMoney(v){
+  const n=String(v||'').replace(/,/g,'').match(/\d+(?:\.\d+)?/);
+  return n?Number(n[0]):0;
+}
+
+function fmtMoney(v){
+  return '₹'+Number(v||0).toLocaleString('en-IN');
+}
+
+async function loadSettings(){
+  try{
+    const data=await fetch('/api/admin/settings',{headers:H()}).then(r=>r.json());
+    if(!data.success)return;
+    adminSettings={...adminSettings,...data.settings};
+    applySettingsToForm();
+  }catch(e){console.log('Settings load error',e);}
+}
+
+function applySettingsToForm(){
+  const map={
+    setStudentRegistrations:adminSettings.features?.studentRegistrations,
+    setBrandRegistrations:adminSettings.features?.brandRegistrations,
+    setProjectPosting:adminSettings.features?.projectPosting,
+    setMaintenanceMode:adminSettings.features?.maintenanceMode,
+    setWelcomeEmail:adminSettings.emails?.welcomeEmail,
+    setApplicationAlert:adminSettings.emails?.applicationAlert,
+    setPaymentConfirmation:adminSettings.emails?.paymentConfirmation,
+    setAdminAlerts:adminSettings.emails?.adminAlerts,
+  };
+  Object.entries(map).forEach(([id,on])=>document.getElementById(id)?.classList.toggle('on',!!on));
+  const commission=document.getElementById('setCommission');
+  const minBudget=document.getElementById('setMinBudget');
+  const maxBudget=document.getElementById('setMaxBudget');
+  if(commission)commission.value=adminSettings.commissionRate??10;
+  if(minBudget)minBudget.value=fmtMoney(adminSettings.minProjectBudget);
+  if(maxBudget)maxBudget.value=fmtMoney(adminSettings.maxProjectBudget);
+}
+
+function collectSettings(){
+  const commission=Number(document.getElementById('setCommission')?.value||adminSettings.commissionRate||10);
+  return{
+    commissionRate:Number.isFinite(commission)?commission:10,
+    minProjectBudget:parseMoney(document.getElementById('setMinBudget')?.value||adminSettings.minProjectBudget),
+    maxProjectBudget:parseMoney(document.getElementById('setMaxBudget')?.value||adminSettings.maxProjectBudget),
+    features:{...adminSettings.features},
+    emails:{...adminSettings.emails},
+  };
+}
+
+async function saveSettings(silent=false){
+  const btn=document.getElementById('saveSettingsBtn');
+  const old=btn?.textContent;
+  if(btn&&!silent){btn.innerHTML='<span class="spin"></span>Saving...';btn.disabled=true;}
+  try{
+    const payload=collectSettings();
+    const res=await fetch('/api/admin/settings',{method:'PUT',headers:H(),body:JSON.stringify(payload)});
+    const data=await res.json();
+    if(data.success){
+      adminSettings=data.settings;
+      applySettingsToForm();
+      if(!silent)showToast('Settings saved! ✅','success');
+      if(btn&&!silent){btn.textContent=old;btn.disabled=false;}
+      return true;
+    }else showToast(data.message||'Settings save failed','error');
+  }catch{showToast('Settings save failed','error');}
+  if(btn&&!silent){btn.textContent=old;btn.disabled=false;}
+  return false;
+}
+
+async function toggleSetting(group,key){
+  adminSettings[group]=adminSettings[group]||{};
+  adminSettings[group][key]=!adminSettings[group][key];
+  applySettingsToForm();
+  const ok=await saveSettings(true);
+  if(ok)showToast('Setting updated','success');
+}
+
+async function exportData(){
+  try{
+    showToast('Preparing export...','info');
+    const res=await fetch('/api/admin/export',{headers:H()});
+    const data=await res.json();
+    if(!data.success){showToast(data.message||'Export failed','error');return;}
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;
+    a.download=`nextgengrowth-export-${new Date().toISOString().slice(0,10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    showToast('Export downloaded! ✅','success');
+  }catch{showToast('Export failed','error');}
 }
 
 // ════ STATS ════
@@ -978,14 +1081,15 @@ function renderDashUsers(users){
   if(!users.length){el.innerHTML='<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--muted)">No users yet</td></tr>';return;}
   el.innerHTML=users.map(u=>{
     const ini=((u.firstName||'?')[0]+(u.lastName||'')[0]).toUpperCase();
-    const skills=u.skills&&u.skills.length?u.skills.slice(0,2).map(s=>`<span class="tag tg" style="font-size:.62rem">${s}</span>`).join(' '):'<span style="color:var(--muted)">—</span>';
+    const skills=u.skills&&u.skills.length?u.skills.slice(0,2).map(s=>`<span class="tag tg" style="font-size:.62rem">${esc(s)}</span>`).join(' '):'<span style="color:var(--muted)">—</span>';
+    const safeName=String(`${u.firstName||''} ${u.lastName||''}`.trim()||'User').replace(/["'\\]/g,'`');
     return`<tr>
-      <td><div class="user-cell"><div class="u-av">${ini}</div><div><div class="u-name">${u.firstName} ${u.lastName}</div><div class="u-email">${u.email}</div></div></div></td>
+      <td><div class="user-cell"><div class="u-av">${esc(ini)}</div><div><div class="u-name">${esc(`${u.firstName||''} ${u.lastName||''}`.trim())}</div><div class="u-email">${esc(u.email||'')}</div></div></div></td>
       <td><span class="tag ${u.role==='student'?'tg':'tb2'}">${u.role==='student'?'🎓 Student':'🏢 Brand'}</span></td>
-      <td style="font-size:.8rem;color:var(--muted)">${u.college||u.companyName||'—'}</td>
+      <td style="font-size:.8rem;color:var(--muted)">${esc(u.college||u.companyName||'—')}</td>
       <td>${skills}</td>
       <td style="font-size:.76rem;color:var(--muted)">${new Date(u.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</td>
-      <td><button class="btn bdan bsm" onclick="showConfirm('user','${u._id||u.id}','${u.firstName} ${u.lastName}')">Delete</button></td>
+      <td><button class="btn bdan bsm" onclick="showConfirm('user','${u._id||u.id}','${esc(safeName)}')">Delete</button></td>
     </tr>`;
   }).join('');
 }
@@ -998,13 +1102,14 @@ function renderUsers(){
   if(!list.length){el.innerHTML='<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--muted)">No users found</td></tr>';return;}
   el.innerHTML=list.map(u=>{
     const ini=((u.firstName||'?')[0]+(u.lastName||'')[0]).toUpperCase();
-    const skills=u.skills&&u.skills.length?u.skills.slice(0,3).map(s=>`<span class="tag tg" style="font-size:.62rem">${s}</span>`).join(' '):'<span style="color:var(--muted)">—</span>';
+    const skills=u.skills&&u.skills.length?u.skills.slice(0,3).map(s=>`<span class="tag tg" style="font-size:.62rem">${esc(s)}</span>`).join(' '):'<span style="color:var(--muted)">—</span>';
+    const safeName=String(`${u.firstName||''} ${u.lastName||''}`.trim()||'User').replace(/["'\\]/g,'`');
     return`<tr>
-      <td><div class="user-cell"><div class="u-av">${ini}</div><div><div class="u-name">${u.firstName} ${u.lastName}</div><div class="u-email">${u.email}</div></div></div></td>
+      <td><div class="user-cell"><div class="u-av">${esc(ini)}</div><div><div class="u-name">${esc(`${u.firstName||''} ${u.lastName||''}`.trim())}</div><div class="u-email">${esc(u.email||'')}</div></div></div></td>
       <td><span class="tag ${u.role==='student'?'tg':'tb2'}">${u.role==='student'?'🎓 Student':'🏢 Brand'}</span></td>
-      <td>${u.role==='student'?`<div style="font-size:.8rem">${u.college||'Not set'}</div><div style="margin-top:4px">${skills}</div>`:`<span style="font-size:.8rem;color:var(--muted)">${u.companyName||'—'}</span>`}</td>
+      <td>${u.role==='student'?`<div style="font-size:.8rem">${esc(u.college||'Not set')}</div><div style="margin-top:4px">${skills}</div>`:`<span style="font-size:.8rem;color:var(--muted)">${esc(u.companyName||'—')}</span>`}</td>
       <td style="font-size:.78rem;color:var(--muted)">${new Date(u.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</td>
-      <td><button class="btn bdan bsm" onclick="showConfirm('user','${u._id||u.id}','${u.firstName} ${u.lastName}')">🗑 Delete</button></td>
+      <td><button class="btn bdan bsm" onclick="showConfirm('user','${u._id||u.id}','${esc(safeName)}')">🗑 Delete</button></td>
     </tr>`;
   }).join('');
 }
@@ -1061,16 +1166,19 @@ function renderProjects(){
   if(s&&s.value)list=list.filter(p=>[p.title,p.firstName+' '+p.lastName,p.brandEmail||''].join(' ').toLowerCase().includes(s.value.toLowerCase()));
   const el=document.getElementById('projectsTable');
   if(!list.length){el.innerHTML='<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--muted)">No projects posted yet</td></tr>';return;}
-  el.innerHTML=list.map(p=>`
+  el.innerHTML=list.map(p=>{
+    const safeName=String(p.title||'Project').replace(/["'\\]/g,'`');
+    return`
     <tr>
-      <td style="max-width:220px"><div style="font-weight:600;font-size:.85rem">${p.title}</div><div style="font-size:.72rem;color:var(--muted);margin-top:2px">${p.description?p.description.slice(0,50)+'...':'—'}</div></td>
-      <td><div style="font-size:.83rem">${p.firstName||''} ${p.lastName||''}</div><div style="font-size:.72rem;color:var(--muted)">${p.brandEmail||''}</div></td>
-      <td><span class="tag tb2">${p.category||'—'}</span></td>
-      <td style="font-family:'Syne',sans-serif;font-weight:700;color:var(--gb)">${p.budget}</td>
+      <td style="max-width:220px"><div style="font-weight:600;font-size:.85rem">${esc(p.title||'Untitled')}</div><div style="font-size:.72rem;color:var(--muted);margin-top:2px">${p.description?esc(p.description.slice(0,50))+'...':'—'}</div></td>
+      <td><div style="font-size:.83rem">${esc(`${p.firstName||''} ${p.lastName||''}`.trim())}</div><div style="font-size:.72rem;color:var(--muted)">${esc(p.brandEmail||'')}</div></td>
+      <td><span class="tag tb2">${esc(p.category||'—')}</span></td>
+      <td style="font-family:'Syne',sans-serif;font-weight:700;color:var(--gb)">${esc(p.budget)}</td>
       <td><span class="tag ${p.status==='open'?'tg':'ta'}">${p.status==='open'?'🟢 Open':'✓ Closed'}</span></td>
       <td style="font-size:.76rem;color:var(--muted)">${new Date(p.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</td>
-      <td><button class="btn bdan bsm" onclick="showConfirm('project','${p._id||p.id}','${p.title.replace(/'/g,'`')}')">🗑 Delete</button></td>
-    </tr>`).join('');
+      <td><button class="btn bdan bsm" onclick="showConfirm('project','${p._id||p.id}','${esc(safeName)}')">🗑 Delete</button></td>
+    </tr>`;
+  }).join('');
 }
 
 function filterProjects(){renderProjects();}
@@ -1231,18 +1339,22 @@ function renderApps(){
   const el=document.getElementById('appsTable');
   if(!list.length){el.innerHTML='<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--muted)">No applications yet</td></tr>';return;}
   const stMap={review:'<span class="tag tb2">🔍 Review</span>',accepted:'<span class="tag tg">✓ Accepted</span>',rejected:'<span class="tag tr2">✗ Rejected</span>'};
-  el.innerHTML=list.map(a=>`
+  el.innerHTML=list.map(a=>{
+    const appId=a._id||a.id;
+    const actions=a.status==='review'
+      ? `<button class="btn bpri bsm" onclick="updateApp('${appId}','accepted')">Accept</button><button class="btn bdan bsm" onclick="updateApp('${appId}','rejected')">Reject</button>`
+      : `<button class="btn bsec bsm" onclick="updateApp('${appId}','review')">Reopen</button>${a.status==='rejected'?`<button class="btn bpri bsm" onclick="updateApp('${appId}','accepted')">Accept</button>`:`<button class="btn bdan bsm" onclick="updateApp('${appId}','rejected')">Reject</button>`}`;
+    return`
     <tr>
-      <td><div style="font-weight:600;font-size:.84rem">${a.firstName||''} ${a.lastName||''}</div><div style="font-size:.72rem;color:var(--muted)">${a.studentEmail||''}</div></td>
-      <td style="max-width:180px;font-size:.83rem">${a.jobTitle}</td>
-      <td style="font-size:.8rem;color:var(--muted)">${a.brandName}</td>
-      <td style="font-family:'Syne',sans-serif;font-weight:700;color:var(--gb)">${a.pay}</td>
+      <td><div style="font-weight:600;font-size:.84rem">${esc(`${a.firstName||''} ${a.lastName||''}`.trim())}</div><div style="font-size:.72rem;color:var(--muted)">${esc(a.studentEmail||'')}</div></td>
+      <td style="max-width:180px;font-size:.83rem">${esc(a.jobTitle||'')}</td>
+      <td style="font-size:.8rem;color:var(--muted)">${esc(a.brandName||'')}</td>
+      <td style="font-family:'Syne',sans-serif;font-weight:700;color:var(--gb)">${esc(a.pay||'')}</td>
       <td>${stMap[a.status]||a.status}</td>
       <td style="font-size:.76rem;color:var(--muted)">${new Date(a.createdAt||a.appliedAt).toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</td>
-      <td style="display:flex;gap:5px;flex-wrap:wrap">
-        <span style="font-size:.75rem;color:var(--muted)">Managed by Brand</span>
-      </td>
-    </tr>`).join('');
+      <td><div class="inline-actions">${actions}</div></td>
+    </tr>`;
+  }).join('');
 }
 
 function filterApps(f,btn){
@@ -1252,7 +1364,15 @@ function filterApps(f,btn){
 }
 
 async function updateApp(id,status){
-  showToast('Applications are managed from the Brand Dashboard.', 'info');
+  try{
+    const res=await fetch(`/api/admin/application/${id}`,{method:'PUT',headers:H(),body:JSON.stringify({status})});
+    const data=await res.json();
+    if(data.success){
+      showToast(data.message||`Application ${status}`,'success');
+      await loadApps();
+      await loadStats();
+    }else showToast(data.message||'Could not update application','error');
+  }catch{showToast('Application update failed','error');}
 }
 
 // ════ PAYOUT KYC ════
@@ -1406,13 +1526,15 @@ async function addPayment(){
 function showConfirm(type,id,name){
   pendingAction={type,id,name};
   document.getElementById('modalMsg').textContent=`Delete "${name}"? This cannot be undone.`;
+  document.getElementById('confirmBtn').textContent=type==='test-data'?'Clear Test Data':'Delete';
   document.getElementById('confirmModal').classList.add('show');
 }
-function hideConfirm(){document.getElementById('confirmModal').classList.remove('show');pendingAction=null;}
+function hideConfirm(){document.getElementById('confirmModal').classList.remove('show');document.getElementById('confirmBtn').textContent='Delete';pendingAction=null;}
 async function doConfirm(){
   if(!pendingAction)return;
+  const action=pendingAction;
   hideConfirm();
-  const{type,id,name}=pendingAction;
+  const{type,id,name}=action;
   try{
     if(type==='user'){
       const res=await fetch(`/api/admin/user/${id}`,{method:'DELETE',headers:H()});
@@ -1429,7 +1551,15 @@ async function doConfirm(){
       const data=await res.json();
       if(data.success){showToast('Blog post deleted!','success');await loadBlogPosts();resetBlogForm();}
       else showToast(data.message,'error');
-    }else{showToast('Feature coming soon!','info');}
+    }else if(type==='test-data'){
+      const res=await fetch('/api/admin/test-data',{method:'DELETE',headers:H()});
+      const data=await res.json();
+      if(data.success){
+        const total=Object.values(data.deleted||{}).reduce((sum,n)=>sum+Number(n||0),0);
+        showToast(`Test data cleared (${total} records)!`,'success');
+        await loadAll();
+      }else showToast(data.message||'Could not clear test data','error');
+    }else{showToast('Unknown action','error');}
   }catch{showToast('Action failed','error');}
 }
 

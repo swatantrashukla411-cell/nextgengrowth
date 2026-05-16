@@ -60,9 +60,13 @@ function getRazorpayClient(){
 // ═══════════════════════════════════════════
 // MONGODB
 // ═══════════════════════════════════════════
-mongoose.connect(MONGO_URI)
-  .then(()=>console.log("✅ MongoDB Connected!"))
-  .catch(err=>console.error("❌ MongoDB Error:",err));
+if(MONGO_URI){
+  mongoose.connect(MONGO_URI)
+    .then(()=>console.log("✅ MongoDB Connected!"))
+    .catch(err=>console.error("❌ MongoDB Error:",err));
+}else{
+  console.error("❌ MongoDB Error: MONGODB_URI is not configured.");
+}
 
 // ═══════════════════════════════════════════
 // SCHEMAS
@@ -213,6 +217,25 @@ const blogEventSchema = new mongoose.Schema({
   userAgent:{type:String,default:""},
 },{timestamps:true});
 
+const platformSettingSchema = new mongoose.Schema({
+  key:{type:String,default:"main",unique:true},
+  commissionRate:{type:Number,default:10,min:0,max:50},
+  minProjectBudget:{type:Number,default:500,min:0},
+  maxProjectBudget:{type:Number,default:50000,min:0},
+  features:{
+    studentRegistrations:{type:Boolean,default:true},
+    brandRegistrations:{type:Boolean,default:true},
+    projectPosting:{type:Boolean,default:true},
+    maintenanceMode:{type:Boolean,default:false},
+  },
+  emails:{
+    welcomeEmail:{type:Boolean,default:true},
+    applicationAlert:{type:Boolean,default:true},
+    paymentConfirmation:{type:Boolean,default:true},
+    adminAlerts:{type:Boolean,default:false},
+  },
+},{timestamps:true});
+
 const User        = mongoose.model("User",userSchema);
 const OTP         = mongoose.model("OTP",otpSchema);
 const Application = mongoose.model("Application",applicationSchema);
@@ -223,6 +246,7 @@ const ProjectWorkspace = mongoose.model("ProjectWorkspace",projectWorkspaceSchem
 const BlogPost = mongoose.model("BlogPost",blogPostSchema);
 const NewsletterSubscriber = mongoose.model("NewsletterSubscriber",newsletterSubscriberSchema);
 const BlogEvent = mongoose.model("BlogEvent",blogEventSchema);
+const PlatformSetting = mongoose.model("PlatformSetting",platformSettingSchema);
 
 console.log("✅ All models loaded!");
 
@@ -331,6 +355,96 @@ function estimateReadingTime(content){
 
 function dbReady(){
   return Boolean(MONGO_URI)&&mongoose.connection.readyState===1;
+}
+
+const DEFAULT_PLATFORM_SETTINGS={
+  commissionRate:10,
+  minProjectBudget:500,
+  maxProjectBudget:50000,
+  features:{
+    studentRegistrations:true,
+    brandRegistrations:true,
+    projectPosting:true,
+    maintenanceMode:false,
+  },
+  emails:{
+    welcomeEmail:true,
+    applicationAlert:true,
+    paymentConfirmation:true,
+    adminAlerts:false,
+  },
+};
+
+function boolSetting(value,fallback){
+  return typeof value==="boolean"?value:fallback;
+}
+
+function amountSetting(value,fallback){
+  const parsed=getMinimumAmount(value);
+  return Number.isFinite(parsed)&&parsed>=0?parsed:fallback;
+}
+
+function normalizePlatformSettings(raw={}){
+  const settings=raw.toObject?raw.toObject():raw;
+  const commission=Number(settings.commissionRate);
+  const minBudget=amountSetting(settings.minProjectBudget,DEFAULT_PLATFORM_SETTINGS.minProjectBudget);
+  const maxBudget=amountSetting(settings.maxProjectBudget,DEFAULT_PLATFORM_SETTINGS.maxProjectBudget);
+  return{
+    commissionRate:Number.isFinite(commission)?Math.min(50,Math.max(0,commission)):DEFAULT_PLATFORM_SETTINGS.commissionRate,
+    minProjectBudget:minBudget,
+    maxProjectBudget:Math.max(minBudget,maxBudget),
+    features:{
+      studentRegistrations:boolSetting(settings.features?.studentRegistrations,DEFAULT_PLATFORM_SETTINGS.features.studentRegistrations),
+      brandRegistrations:boolSetting(settings.features?.brandRegistrations,DEFAULT_PLATFORM_SETTINGS.features.brandRegistrations),
+      projectPosting:boolSetting(settings.features?.projectPosting,DEFAULT_PLATFORM_SETTINGS.features.projectPosting),
+      maintenanceMode:boolSetting(settings.features?.maintenanceMode,DEFAULT_PLATFORM_SETTINGS.features.maintenanceMode),
+    },
+    emails:{
+      welcomeEmail:boolSetting(settings.emails?.welcomeEmail,DEFAULT_PLATFORM_SETTINGS.emails.welcomeEmail),
+      applicationAlert:boolSetting(settings.emails?.applicationAlert,DEFAULT_PLATFORM_SETTINGS.emails.applicationAlert),
+      paymentConfirmation:boolSetting(settings.emails?.paymentConfirmation,DEFAULT_PLATFORM_SETTINGS.emails.paymentConfirmation),
+      adminAlerts:boolSetting(settings.emails?.adminAlerts,DEFAULT_PLATFORM_SETTINGS.emails.adminAlerts),
+    },
+  };
+}
+
+async function getPlatformSettings(){
+  const defaults=normalizePlatformSettings(DEFAULT_PLATFORM_SETTINGS);
+  if(!dbReady())return defaults;
+  const doc=await PlatformSetting.findOneAndUpdate(
+    {key:"main"},
+    {$setOnInsert:{key:"main",...defaults}},
+    {new:true,upsert:true,setDefaultsOnInsert:true}
+  );
+  return normalizePlatformSettings(doc);
+}
+
+async function savePlatformSettings(payload){
+  if(!dbReady())throw apiError("Database not connected.",503);
+  const settings=normalizePlatformSettings(payload);
+  const doc=await PlatformSetting.findOneAndUpdate(
+    {key:"main"},
+    {$set:{...settings,key:"main"}},
+    {new:true,upsert:true,setDefaultsOnInsert:true,runValidators:true}
+  );
+  return normalizePlatformSettings(doc);
+}
+
+const EMAIL_SETTING_KEYS={
+  welcome:"welcomeEmail",
+  application:"applicationAlert",
+  payment:"paymentConfirmation",
+  admin:"adminAlerts",
+};
+
+async function sendConfiguredEmail(type,to,subject,html){
+  const settings=await getPlatformSettings();
+  const key=EMAIL_SETTING_KEYS[type]||type;
+  if(settings.emails?.[key]===false){
+    console.log(`📧 Email skipped by admin setting [${key}] for ${to}`);
+    return;
+  }
+  return sendEmail(to,subject,html);
 }
 
 const BLOG_CATEGORIES=[
@@ -1275,6 +1389,18 @@ app.set("trust proxy",1);
 app.use(session({secret:JWT_SECRET,resave:false,saveUninitialized:false}));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(async(req,res,next)=>{
+  if(!req.path.startsWith("/api/")||req.path.startsWith("/api/admin")||req.path==="/api/health")return next();
+  try{
+    const settings=await getPlatformSettings();
+    if(settings.features.maintenanceMode){
+      return res.status(503).json({success:false,message:"Platform is in maintenance mode. Please try again later."});
+    }
+  }catch(err){
+    console.error("Maintenance guard error:",err.message);
+  }
+  next();
+});
 
 const authLimiter=rateLimit({windowMs:15*60*1000,max:20,message:{success:false,message:"Too many attempts."}});
 
@@ -1400,6 +1526,11 @@ if(GOOGLE_CLIENT_ID && GOOGLE_CLIENT_SECRET){
         if(u.isNew||u.googleProfile){
           // New user — redirect to complete profile
           const role=normalizeRole(requestedRoleRaw);
+          const settings=await getPlatformSettings();
+          const allowedKey=role==="brand"?"brandRegistrations":"studentRegistrations";
+          if(settings.features.maintenanceMode||settings.features[allowedKey]===false){
+            return res.redirect(`/login?error=registration_closed&selected=${encodeURIComponent(role)}`);
+          }
           const profile=u.googleProfile;
           
           // ✅ FIXED: Better name extraction so it doesn't fail if Google gives empty names
@@ -1419,10 +1550,13 @@ if(GOOGLE_CLIENT_ID && GOOGLE_CLIENT_SECRET){
           
           // ✅ BRAND PENDING MAIL CHECK HERE
           if (role === 'brand') {
-            sendEmail(newUser.email, "Action Required: Your Brand Verification is Under Review — NextGenGrowth", brandPendingEmail(newUser.firstName));
+            sendConfiguredEmail("welcome",newUser.email, "Action Required: Your Brand Verification is Under Review — NextGenGrowth", brandPendingEmail(newUser.firstName))
+              .catch(err=>console.error("Brand pending email error:",err.message));
           } else {
-            sendEmail(newUser.email, `Welcome to NextGenGrowth! 🎉`, welcomeEmail(newUser.firstName, role));
+            sendConfiguredEmail("welcome",newUser.email, `Welcome to NextGenGrowth! 🎉`, welcomeEmail(newUser.firstName, role))
+              .catch(err=>console.error("Welcome email error:",err.message));
           }
+          notifyAdminSignup(newUser);
 
           return res.redirect(`/auth/success?token=${token}&user=${encodeURIComponent(JSON.stringify(safeUser(newUser)))}`);
         }
@@ -1466,7 +1600,13 @@ app.get("/auth/success",(req,res)=>{
 // Send OTP
 app.post("/api/send-otp",authLimiter,async(req,res)=>{
   try{
-    const{email,name}=req.body;
+    const{email,name,role}=req.body;
+    const normalizedRole=normalizeRole(role);
+    const settings=await getPlatformSettings();
+    const allowedKey=normalizedRole==="brand"?"brandRegistrations":"studentRegistrations";
+    if(settings.features.maintenanceMode||settings.features[allowedKey]===false){
+      return res.status(403).json({success:false,message:`${normalizedRole==="brand"?"Brand":"Student"} registrations are currently closed.`});
+    }
     if(!email)return res.status(400).json({success:false,message:"Email required."});
     if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
       return res.status(400).json({success:false,message:"Invalid email format."});
@@ -1509,9 +1649,15 @@ app.post("/api/verify-otp",async(req,res)=>{
 // ═══════════════════════════════════════════
 app.post("/api/register",authLimiter,async(req,res)=>{
   try{
-    const{firstName,lastName,email,password,role,college,year,skills,companyName,serviceNeeded}=req.body;
+    const{firstName,lastName,email,password,role,college,year,skills,companyName,serviceNeeded,brandLink}=req.body;
     if(!firstName||!lastName||!email||!password||!role)
       return res.status(400).json({success:false,message:"All fields required."});
+    const settings=await getPlatformSettings();
+    const normalizedRole=normalizeRole(role);
+    const allowedKey=normalizedRole==="brand"?"brandRegistrations":"studentRegistrations";
+    if(settings.features.maintenanceMode||settings.features[allowedKey]===false){
+      return res.status(403).json({success:false,message:`${normalizedRole==="brand"?"Brand":"Student"} registrations are currently closed.`});
+    }
     if(password.length<8)
       return res.status(400).json({success:false,message:"Password must be 8+ characters."});
     // Check OTP verified
@@ -1523,8 +1669,8 @@ app.post("/api/register",authLimiter,async(req,res)=>{
     const hashedPwd=await bcrypt.hash(password,12);
     const newUser=await User.create({
       firstName,lastName,email:email.toLowerCase(),password:hashedPwd,
-      role,college:college||"",year:year||"",
-      skills:skills||[],companyName:companyName||"",serviceNeeded:serviceNeeded||"",
+      role:normalizedRole,college:college||"",year:year||"",
+      skills:skills||[],companyName:companyName||"",brandLink:brandLink||"",serviceNeeded:serviceNeeded||"",
       isVerified:true,
     });
     // Clean up OTP
@@ -1532,13 +1678,16 @@ app.post("/api/register",authLimiter,async(req,res)=>{
     const token=generateToken(newUser);
 
     // ✅ BRAND PENDING MAIL CHECK HERE FOR MANUAL REGISTER
-    if (role === 'brand') {
-      sendEmail(email, "Action Required: Your Brand Verification is Under Review — NextGenGrowth", brandPendingEmail(firstName));
+    if (normalizedRole === 'brand') {
+      sendConfiguredEmail("welcome",email, "Action Required: Your Brand Verification is Under Review — NextGenGrowth", brandPendingEmail(firstName))
+        .catch(err=>console.error("Brand pending email error:",err.message));
     } else {
-      sendEmail(email, `Welcome to NextGenGrowth, ${firstName}! 🎉`, welcomeEmail(firstName, role));
+      sendConfiguredEmail("welcome",email, `Welcome to NextGenGrowth, ${firstName}! 🎉`, welcomeEmail(firstName, normalizedRole))
+        .catch(err=>console.error("Welcome email error:",err.message));
     }
+    notifyAdminSignup(newUser);
 
-    console.log(`✅ Registered [${role}]: ${email}`);
+    console.log(`✅ Registered [${normalizedRole}]: ${email}`);
     res.status(201).json({success:true,message:`Welcome, ${firstName}! 🎉`,token,user:safeUser(newUser)});
   }catch(err){
     console.error("Register error:",err);
@@ -1711,7 +1860,7 @@ app.post("/api/apply",verifyToken,async(req,res)=>{
     const student=await User.findById(req.user.id);
     const brand=brandId?await User.findById(brandId):await User.findOne({$or:[{companyName:brandName},{firstName:brandName.split(" ")[0]}],role:"brand"});
     if(brand?.email){
-      sendEmail(brand.email,`📥 New Application for "${jobTitle}"!`,
+      sendConfiguredEmail("application",brand.email,`📥 New Application for "${jobTitle}"!`,
         `<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;padding:20px">
         <div style="background:linear-gradient(135deg,#0a7c44,#064e2b);border-radius:16px;padding:24px;text-align:center;color:white;margin-bottom:20px">
           <h2 style="margin:0">📥 New Application!</h2>
@@ -1722,7 +1871,7 @@ app.post("/api/apply",verifyToken,async(req,res)=>{
           <p><strong>Skills:</strong> ${student.skills.join(", ")||"Not listed"}</p>
           <p><strong>Project:</strong> ${jobTitle}</p>
           <a href="${BASE_URL}/brand-dashboard" style="display:inline-block;background:#0a7c44;color:white;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:bold">Review Application →</a>
-        </div></div>`);
+        </div></div>`).catch(err=>console.error("Application alert email error:",err.message));
     }
     res.json({success:true,message:`Applied for "${jobTitle}"! 🎉`,activeApplications:activeCount});
   }catch(err){console.error("Apply error:",err);res.status(500).json({success:false,message:"Server error."});}
@@ -1747,6 +1896,9 @@ app.get("/api/brand/stats",verifyToken,async(req,res)=>{
 app.post("/api/brand/project",verifyToken,async(req,res)=>{
   try{
     if(req.user.role!=="brand")return res.status(403).json({success:false,message:"Brand only."});
+    const settings=await getPlatformSettings();
+    if(settings.features.maintenanceMode)return res.status(503).json({success:false,message:"Platform is in maintenance mode. Please try again later."});
+    if(settings.features.projectPosting===false)return res.status(403).json({success:false,message:"Project posting is currently disabled by admin."});
     
     // ✅ ADMIN VERIFICATION CHECK ADDED HERE
     const brand=await User.findById(req.user.id);
@@ -1756,6 +1908,13 @@ app.post("/api/brand/project",verifyToken,async(req,res)=>{
 
     const{title,description,budget,category,deadline,tags}=req.body;
     if(!title||!budget||!category)return res.status(400).json({success:false,message:"Title, budget and category required."});
+    const budgetAmount=getMinimumAmount(budget);
+    if(budgetAmount<settings.minProjectBudget){
+      return res.status(400).json({success:false,message:`Minimum project budget is ${formatINR(settings.minProjectBudget)}.`});
+    }
+    if(budgetAmount>settings.maxProjectBudget){
+      return res.status(400).json({success:false,message:`Maximum project budget is ${formatINR(settings.maxProjectBudget)}.`});
+    }
     
     const brandName=brand.companyName||`${brand.firstName} ${brand.lastName}`;
     const job=await Job.create({
@@ -1907,9 +2066,11 @@ app.put("/api/brand/application/:id",verifyToken,async(req,res)=>{
     const student=app.studentId;
     if(student?.email){
       if(status==="accepted"){
-        sendEmail(student.email,`🎉 Your application was ACCEPTED! — ${app.jobTitle}`,acceptedEmail(student.firstName,app.jobTitle,app.brandName));
+        sendConfiguredEmail("application",student.email,`🎉 Your application was ACCEPTED! — ${app.jobTitle}`,acceptedEmail(student.firstName,app.jobTitle,app.brandName))
+          .catch(err=>console.error("Application status email error:",err.message));
       }else{
-        sendEmail(student.email,`Application Update — ${app.jobTitle}`,rejectedEmail(student.firstName,app.jobTitle));
+        sendConfiguredEmail("application",student.email,`Application Update — ${app.jobTitle}`,rejectedEmail(student.firstName,app.jobTitle))
+          .catch(err=>console.error("Application status email error:",err.message));
       }
     }
     res.json({success:true,message:`Application ${status}! Email sent. ✅`});
@@ -1947,7 +2108,8 @@ async function ensureWorkspaceForApplication(applicationId,brandId){
 async function notifyStudentPaymentSecured(payment){
   const student=await User.findById(payment.studentId);
   if(!student?.email)return;
-  sendEmail(
+  sendConfiguredEmail(
+    "payment",
     student.email,
     "💰 Payment Received — NextGenGrowth",
     `<div style="font-family:Arial,sans-serif;padding:20px;max-width:500px;margin:0 auto">
@@ -2454,6 +2616,210 @@ function buildBlogPayload(body){
   };
 }
 
+function apiError(message,statusCode=500){
+  const err=new Error(message);
+  err.statusCode=statusCode;
+  return err;
+}
+
+function requireObjectId(id,label="ID"){
+  if(!mongoose.Types.ObjectId.isValid(String(id||"")))throw apiError(`Invalid ${label}.`,400);
+}
+
+async function deleteProjectCascade(projectId){
+  requireObjectId(projectId,"project ID");
+  const project=await Job.findById(projectId).lean();
+  if(!project)throw apiError("Project not found.",404);
+  const jobId=String(project._id);
+  const apps=await Application.find({jobId}).select("_id").lean();
+  const appIds=apps.map(a=>a._id);
+  const[workspaces,payments,earnings,applications,job]=await Promise.all([
+    ProjectWorkspace.deleteMany({$or:[{jobId},{applicationId:{$in:appIds}}]}),
+    Payment.deleteMany({applicationId:{$in:appIds}}),
+    Earning.deleteMany({applicationId:{$in:appIds}}),
+    Application.deleteMany({_id:{$in:appIds}}),
+    Job.deleteOne({_id:project._id}),
+  ]);
+  return{
+    projects:job.deletedCount||0,
+    applications:applications.deletedCount||0,
+    workspaces:workspaces.deletedCount||0,
+    payments:payments.deletedCount||0,
+    earnings:earnings.deletedCount||0,
+  };
+}
+
+async function deleteUserCascade(userId){
+  requireObjectId(userId,"user ID");
+  const user=await User.findById(userId).lean();
+  if(!user)throw apiError("User not found.",404);
+  const brandJobs=user.role==="brand"
+    ? await Job.find({brandId:user._id}).select("_id").lean()
+    : [];
+  const jobObjectIds=brandJobs.map(j=>j._id);
+  const jobIds=jobObjectIds.map(String);
+  const appQuery={$or:[{studentId:user._id},{brandId:user._id}]};
+  if(jobIds.length)appQuery.$or.push({jobId:{$in:jobIds}});
+  const apps=await Application.find(appQuery).select("_id").lean();
+  const appIds=apps.map(a=>a._id);
+
+  const[workspaces,payments,earnings,applications,jobs,otps,deletedUser]=await Promise.all([
+    ProjectWorkspace.deleteMany({$or:[
+      {studentId:user._id},
+      {brandId:user._id},
+      {applicationId:{$in:appIds}},
+      {jobId:{$in:jobIds}},
+    ]}),
+    Payment.deleteMany({$or:[{studentId:user._id},{brandId:user._id},{applicationId:{$in:appIds}}]}),
+    Earning.deleteMany({$or:[{studentId:user._id},{applicationId:{$in:appIds}}]}),
+    Application.deleteMany({_id:{$in:appIds}}),
+    Job.deleteMany({_id:{$in:jobObjectIds}}),
+    OTP.deleteMany({email:user.email}),
+    User.deleteOne({_id:user._id}),
+  ]);
+
+  return{
+    users:deletedUser.deletedCount||0,
+    projects:jobs.deletedCount||0,
+    applications:applications.deletedCount||0,
+    workspaces:workspaces.deletedCount||0,
+    payments:payments.deletedCount||0,
+    earnings:earnings.deletedCount||0,
+    otps:otps.deletedCount||0,
+  };
+}
+
+async function updateApplicationStatusAsAdmin(applicationId,status){
+  requireObjectId(applicationId,"application ID");
+  if(!["review","accepted","rejected"].includes(status))throw apiError("Invalid status.",400);
+  const app=await Application.findById(applicationId).populate("studentId","firstName lastName email");
+  if(!app)throw apiError("Application not found.",404);
+  if(app.paymentStatus==="paid"&&status!=="accepted"){
+    throw apiError("Paid applications cannot be moved out of accepted status from the admin panel.",400);
+  }
+  if(status==="accepted"){
+    const alreadyAccepted=await Application.findOne({
+      _id:{$ne:app._id},
+      jobId:app.jobId,
+      status:"accepted",
+    }).populate("studentId","firstName lastName");
+    if(alreadyAccepted){
+      const selectedName=`${alreadyAccepted.studentId?.firstName||""} ${alreadyAccepted.studentId?.lastName||""}`.trim()||"another student";
+      throw apiError(`Already approved ${selectedName} for this project. Only one student can be approved per project.`,409);
+    }
+  }
+  app.status=status;
+  await app.save();
+  const student=app.studentId;
+  if(student?.email&&["accepted","rejected"].includes(status)){
+    const subject=status==="accepted"
+      ? `🎉 Your application was ACCEPTED! — ${app.jobTitle}`
+      : `Application Update — ${app.jobTitle}`;
+    const html=status==="accepted"
+      ? acceptedEmail(student.firstName,app.jobTitle,app.brandName)
+      : rejectedEmail(student.firstName,app.jobTitle);
+    sendConfiguredEmail("application",student.email,subject,html).catch(err=>console.error("Application email error:",err.message));
+  }
+  return app;
+}
+
+function testDataQueries(){
+  const textRegex=/(^|[\s._+\-@])(test|demo|sample|dummy|example|seed)([\s._+\-@]|$)/i;
+  const emailRegex=/(^test|[._+\-](test|demo|sample|dummy|seed)|@(example|test)\.|mailinator|yopmail|tempmail)/i;
+  return{textRegex,emailRegex};
+}
+
+async function clearTestData(){
+  const{textRegex,emailRegex}=testDataQueries();
+  const users=await User.find({$or:[
+    {email:emailRegex},
+    {firstName:textRegex},
+    {lastName:textRegex},
+    {companyName:textRegex},
+  ]}).select("_id email").lean();
+  const userIds=users.map(u=>u._id);
+
+  const jobs=await Job.find({$or:[
+    {brandId:{$in:userIds}},
+    {title:textRegex},
+    {brandName:textRegex},
+    {description:textRegex},
+  ]}).select("_id").lean();
+  const jobObjectIds=jobs.map(j=>j._id);
+  const jobIds=jobObjectIds.map(String);
+
+  const applications=await Application.find({$or:[
+    {studentId:{$in:userIds}},
+    {brandId:{$in:userIds}},
+    {jobId:{$in:jobIds}},
+    {jobTitle:textRegex},
+    {brandName:textRegex},
+  ]}).select("_id").lean();
+  const appIds=applications.map(a=>a._id);
+
+  const blogPosts=await BlogPost.find({$or:[{title:textRegex},{slug:textRegex}]}).select("_id").lean();
+  const blogIds=blogPosts.map(p=>p._id);
+
+  const[
+    workspacesDeleted,
+    paymentsDeleted,
+    earningsDeleted,
+    applicationsDeleted,
+    jobsDeleted,
+    usersDeleted,
+    otpsDeleted,
+    postsDeleted,
+    eventsDeleted,
+    subscribersDeleted,
+  ]=await Promise.all([
+    ProjectWorkspace.deleteMany({$or:[
+      {studentId:{$in:userIds}},
+      {brandId:{$in:userIds}},
+      {applicationId:{$in:appIds}},
+      {jobId:{$in:jobIds}},
+    ]}),
+    Payment.deleteMany({$or:[
+      {studentId:{$in:userIds}},
+      {brandId:{$in:userIds}},
+      {applicationId:{$in:appIds}},
+    ]}),
+    Earning.deleteMany({$or:[{studentId:{$in:userIds}},{applicationId:{$in:appIds}}]}),
+    Application.deleteMany({_id:{$in:appIds}}),
+    Job.deleteMany({_id:{$in:jobObjectIds}}),
+    User.deleteMany({_id:{$in:userIds}}),
+    OTP.deleteMany({email:emailRegex}),
+    BlogPost.deleteMany({_id:{$in:blogIds}}),
+    BlogEvent.deleteMany({postId:{$in:blogIds}}),
+    NewsletterSubscriber.deleteMany({email:emailRegex}),
+  ]);
+
+  return{
+    users:usersDeleted.deletedCount||0,
+    projects:jobsDeleted.deletedCount||0,
+    applications:applicationsDeleted.deletedCount||0,
+    workspaces:workspacesDeleted.deletedCount||0,
+    payments:paymentsDeleted.deletedCount||0,
+    earnings:earningsDeleted.deletedCount||0,
+    otps:otpsDeleted.deletedCount||0,
+    blogPosts:postsDeleted.deletedCount||0,
+    blogEvents:eventsDeleted.deletedCount||0,
+    subscribers:subscribersDeleted.deletedCount||0,
+  };
+}
+
+function notifyAdminSignup(user){
+  if(!user?.email||!ADMIN_EMAIL)return;
+  const name=`${user.firstName||""} ${user.lastName||""}`.trim()||"New user";
+  sendConfiguredEmail("admin",ADMIN_EMAIL,`New ${user.role} signup — NextGenGrowth`,
+    `<div style="font-family:Arial,sans-serif;padding:20px;max-width:520px;margin:0 auto">
+      <h2>New ${user.role} signup</h2>
+      <p><strong>Name:</strong> ${escapeHtml(name)}</p>
+      <p><strong>Email:</strong> ${escapeHtml(user.email)}</p>
+      <p><strong>Role:</strong> ${escapeHtml(user.role)}</p>
+      <p><strong>Company/College:</strong> ${escapeHtml(user.companyName||user.college||"")}</p>
+    </div>`).catch(err=>console.error("Admin alert email error:",err.message));
+}
+
 // ✅ NEW ADMIN API FOR APPROVING BRANDS
 app.put("/api/admin/approve-brand/:id", adminOnly, async (req, res) => {
   try {
@@ -2464,7 +2830,8 @@ app.put("/api/admin/approve-brand/:id", adminOnly, async (req, res) => {
     await user.save();
     
     // Approval Email bhej rahe hain yahan se
-    sendEmail(user.email, "Welcome Aboard! Your Brand Account is Approved 🎉", brandApprovedEmail(user.firstName));
+    sendConfiguredEmail("welcome",user.email, "Welcome Aboard! Your Brand Account is Approved 🎉", brandApprovedEmail(user.firstName))
+      .catch(err=>console.error("Brand approval email error:",err.message));
     
     res.json({success: true, message: "Brand approved and email sent!"});
   } catch (err) {
@@ -2485,6 +2852,66 @@ app.get("/api/admin/stats",adminOnly,async(req,res)=>{
     ]);
     res.json({success:true,stats:{totalUsers,totalStudents,totalBrands,totalProjects,openProjects,totalApps,acceptedApps,totalEarnings:earningsData[0]?.total||0,pendingEarnings:pendingData[0]?.total||0,todaySignups}});
   }catch(err){res.status(500).json({success:false,message:"Server error."});}
+});
+
+app.get("/api/admin/settings",adminOnly,async(req,res)=>{
+  try{
+    const settings=await getPlatformSettings();
+    res.json({success:true,settings});
+  }catch(err){
+    res.status(500).json({success:false,message:"Could not load settings."});
+  }
+});
+
+app.put("/api/admin/settings",adminOnly,async(req,res)=>{
+  try{
+    const settings=await savePlatformSettings(req.body||{});
+    res.json({success:true,message:"Settings saved.",settings});
+  }catch(err){
+    res.status(err.statusCode||500).json({success:false,message:err.message||"Could not save settings."});
+  }
+});
+
+app.get("/api/admin/export",adminOnly,async(req,res)=>{
+  try{
+    const[users,projects,applications,earnings,payments,workspaces,blogPosts,newsletterSubscribers,settings]=await Promise.all([
+      User.find().select("-password").lean(),
+      Job.find().lean(),
+      Application.find().lean(),
+      Earning.find().lean(),
+      Payment.find().lean(),
+      ProjectWorkspace.find().lean(),
+      BlogPost.find().lean(),
+      NewsletterSubscriber.find().lean(),
+      getPlatformSettings(),
+    ]);
+    res.json({
+      success:true,
+      exportedAt:new Date().toISOString(),
+      counts:{
+        users:users.length,
+        projects:projects.length,
+        applications:applications.length,
+        earnings:earnings.length,
+        payments:payments.length,
+        workspaces:workspaces.length,
+        blogPosts:blogPosts.length,
+        newsletterSubscribers:newsletterSubscribers.length,
+      },
+      data:{users,projects,applications,earnings,payments,workspaces,blogPosts,newsletterSubscribers,settings},
+    });
+  }catch(err){
+    res.status(500).json({success:false,message:"Could not export data."});
+  }
+});
+
+app.delete("/api/admin/test-data",adminOnly,async(req,res)=>{
+  try{
+    const deleted=await clearTestData();
+    res.json({success:true,message:"Test data cleared.",deleted});
+  }catch(err){
+    res.status(err.statusCode||500).json({success:false,message:err.message||"Could not clear test data."});
+  }
 });
 
 app.get("/api/admin/blog/posts",adminOnly,async(req,res)=>{
@@ -2605,12 +3032,9 @@ app.get("/api/admin/users",adminOnly,async(req,res)=>{
 
 app.delete("/api/admin/user/:id",adminOnly,async(req,res)=>{
   try{
-    const user=await User.findById(req.params.id);
-    if(!user)return res.status(404).json({success:false,message:"Not found."});
-    await User.findByIdAndDelete(req.params.id);
-    await Application.deleteMany({studentId:req.params.id});
-    res.json({success:true,message:`User deleted.`});
-  }catch(err){res.status(500).json({success:false,message:"Server error."});}
+    const deleted=await deleteUserCascade(req.params.id);
+    res.json({success:true,message:`User deleted.`,deleted});
+  }catch(err){res.status(err.statusCode||500).json({success:false,message:err.message||"Server error."});}
 });
 
 app.get("/api/admin/projects",adminOnly,async(req,res)=>{
@@ -2622,8 +3046,11 @@ app.get("/api/admin/projects",adminOnly,async(req,res)=>{
 });
 
 app.delete("/api/admin/project/:id",adminOnly,async(req,res)=>{
-  try{await Job.findByIdAndDelete(req.params.id);res.json({success:true,message:"Project deleted."});}
-  catch(err){res.status(500).json({success:false,message:"Server error."});}
+  try{
+    const deleted=await deleteProjectCascade(req.params.id);
+    res.json({success:true,message:"Project deleted.",deleted});
+  }
+  catch(err){res.status(err.statusCode||500).json({success:false,message:err.message||"Server error."});}
 });
 
 app.get("/api/admin/applications",adminOnly,async(req,res)=>{
@@ -2632,6 +3059,15 @@ app.get("/api/admin/applications",adminOnly,async(req,res)=>{
     const result=apps.map(a=>({...a.toObject(),firstName:a.studentId?.firstName||"",lastName:a.studentId?.lastName||"",studentEmail:a.studentId?.email||""}));
     res.json({success:true,applications:result});
   }catch(err){res.status(500).json({success:false,message:"Server error."});}
+});
+
+app.put("/api/admin/application/:id",adminOnly,async(req,res)=>{
+  try{
+    const app=await updateApplicationStatusAsAdmin(req.params.id,req.body.status);
+    res.json({success:true,message:`Application marked ${app.status}.`,application:app});
+  }catch(err){
+    res.status(err.statusCode||500).json({success:false,message:err.message||"Server error."});
+  }
 });
 
 app.get("/api/admin/transactions",adminOnly,async(req,res)=>{
@@ -2645,15 +3081,20 @@ app.get("/api/admin/transactions",adminOnly,async(req,res)=>{
 app.post("/api/admin/earning",adminOnly,async(req,res)=>{
   try{
     const{studentId,amount,description,status}=req.body;
+    requireObjectId(studentId,"student ID");
+    if(!Number(amount)||Number(amount)<=0)return res.status(400).json({success:false,message:"Enter a valid amount."});
+    if(!["paid","pending",undefined,null,""].includes(status))return res.status(400).json({success:false,message:"Invalid payment status."});
+    const student=await User.findOne({_id:studentId,role:"student"});
+    if(!student)return res.status(404).json({success:false,message:"Student not found."});
     await Earning.create({studentId,amount,description,status:status||"paid"});
-    const student=await User.findById(studentId);
     if(student?.email){
-      sendEmail(student.email,"💰 Payment Received — NextGenGrowth",
+      sendConfiguredEmail("payment",student.email,"💰 Payment Received — NextGenGrowth",
         `<div style="font-family:Arial,sans-serif;padding:20px;max-width:500px;margin:0 auto">
         <div style="background:linear-gradient(135deg,#0a7c44,#064e2b);border-radius:16px;padding:24px;text-align:center;color:white">
           <h2>💰 Payment Received!</h2><p style="font-size:2rem;font-weight:bold">₹${amount}</p><p>${description||"Project payment"}</p>
         </div>
-        <a href="${BASE_URL}/dashboard" style="display:inline-block;background:#0a7c44;color:white;padding:12px 24px;border-radius:10px;text-decoration:none;margin-top:16px;font-weight:bold">View Earnings →</a></div>`);
+        <a href="${BASE_URL}/dashboard" style="display:inline-block;background:#0a7c44;color:white;padding:12px 24px;border-radius:10px;text-decoration:none;margin-top:16px;font-weight:bold">View Earnings →</a></div>`)
+        .catch(err=>console.error("Payment email error:",err.message));
     }
     res.json({success:true,message:"Earning added!"});
   }catch(err){res.status(500).json({success:false,message:"Server error."});}
@@ -2740,24 +3181,30 @@ ${unique.map(url=>`  <url><loc>${escapeHtml(`${getBaseUrl()}${url}`)}</loc><chan
 });
 
 app.get("/api/health",async(req,res)=>{
-  const userCount=await User.countDocuments();
-  const jobCount=await Job.countDocuments();
-  const razorpayConfig=getRazorpayConfig();
-  res.json({
-    success:true,
-    message:"NextGenGrowth API 🚀 v4",
-    users:userCount,
-    jobs:jobCount,
-    email:process.env.RESEND_API_KEY?"configured":"not configured",
-    google:GOOGLE_CLIENT_ID?"configured":"not configured",
-    razorpay:razorpayConfig.configured?"configured":"not configured",
-    razorpayStatus:{
-      keyId:razorpayConfig.keyId?"configured":"missing",
-      keySecret:razorpayConfig.keySecret?"configured":"missing",
-      mode:razorpayConfig.mode,
-      missing:razorpayConfig.missing,
-    },
-  });
+  try{
+    const[userCount,jobCount]=dbReady()
+      ? await Promise.all([User.countDocuments(),Job.countDocuments()])
+      : [0,0];
+    const razorpayConfig=getRazorpayConfig();
+    res.json({
+      success:true,
+      message:"NextGenGrowth API 🚀 v4",
+      users:userCount,
+      jobs:jobCount,
+      database:dbReady()?"connected":"not connected",
+      email:process.env.RESEND_API_KEY?"configured":"not configured",
+      google:GOOGLE_CLIENT_ID?"configured":"not configured",
+      razorpay:razorpayConfig.configured?"configured":"not configured",
+      razorpayStatus:{
+        keyId:razorpayConfig.keyId?"configured":"missing",
+        keySecret:razorpayConfig.keySecret?"configured":"missing",
+        mode:razorpayConfig.mode,
+        missing:razorpayConfig.missing,
+      },
+    });
+  }catch(err){
+    res.status(500).json({success:false,message:"Health check failed.",error:err.message});
+  }
 });
 // --- NEXTGEN GROWTH AI LOGIC START ---
 
@@ -2830,5 +3277,5 @@ app.listen(PORT,()=>{
   console.log(`📧 Email:  ${process.env.RESEND_API_KEY?"Configured ✅":"Not configured ❌"}`);
   console.log(`🔑 Google: ${GOOGLE_CLIENT_ID?"Configured":"Not configured"}`);
   console.log(`💳 Razorpay: ${razorpayConfig.configured?`Configured ✅ (${razorpayConfig.mode})`:`Not configured ❌ missing ${razorpayConfig.missing.join(", ")}`}`);
-  console.log(`🗄️  DB:    MongoDB Atlas\n`);
+  console.log(`🗄️  DB:    ${MONGO_URI?"MongoDB Atlas":"Not configured"}\n`);
 });

@@ -1185,7 +1185,7 @@
 
       btn.innerHTML = '<span class="btn-spinner"></span>'; btn.disabled = true;
       try {
-        let r = await fetch('/api/send-otp', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, name: fn || 'User' }) });
+        let r = await fetch('/api/send-otp', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, name: fn || 'User', role }) });
         let res = await r.json();
         if (res.success) {
           vEmail = email; document.getElementById('otpEmailDisplay').textContent = email;
