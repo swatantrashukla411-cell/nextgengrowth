@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>NextGenGrowth — Where Skills Meet Opportunity</title>
-<meta name="description" content="India's first student-powered digital growth platform. Hire vetted college talent or learn industry skills." />
+<meta name="description" content="NextGenGrowth helps brands hire verified students for websites, content, social media, AI tools and growth projects with secure payments and trusted delivery workflows." />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
@@ -312,6 +312,77 @@
     margin-bottom: 14px;
   }
 
+  /* ---------- Trust signals ---------- */
+  .trust-shell {
+    display: grid; grid-template-columns: minmax(0,.9fr) minmax(0,1.1fr); gap: 28px; align-items: stretch;
+  }
+  @media (max-width: 920px) { .trust-shell { grid-template-columns: 1fr; } }
+  .trust-panel {
+    background: linear-gradient(155deg, var(--green-700), var(--green-900));
+    color: #fff; border-radius: 28px; padding: 34px; position: relative; overflow: hidden;
+    box-shadow: var(--shadow-lg);
+  }
+  .trust-panel::before {
+    content:""; position:absolute; inset:0;
+    background: radial-gradient(520px circle at 14% 12%, rgba(255,255,255,.18), transparent 55%),
+                radial-gradient(420px circle at 92% 82%, rgba(110,231,183,.22), transparent 58%);
+  }
+  .trust-panel > * { position: relative; }
+  .trust-panel .eyebrow { background: rgba(255,255,255,.12); color: #fff; border-color: rgba(255,255,255,.22); }
+  .trust-panel h2 { color: #fff; margin-bottom: 16px; }
+  .trust-panel p { color: rgba(255,255,255,.82); }
+  .trust-metrics {
+    display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:28px;
+  }
+  .trust-metric {
+    border:1px solid rgba(255,255,255,.18);border-radius:18px;padding:16px;background:rgba(255,255,255,.08);
+  }
+  .trust-metric strong { display:block;font-size:26px;line-height:1;margin-bottom:7px;color:#fff; }
+  .trust-metric span { color:rgba(255,255,255,.78);font-size:12.5px;font-weight:600; }
+  .signal-grid { display:grid;grid-template-columns:repeat(2,1fr);gap:16px; }
+  @media (max-width: 640px) { .signal-grid,.trust-metrics { grid-template-columns:1fr; } }
+  .signal-card {
+    background:#fff;border:1px solid var(--border);border-radius:22px;padding:22px;box-shadow:var(--shadow-sm);
+    transition:transform .25s ease,border-color .25s ease,box-shadow .25s ease;
+  }
+  .signal-card:hover { transform:translateY(-4px);border-color:var(--green-300);box-shadow:var(--shadow-md); }
+  .signal-icon {
+    width:42px;height:42px;border-radius:14px;background:var(--green-50);color:var(--green-700);
+    display:grid;place-items:center;margin-bottom:14px;
+  }
+  .signal-card h3 { font-size:18px;margin-bottom:8px; }
+  .signal-card p { color:var(--ink-500);font-size:14.2px; }
+  .proof-row {
+    display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:24px;
+  }
+  @media (max-width: 820px) { .proof-row { grid-template-columns:1fr; } }
+  .output-card,.case-card {
+    background:#fff;border:1px solid var(--border);border-radius:24px;padding:24px;box-shadow:var(--shadow-sm);
+  }
+  .output-list { display:grid;gap:12px;margin-top:16px; }
+  .output-item {
+    display:flex;align-items:flex-start;gap:12px;padding:13px;border-radius:16px;background:var(--bg-soft);
+    border:1px solid rgba(16,185,129,.1);
+  }
+  .output-item b { display:block;font-size:14px;color:var(--ink-900); }
+  .output-item span { display:block;font-size:12.5px;color:var(--ink-500);margin-top:2px; }
+  .output-dot {
+    width:30px;height:30px;border-radius:10px;background:linear-gradient(135deg,var(--green-300),var(--green-700));
+    color:#fff;display:grid;place-items:center;font-size:13px;font-weight:800;flex:0 0 30px;
+  }
+  .case-grid { display:grid;gap:12px;margin-top:16px; }
+  .case-mini {
+    border:1px solid var(--border);border-radius:16px;padding:14px;background:linear-gradient(135deg,#fff,var(--green-50));
+  }
+  .case-mini .tagline { color:var(--green-700);font-size:11px;text-transform:uppercase;letter-spacing:.08em;font-weight:800;margin-bottom:5px; }
+  .case-mini strong { display:block;font-size:15px;margin-bottom:5px; }
+  .case-mini p { color:var(--ink-500);font-size:13px; }
+  .trust-note {
+    margin-top:22px;padding:18px;border-radius:20px;background:#fff;border:1px solid var(--border);
+    display:flex;gap:14px;align-items:flex-start;color:var(--ink-700);font-size:14.2px;
+  }
+  .trust-note svg { color:var(--green-700);flex:0 0 22px;margin-top:2px; }
+
   /* ---------- Services bento ---------- */
   .bento { display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; }
   .bento .item {
@@ -555,7 +626,9 @@
     .panel-card-1{bottom:58px}
     .panel-card-2{display:none}
     .marquee{display:none}
-    .feat-card,.step,.bento .item,.col,.testi{padding:20px;border-radius:16px}
+    .feat-card,.step,.bento .item,.col,.testi,.signal-card,.output-card,.case-card,.trust-panel{padding:20px;border-radius:16px}
+    .trust-note{display:block;border-radius:16px}
+    .trust-note svg{margin-bottom:10px}
     .stats-grid{grid-template-columns:1fr;gap:22px}
     .compare-list li{font-size:14px}
     .footer-bottom{display:block}
@@ -586,6 +659,7 @@
   <div class="nav-links">
     <a href="#solution">Platform</a>
     <a href="#how">How it Works</a>
+    <a href="#trust">Trust</a>
     <a href="#services">Services</a>
     <a href="#school">Skill School</a>
     <a href="/blog">Blog</a>
@@ -607,6 +681,7 @@
   <div class="mobile-panel" onclick="event.stopPropagation()">
     <a href="#solution" onclick="closeMobileMenu()">Platform <span>→</span></a>
     <a href="#how" onclick="closeMobileMenu()">How it Works <span>→</span></a>
+    <a href="#trust" onclick="closeMobileMenu()">Trust <span>→</span></a>
     <a href="#services" onclick="closeMobileMenu()">Services <span>→</span></a>
     <a href="#school" onclick="closeMobileMenu()">Skill School <span>→</span></a>
     <a href="/blog">Blog <span>→</span></a>
@@ -812,6 +887,96 @@
   </div>
 </section>
 
+<!-- TRUST SIGNALS -->
+<section id="trust">
+  <div class="container">
+    <div class="section-head reveal">
+      <span class="eyebrow"><span class="dot"></span>Trust signals</span>
+      <h2>Built to make student hiring feel <span class="gradient-text">serious, safe and fast.</span></h2>
+      <p class="lead">NextGenGrowth is not just a listing page. It is a trust layer for brands and Gen-Z creators who want clear work, real proof and secure project flow.</p>
+    </div>
+
+    <div class="trust-shell">
+      <div class="trust-panel reveal">
+        <span class="eyebrow"><span class="dot"></span>Built for Gen-Z creators</span>
+        <h2>Young talent, professional workflow.</h2>
+        <p>Students get a real profile, portfolio links, skill tags, workspaces and payment visibility. Brands get verified student applications, clear response expectations and one approved student per project.</p>
+        <div class="trust-metrics">
+          <div class="trust-metric"><strong>24h</strong><span>target application response window</span></div>
+          <div class="trust-metric"><strong>1</strong><span>selected student per project for focus</span></div>
+          <div class="trust-metric"><strong>Pay</strong><span>secure Razorpay-powered payment flow</span></div>
+          <div class="trust-metric"><strong>KYC</strong><span>student payout details collected before release</span></div>
+        </div>
+      </div>
+
+      <div class="signal-grid">
+        <div class="signal-card reveal">
+          <div class="signal-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+          </div>
+          <h3>Verified students</h3>
+          <p>Student profiles show education, skills, bio, links and recent work so brands can judge fit before approving.</p>
+        </div>
+        <div class="signal-card reveal">
+          <div class="signal-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18M7 15h.01M11 15h2"/></svg>
+          </div>
+          <h3>Secure payments</h3>
+          <p>Brands pay through a guided checkout and students see earnings only after accepted work and approval flow.</p>
+        </div>
+        <div class="signal-card reveal">
+          <div class="signal-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          </div>
+          <h3>Fast response times</h3>
+          <p>The platform is designed around quick project posting, fast applications and clear brand decisions.</p>
+        </div>
+        <div class="signal-card reveal">
+          <div class="signal-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <h3>Review before approval</h3>
+          <p>Brands can share resources, review submissions, request revisions and approve only when delivery is ready.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="proof-row">
+      <div class="output-card reveal">
+        <span class="eyebrow"><span class="dot"></span>Sample outputs</span>
+        <h3>What brands can ask students to create</h3>
+        <div class="output-list">
+          <div class="output-item"><div class="output-dot">01</div><div><b>Landing page or website refresh</b><span>Hero copy, responsive layout, sections, forms and launch polish.</span></div></div>
+          <div class="output-item"><div class="output-dot">02</div><div><b>Social media launch kit</b><span>Reel ideas, captions, content calendar, post creatives and brand voice.</span></div></div>
+          <div class="output-item"><div class="output-dot">03</div><div><b>AI and automation workflow</b><span>Lead capture, content repurposing, research sheets and simple SOPs.</span></div></div>
+        </div>
+      </div>
+
+      <div class="case-card reveal">
+        <span class="eyebrow"><span class="dot"></span>Case studies</span>
+        <h3>Proof stories to build brand trust</h3>
+        <div class="case-grid">
+          <div class="case-mini">
+            <div class="tagline">NextGenGrowth case study</div>
+            <strong>Brand project workflow</strong>
+            <p>A brand posts one brief, reviews student profiles, accepts one student, pays securely and manages resources in one workspace.</p>
+          </div>
+          <div class="case-mini">
+            <div class="tagline">Creator growth case study</div>
+            <strong>Student profile to paid work</strong>
+            <p>A Gen-Z creator can show skills, apply with context, submit work and build proof beyond certificates.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="trust-note reveal">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+      <div><strong>Trust is designed into the workflow.</strong> The brand sees profile proof before approval, the student sees a real paid project, and the platform keeps payment, resources, submissions and approval in one place.</div>
+    </div>
+  </div>
+</section>
+
 <!-- SERVICES BENTO -->
 <section id="services">
   <div class="container">
@@ -948,29 +1113,30 @@
 <section style="background:var(--bg-soft);">
   <div class="container">
     <div class="section-head reveal">
-      <span class="eyebrow"><span class="dot"></span>Built for both sides</span>
-      <h2>A platform with a <span class="gradient-text">human rhythm.</span></h2>
+      <span class="eyebrow"><span class="dot"></span>Testimonials</span>
+      <h2>Built for both sides, with a <span class="gradient-text">human rhythm.</span></h2>
+      <p class="lead">The platform is shaped around what brands need before trusting a student, and what students need before doing serious paid work.</p>
     </div>
     <div class="testi-grid">
       <div class="testi reveal">
         <div class="stars">★★★★★</div>
-        <p class="quote">"Brands should not have to guess who can deliver. Profiles, applications and payment status make the decision clear."</p>
+        <p class="quote">"The best part is clarity. A brand can see the student's skills, project context and payment status before work begins."</p>
         <div class="who">
           <div class="av">B</div>
-          <div><div class="name">For Brands</div><div class="role">Post, approve, pay, review</div></div>
+          <div><div class="name">Brand workflow</div><div class="role">Post, approve, pay, review</div></div>
         </div>
       </div>
       <div class="testi reveal">
         <div class="stars">★★★★★</div>
-        <p class="quote">"Students need more than certificates. They need a place to apply, submit work, build trust and earn from projects."</p>
+        <p class="quote">"Gen-Z creators need more than certificates. They need a profile, recent work, feedback and real paid projects."</p>
         <div class="who">
           <div class="av">S</div>
-          <div><div class="name">For Students</div><div class="role">Profile, apply, submit, grow</div></div>
+          <div><div class="name">Student creator journey</div><div class="role">Profile, apply, submit, grow</div></div>
         </div>
       </div>
       <div class="testi reveal">
         <div class="stars">★★★★★</div>
-        <p class="quote">"NextGenGrowth is designed to feel simple: one project, one selected student, one workspace, one final approval."</p>
+        <p class="quote">"NextGenGrowth is intentionally simple: one project, one selected student, one workspace, one final approval."</p>
         <div class="who">
           <div class="av">N</div>
           <div><div class="name">NextGenGrowth</div><div class="role">Founded by Swatantra Shukla</div></div>
@@ -1009,6 +1175,7 @@
     <div>
       <h4>Platform</h4>
       <a href="#solution">Marketplace</a>
+      <a href="#trust">Trust Signals</a>
       <a href="#school">Skill School</a>
       <a href="#services">Services</a>
       <a href="/blog">Blog</a>
