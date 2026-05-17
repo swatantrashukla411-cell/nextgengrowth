@@ -70,11 +70,18 @@ a { color: inherit; }
   width: 34px;
   height: 34px;
   border-radius: 11px;
-  background: linear-gradient(135deg, var(--green-500), var(--green-800));
-  color: #fff;
+  background: #fff;
   display: grid;
   place-items: center;
   box-shadow: 0 12px 24px -12px rgba(6, 95, 70, 0.7);
+  overflow: hidden;
+}
+
+.brand-mark img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
 .brand span span { color: var(--green-600); }

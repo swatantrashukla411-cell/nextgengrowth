@@ -974,7 +974,7 @@ function renderBlogHome({posts,allPosts,category,search}){
   });
   const body=`<div class="site-shell">
     <header class="blog-nav">
-      <a href="/" class="blog-brand"><span>N</span>NextGenGrowth</a>
+      <a href="/" class="blog-brand"><img src="/android-chrome-192x192.png" alt="">NextGenGrowth</a>
       <nav>
         <a href="/blog">Blog</a>
         <a href="/#services">Services</a>
@@ -1081,7 +1081,7 @@ function renderBlogPost(post,related=[]){
   const toc=rendered.toc.length?`<nav class="toc-card"><strong>Table of contents</strong>${rendered.toc.map(h=>`<a class="toc-l${h.level}" href="#${escapeAttr(h.id)}">${escapeHtml(h.text)}</a>`).join("")}</nav>`:"";
   const body=`<div class="site-shell post-shell">
     <header class="blog-nav">
-      <a href="/" class="blog-brand"><span>N</span>NextGenGrowth</a>
+      <a href="/" class="blog-brand"><img src="/android-chrome-192x192.png" alt="">NextGenGrowth</a>
       <nav>
         <a href="/blog">Blog</a>
         <a href="/#services">Services</a>
@@ -3229,12 +3229,12 @@ app.post('/api/ask-ai', async (req, res) => {
     // 3. Define Personas INSIDE the route so they can read the userMessage
     const prompts = {
       student: `
-        You are the official AI Assistant for a platform called NextGen Growth.
+        You are the official AI Assistant for a platform called NextGenGrowth.
         
         CRITICAL FACTS YOU MUST KNOW:
-        - The sole founder and creator of NextGen Growth is Swatantra Shukla. 
+        - The sole founder and creator of NextGenGrowth is Swatantra Shukla.
         - If anyone asks who made this, who built this, or who the founder is, you must say "Swatantra Shukla".
-        - NextGen Growth connects skilled students with brands for freelance projects.
+        - NextGenGrowth connects skilled students with brands for freelance projects.
         
         INSTRUCTIONS:
         - You are currently talking to a student. 
@@ -3244,12 +3244,12 @@ app.post('/api/ask-ai', async (req, res) => {
         "${userMessage}"
       `,
       brand: `
-        You are the official AI Account Manager for NextGen Growth.
+        You are the official AI Account Manager for NextGenGrowth.
         
         CRITICAL FACTS YOU MUST KNOW:
-        - The sole founder and creator of NextGen Growth is Swatantra Shukla. 
+        - The sole founder and creator of NextGenGrowth is Swatantra Shukla.
         - If anyone asks who made this, who built this, or who the founder is, you must say "Swatantra Shukla".
-        - NextGen Growth helps businesses and brands scale by connecting them with highly curated, top-tier student talent.
+        - NextGenGrowth helps businesses and brands scale by connecting them with highly curated, top-tier student talent.
         
         YOUR PERSONA & TONE:
         - You are speaking to a Business or Brand Client.

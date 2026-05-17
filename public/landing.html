@@ -81,15 +81,14 @@
   .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 18px; letter-spacing: -0.02em; color:var(--ink-900); text-decoration:none; min-width:0; }
   .logo-mark {
     width: 34px; height: 34px; border-radius: 10px;
-    background: linear-gradient(135deg, var(--green-400), var(--green-700));
+    background: #fff;
     display: grid; place-items: center; color: #fff; font-weight: 800;
     box-shadow: 0 6px 20px -4px rgba(16,185,129,0.5);
     position: relative; overflow: hidden;
   }
+  .logo-mark img { width:100%; height:100%; object-fit:cover; display:block; }
   .logo-mark::after{
-    content:""; position:absolute; inset:-50%;
-    background: conic-gradient(from 0deg, transparent, rgba(255,255,255,.4), transparent);
-    animation: spin 4s linear infinite;
+    display:none;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
   .nav-links { display: flex; gap: 28px; }
@@ -658,7 +657,7 @@
 <!-- NAVBAR -->
 <nav id="nav">
   <a href="/" class="logo">
-    <div class="logo-mark">N</div>
+    <div class="logo-mark"><img src="android-chrome-192x192.png" alt=""></div>
     <span>NextGen<span class="gradient-text">Growth</span></span>
   </a>
   <div class="nav-links">
@@ -1172,7 +1171,7 @@
   <div class="footer-grid">
     <div>
       <div class="logo" style="margin-bottom:14px;">
-        <div class="logo-mark">N</div>
+        <div class="logo-mark"><img src="android-chrome-192x192.png" alt=""></div>
         <span>NextGen<span class="gradient-text">Growth</span></span>
       </div>
       <p style="color:var(--ink-500); font-size:14.5px; max-width:340px;">Where brands meet skilled students for paid projects, secure payments and clean delivery.</p>

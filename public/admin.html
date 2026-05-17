@@ -51,7 +51,7 @@ canvas#particles{position:absolute;inset:0;opacity:.6}
   box-shadow:0 0 80px rgba(0,255,136,.06),0 40px 80px rgba(0,0,0,.5);
 }
 .login-logo{display:flex;align-items:center;gap:10px;margin-bottom:6px;justify-content:center}
-.login-logo-dot{width:10px;height:10px;border-radius:50%;background:var(--gb);box-shadow:0 0 20px var(--gb);animation:glow 2s infinite}
+.admin-logo-img{width:34px;height:34px;border-radius:10px;background:#fff;object-fit:cover;display:block;box-shadow:0 10px 24px rgba(0,255,136,.14)}
 @keyframes glow{0%,100%{box-shadow:0 0 10px var(--gb)}50%{box-shadow:0 0 30px var(--gb),0 0 60px rgba(0,255,136,.3)}}
 .login-logo-text{font-family:'Syne',sans-serif;font-size:1.3rem;font-weight:800;color:var(--white)}
 .login-logo-text span{color:var(--gb)}
@@ -113,7 +113,7 @@ canvas#particles{position:absolute;inset:0;opacity:.6}
 
 .sb-head{padding:24px 20px 18px;border-bottom:1px solid var(--border);flex-shrink:0}
 .sb-logo{display:flex;align-items:center;gap:9px;margin-bottom:14px}
-.sb-logo-dot{width:8px;height:8px;border-radius:50%;background:var(--gb);box-shadow:0 0 12px var(--gb);animation:glow 2s infinite}
+.sb-logo .admin-logo-img{width:30px;height:30px;border-radius:9px}
 .sb-logo-text{font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:800;color:var(--white)}
 .sb-logo-text span{color:var(--gb)}
 .sb-admin-card{
@@ -359,7 +359,7 @@ select.fi option{background:var(--bg2)}
   <div class="login-box">
     <div class="login-card">
       <div class="login-logo">
-        <div class="login-logo-dot"></div>
+        <img class="admin-logo-img" src="android-chrome-192x192.png" alt="">
         <span class="login-logo-text">NextGen<span>Growth</span></span>
       </div>
       <div class="login-badge">👑 ADMIN PANEL</div>
@@ -386,7 +386,7 @@ select.fi option{background:var(--bg2)}
   <aside class="sidebar">
     <div class="sb-head">
       <div class="sb-logo">
-        <div class="sb-logo-dot"></div>
+        <img class="admin-logo-img" src="android-chrome-192x192.png" alt="">
         <span class="sb-logo-text">NextGen<span>Growth</span></span>
       </div>
       <div class="sb-admin-card">
