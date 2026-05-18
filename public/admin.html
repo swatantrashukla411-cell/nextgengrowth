@@ -901,6 +901,8 @@ function showApp(){
 }
 
 function adminLogout(){
+  const ok=confirm('Are you sure you want to log out of the NextGenGrowth admin panel?');
+  if(!ok)return;
   gsap.to('.app',{opacity:0,duration:.3,onComplete:()=>{
     localStorage.removeItem('ngg_admin_token');_tok=null;location.reload();
   }});

@@ -1412,6 +1412,8 @@ function showToast(msg,type='info'){
   setTimeout(()=>t.className='toast',3500);
 }
 function logout(){
+  const ok=confirm('Are you sure you want to log out of NextGenGrowth?');
+  if(!ok)return;
   gsap.to('.app',{opacity:0,duration:.3,onComplete:()=>{
     localStorage.removeItem('ngg_token');
     localStorage.removeItem('ngg_user');
