@@ -21,7 +21,8 @@ const MONGO_URI  = process.env.MONGODB_URI;
 const GOOGLE_CLIENT_ID     = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 const GOOGLE_CALLBACK_URL  = process.env.GOOGLE_CALLBACK_URL || "http://localhost:3000/auth/google/callback";
-const BASE_URL   = process.env.BASE_URL || "https://nextgengrowth-production.up.railway.app";
+const SITE_URL   = String(process.env.SITE_URL || "https://nextgengrowth.in").replace(/\/$/,"");
+const BASE_URL   = String(process.env.BASE_URL || SITE_URL).replace(/\/$/,"");
 
 const RAZORPAY_MIN_AMOUNT_PAISE = 100;
 
@@ -888,7 +889,7 @@ function blogImageMarkup(post,classes=""){
 }
 
 function getBaseUrl(){
-  return String(BASE_URL||"https://nextgengrowth.in").replace(/\/$/,"");
+  return SITE_URL;
 }
 
 function blogMetaTags({title,description,url,image,type="website",publishedAt,updatedAt}){
@@ -3211,7 +3212,7 @@ app.get("/api/health",async(req,res)=>{
     res.status(500).json({success:false,message:"Health check failed.",error:err.message});
   }
 });
-// --- NEXTGEN GROWTH AI LOGIC START ---
+// --- NEXTGENGROWTH AI LOGIC START ---
 
 // 1. Connect to Gemini 
 const aiClient = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
@@ -3275,7 +3276,7 @@ app.post('/api/ask-ai', async (req, res) => {
     res.status(500).json({ error: "Something went wrong communicating with the AI." });
   }
 });
-// --- NEXTGEN GROWTH AI LOGIC END ---
+// --- NEXTGENGROWTH AI LOGIC END ---
 app.listen(PORT,()=>{
   const razorpayConfig=getRazorpayConfig();
   console.log(`\n🚀 Server: http://localhost:${PORT}`);
