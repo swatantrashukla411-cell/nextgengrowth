@@ -2015,7 +2015,8 @@ app.post("/api/brand/project",verifyToken,async(req,res)=>{
     }
 
     const{title,description,budget,category,deadline,tags}=req.body;
-    if(!title||!budget||!category)return res.status(400).json({success:false,message:"Title, budget and category required."});
+    const cleanDescription=String(description||"").trim();
+    if(!title||!cleanDescription||!budget||!category)return res.status(400).json({success:false,message:"Title, description, budget and category required."});
     const budgetAmount=getMinimumAmount(budget);
     if(budgetAmount<settings.minProjectBudget){
       return res.status(400).json({success:false,message:`Minimum project budget is ${formatINR(settings.minProjectBudget)}.`});
@@ -2027,7 +2028,7 @@ app.post("/api/brand/project",verifyToken,async(req,res)=>{
     const brandName=brand.companyName||`${brand.firstName} ${brand.lastName}`;
     const job=await Job.create({
       brandId:req.user.id,brandName,
-      title,description:description||"",budget,category,
+      title,description:cleanDescription,budget,category,
       deadline:deadline||"",tags:tags||[],
     });
     res.json({success:true,message:"Project posted! Students will see it now 🚀",projectId:job._id});

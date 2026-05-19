@@ -170,6 +170,7 @@
     .pj-info{flex:1;min-width:0}
     .pj-title{font-weight:600;font-size:.87rem;color:var(--td);margin-bottom:2px}
     .pj-meta{font-size:.73rem;color:var(--ts);display:flex;gap:10px}
+    .pj-desc{font-size:.76rem;color:var(--tm);line-height:1.45;margin-top:7px;background:var(--gp);border:1px solid var(--br);border-radius:9px;padding:8px;white-space:pre-wrap;overflow-wrap:anywhere}
     .pj-right{text-align:right;flex-shrink:0}
     .pj-budget{font-family:'Clash Display',sans-serif;font-size:.95rem;font-weight:700;color:var(--gm)}
     /* BROWSE STUDENTS */
@@ -625,6 +626,10 @@ let myProjects=[], brandApps=[], brandWorkspaces=[], brandStudents=[], curAppFil
 
 function getAppId(app){return app?._id||app?.id||'';}
 function esc(value){return String(value??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function shortenText(text,max=180){
+  const value=String(text||'').trim();
+  return value.length>max?value.slice(0,max).trim()+'...':value;
+}
 function getInitials(name){return String(name||'Student').split(' ').filter(Boolean).map(p=>p[0]).join('').slice(0,2).toUpperCase()||'?';}
 function parsePayAmount(pay){
   const match=String(pay||'').replace(/,/g,'').match(/(\d+(?:\.\d+)?)/);
@@ -755,13 +760,13 @@ function renderBrowseStudents(){
 function renderHomeProjList(projs){
   const el=document.getElementById('homeProjList');
   if(!projs.length)return;
-  el.innerHTML=projs.map(p=>`<div class="pj-card"><div class="pj-ico">📋</div><div class="pj-info"><div class="pj-title">${p.title}</div><div class="pj-meta"><span>📂 ${p.category}</span><span>📅 ${new Date(p.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</span></div></div><div class="pj-right"><div class="pj-budget">${p.budget}</div><span class="tag ${p.status==='open'?'topen':'tclosed'}">${p.status==='open'?'🟢 Open':'✓ Closed'}</span></div></div>`).join('');
+  el.innerHTML=projs.map(p=>`<div class="pj-card"><div class="pj-ico">📋</div><div class="pj-info"><div class="pj-title">${esc(p.title)}</div><div class="pj-meta"><span>📂 ${esc(p.category)}</span><span>📅 ${new Date(p.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</span></div>${p.description?`<div class="pj-desc">${esc(shortenText(p.description))}</div>`:''}</div><div class="pj-right"><div class="pj-budget">${esc(p.budget)}</div><span class="tag ${p.status==='open'?'topen':'tclosed'}">${p.status==='open'?'🟢 Open':'✓ Closed'}</span></div></div>`).join('');
 }
 
 function renderFullProjList(projs){
   const el=document.getElementById('projListFull');
   if(!projs.length){el.innerHTML='<div class="empty-s"><div class="ei">📋</div><h3>No projects yet</h3><p>Post your first project!</p><button class="btn bpri" onclick="goTo(\'post\',null)">+ Post Project</button></div>';return;}
-  el.innerHTML=projs.map(p=>`<div class="pj-card"><div class="pj-ico">📋</div><div class="pj-info"><div class="pj-title">${p.title}</div><div class="pj-meta"><span>📂 ${p.category}</span><span>📅 Posted ${new Date(p.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</span>${p.deadline?`<span>⏱ ${p.deadline}</span>`:''}</div></div><div class="pj-right"><div class="pj-budget">${p.budget}</div><span class="tag ${p.status==='open'?'topen':'tclosed'}">${p.status==='open'?'🟢 Open':'✓ Closed'}</span></div></div>`).join('');
+  el.innerHTML=projs.map(p=>`<div class="pj-card"><div class="pj-ico">📋</div><div class="pj-info"><div class="pj-title">${esc(p.title)}</div><div class="pj-meta"><span>📂 ${esc(p.category)}</span><span>📅 Posted ${new Date(p.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</span>${p.deadline?`<span>⏱ ${esc(p.deadline)}</span>`:''}</div>${p.description?`<div class="pj-desc">${esc(p.description)}</div>`:''}</div><div class="pj-right"><div class="pj-budget">${esc(p.budget)}</div><span class="tag ${p.status==='open'?'topen':'tclosed'}">${p.status==='open'?'🟢 Open':'✓ Closed'}</span></div></div>`).join('');
 }
 
 function renderWorkspaceBox(appId){
@@ -1164,6 +1169,7 @@ async function postProject(){
   const deadline=document.getElementById('pjDeadline').value.trim();
   if(!title){showToast('Enter a project title','error');return;}
   if(!category){showToast('Select a category','error');return;}
+  if(!desc){showToast('Enter a project description so students can review details before applying.','error');return;}
   if(!budget){showToast('Set a budget','error');return;}
   const btn=document.getElementById('postBtn');
   btn.innerHTML='<span class="spin"></span>Posting...';btn.disabled=true;

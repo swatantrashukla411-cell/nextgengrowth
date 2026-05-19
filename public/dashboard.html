@@ -228,6 +228,7 @@
     .fbtn.aif{background:linear-gradient(135deg,var(--gm),var(--gd));color:white;border-color:var(--gm)}
     .pg{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
     .pc{background:var(--white);border:1px solid var(--br);border-radius:12px;padding:14px;transition:all .25s;cursor:pointer;display:flex;flex-direction:column;gap:9px;position:relative}
+    .project-card{cursor:default}
     .pc:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.08);border-color:var(--gb)}
     .pc.matched{border-color:var(--gb)}
     .match-bd{position:absolute;top:10px;right:10px;background:linear-gradient(135deg,var(--gm),var(--gd));color:white;font-size:.6rem;font-weight:700;padding:3px 8px;border-radius:100px}
@@ -239,10 +240,22 @@
     .ptg{padding:2px 8px;background:var(--gp);border:1px solid var(--br);border-radius:100px;font-size:.65rem;font-weight:500;color:var(--tm)}
     .ptg.mt{background:var(--gl);color:var(--gm);border-color:var(--gb);font-weight:700}
     .pf_{display:flex;align-items:center;justify-content:space-between;padding-top:9px;border-top:1px solid var(--br)}
+    .project-desc{background:var(--gp);border:1px solid var(--br);border-radius:10px;padding:10px;line-height:1.45}
+    .project-desc strong{display:block;font-size:.7rem;color:var(--td);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+    .project-desc p{font-size:.78rem;color:var(--tm);white-space:pre-wrap;overflow-wrap:anywhere}
+    .project-desc.empty p{color:var(--ts);font-style:italic}
+    .project-actions{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
     .pp{font-family:'Clash Display',sans-serif;font-size:1rem;font-weight:700;color:var(--gm)}
     .pm{font-size:.68rem;color:var(--ts)}
     .pa{padding:6px 12px;background:var(--gp);border:1.5px solid var(--br);border-radius:7px;color:var(--gm);font-size:.77rem;font-weight:600;cursor:pointer;transition:all .2s}
     .pa:hover{background:var(--gm);color:white}
+    .project-detail-card{max-width:680px}
+    .project-detail-title{font-family:'Clash Display',sans-serif;font-size:1.28rem;font-weight:700;color:var(--td);line-height:1.2;margin-bottom:5px;padding-right:36px}
+    .project-detail-meta{display:flex;gap:8px;flex-wrap:wrap;color:var(--ts);font-size:.78rem;margin-bottom:14px}
+    .project-detail-desc{background:var(--gp);border:1px solid var(--br);border-radius:13px;padding:14px;margin-bottom:14px}
+    .project-detail-desc strong{display:block;font-size:.78rem;color:var(--td);margin-bottom:7px}
+    .project-detail-desc p{font-size:.86rem;color:var(--tm);line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
+    .project-detail-actions{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
 
     /* ══ APPLICATIONS ══ */
     .atabs{display:flex;gap:3px;background:var(--gp);border:1px solid var(--br);border-radius:10px;padding:3px;margin-bottom:14px;overflow-x:auto}
@@ -390,7 +403,7 @@
     .brand-link{display:inline-flex;align-items:center;gap:6px;color:var(--gm);font-weight:700;text-decoration:none;font-size:.82rem;word-break:break-word}
     .brand-projects{display:grid;gap:9px}
     .brand-about{font-size:.86rem;color:var(--tm);line-height:1.55;margin-bottom:14px;background:white;border:1px solid var(--br);border-radius:12px;padding:12px}
-    @media(max-width:640px){.brand-grid,.brand-detail-grid{grid-template-columns:1fr}.brand-hero{padding-right:38px}.brand-profile-card{padding:16px}}
+    @media(max-width:640px){.brand-grid,.brand-detail-grid{grid-template-columns:1fr}.brand-hero{padding-right:38px}.brand-profile-card{padding:16px}.pf_{align-items:flex-start;gap:10px}.project-actions{align-items:stretch;width:100%}.project-actions .pa{width:100%;text-align:center}.project-detail-actions .pa{width:100%;text-align:center}}
 
     /* ══ MISC ══ */
     .spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:white;border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle;margin-right:5px}
@@ -806,6 +819,12 @@
     <div id="brandProfileContent"><div class="empty-s"><div class="ei">🏢</div><h3>Loading brand profile...</h3></div></div>
   </div>
 </div>
+<div class="brand-profile-modal" id="projectDetailModal" aria-hidden="true">
+  <div class="brand-profile-card project-detail-card">
+    <button class="brand-profile-close" onclick="closeProjectDetails()" aria-label="Close project details">×</button>
+    <div id="projectDetailContent"><div class="empty-s"><div class="ei">📋</div><h3>Loading project details...</h3></div></div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -841,6 +860,11 @@ let aiJobs=[],realApps=[],studentWorkspaces=[],studentTransactions=[],userSkills
 
 function esc(value){return String(value??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 function getJobId(value){return String(value?._id||value?.id||value||'');}
+function getProjectDescription(job){return String(job?.description||job?.brief||'').trim();}
+function shortenText(text,max=220){
+  const value=String(text||'').trim();
+  return value.length>max?value.slice(0,max).trim()+'...':value;
+}
 function safeHref(value){
   let raw=String(value||'').trim();
   if(!raw)return '';
@@ -965,7 +989,7 @@ function matchJobs(skills,jobs){
   if(!skills||!skills.length)return jobs.map(j=>({...j,matchScore:0,isMatch:false,matchedTags:[]}));
   const kws=new Set();skills.forEach(sk=>(SKILL_KW[sk]||[]).forEach(k=>kws.add(k)));
   return jobs.map(j=>{
-    const txt=[j.title,j.brand,...(j.tags||[])].join(' ').toLowerCase();
+    const txt=[j.title,j.brand,getProjectDescription(j),...(j.tags||[])].join(' ').toLowerCase();
     let score=0;const mt=[];
     kws.forEach(k=>{if(txt.includes(k))score+=10;});
     (j.tags||[]).forEach(t=>{if(skills.some(s=>s.toLowerCase()===t.toLowerCase())){score+=25;mt.push(t);}else if([...kws].some(k=>t.toLowerCase().includes(k)))mt.push(t);});
@@ -1252,7 +1276,7 @@ function renderHomeMatchedJobs(jobs){
 function renderProjects(){
   let jobs=curFilter==='ai'?aiJobs:ALL_JOBS;
   if(curCat!=='all')jobs=jobs.filter(j=>j.cat===curCat);
-  if(curSearch)jobs=jobs.filter(j=>[j.title,j.brand,...(j.tags||[])].join(' ').toLowerCase().includes(curSearch));
+  if(curSearch)jobs=jobs.filter(j=>[j.title,j.brand,getProjectDescription(j),...(j.tags||[])].join(' ').toLowerCase().includes(curSearch));
   const grid=document.getElementById('projGrid');
   if(!jobs.length){grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--ts)"><div style="font-size:2rem;margin-bottom:8px">🔍</div><h3 style="font-family:'Clash Display',sans-serif;color:var(--td);margin-bottom:5px">No projects found</h3><p>Try different filter or add more skills</p></div>`;return;}
   const bdg={hot:'<span class="tag th">🔥 Hot</span>',new:'<span class="tag tn">✨ New</span>',apply:'<span class="tag trev">📝 Apply</span>'};
@@ -1263,14 +1287,17 @@ function renderProjects(){
     
     const brandId=String(j.brandId||'');
     const brandBtn=brandId?`<button class="pa" style="background:white" onclick="event.stopPropagation();openBrandProfile('${brandId}')">Brand Details</button>`:'';
+    const desc=getProjectDescription(j);
+    const descHtml=desc
+      ? `<div class="project-desc"><strong>Project Description</strong><p>${esc(shortenText(desc))}</p></div>`
+      : `<div class="project-desc empty"><strong>Project Description</strong><p>No detailed description was added by this brand yet.</p></div>`;
 
     // CHANGED: Determine button UI based on hasApplied state
     const btnHtml = hasApplied
       ? `<button class="pa" style="background:var(--gm);color:white;border-color:var(--gm);cursor:default" onclick="event.stopPropagation()">Applied ✓</button>`
       : `<button class="pa" onclick="event.stopPropagation();applyJob('${jobId}')">Apply</button>`;
 
-    // CHANGED: Disable card click if already applied
-    return`<div class="pc ${m?'matched':''}" onclick="${hasApplied ? '' : `applyJob('${jobId}')`}">${m?'<div class="match-bd">🤖 Match</div>':''}<div class="pt_"><div class="pi">${j.ico}</div><div style="padding-right:${m?'70px':'0'}"><div class="pb_">${esc(j.brand)}</div><div class="pn">${esc(j.title)}</div></div></div><div class="ptgs">${(j.tags||[]).map(t=>`<span class="ptg ${mt.includes(t)?'mt':''}">${esc(t)}</span>`).join('')}</div><div class="pf_"><div><div class="pp">${esc(j.pay)}</div><div class="pm">⏱ ${esc(j.days)} · 📍 Remote</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">${bdg[j.badge]||''}${brandBtn}${btnHtml}</div></div></div>`;
+    return`<div class="pc project-card ${m?'matched':''}">${m?'<div class="match-bd">🤖 Match</div>':''}<div class="pt_"><div class="pi">${j.ico}</div><div style="padding-right:${m?'70px':'0'}"><div class="pb_">${esc(j.brand)}</div><div class="pn">${esc(j.title)}</div></div></div>${descHtml}<div class="ptgs">${(j.tags||[]).map(t=>`<span class="ptg ${mt.includes(t)?'mt':''}">${esc(t)}</span>`).join('')}</div><div class="pf_"><div><div class="pp">${esc(j.pay)}</div><div class="pm">⏱ ${esc(j.days)} · 📍 Remote</div></div><div class="project-actions">${bdg[j.badge]||''}<button class="pa" style="background:white" onclick="event.stopPropagation();openProjectDetails('${jobId}')">Full Details</button>${brandBtn}${btnHtml}</div></div></div>`;
   }).join('');
 }
 
@@ -1278,6 +1305,44 @@ function setFilter(f,btn){
   if(f==='ai'){curFilter='ai';curCat='all';}else{curFilter='manual';curCat=f;}
   document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));
   if(btn)btn.classList.add('active');renderProjects();
+}
+
+function closeProjectDetails(){
+  const modal=document.getElementById('projectDetailModal');
+  modal.classList.remove('show');
+  modal.setAttribute('aria-hidden','true');
+}
+
+function openProjectDetails(id){
+  const jobId=String(id);
+  const j=[...ALL_JOBS,...aiJobs].find(x=>getJobId(x)===jobId);
+  if(!j){showToast('Project details are not available. Please refresh once.','error');return;}
+  const modal=document.getElementById('projectDetailModal');
+  const content=document.getElementById('projectDetailContent');
+  const desc=getProjectDescription(j)||'No detailed description was added by this brand yet.';
+  const hasApplied=appliedJobIds.has(jobId)||j.hasApplied;
+  const brandId=String(j.brandId||'');
+  const brandAction=brandId?`<button class="pa" onclick="closeProjectDetails();openBrandProfile('${brandId}')">Brand Details</button>`:'';
+  const applyAction=hasApplied
+    ? `<button class="pa" style="background:var(--gm);color:white;border-color:var(--gm);cursor:default">Applied ✓</button>`
+    : `<button class="pa" onclick="closeProjectDetails();applyJob('${jobId}')">Apply Now</button>`;
+  content.innerHTML=`
+    <div class="project-detail-title">${esc(j.title||'Project')}</div>
+    <div class="project-detail-meta">
+      <span>🏢 ${esc(j.brand||'Brand')}</span>
+      <span>💰 ${esc(j.pay||'Budget not listed')}</span>
+      <span>⏱ ${esc(j.days||'Flexible')}</span>
+      <span>📍 Remote</span>
+    </div>
+    <div class="project-detail-desc">
+      <strong>Project Description</strong>
+      <p>${esc(desc)}</p>
+    </div>
+    <div class="ptgs" style="margin-bottom:14px">${(j.tags||[]).map(t=>`<span class="ptg">${esc(t)}</span>`).join('')}</div>
+    <div class="project-detail-actions">${brandAction}${applyAction}</div>
+  `;
+  modal.classList.add('show');
+  modal.setAttribute('aria-hidden','false');
 }
 
 function closeBrandProfile(){
@@ -1311,7 +1376,7 @@ function renderBrandProfile(brand){
   const website=safeHref(brand.brandLink);
   const linkedin=safeHref(brand.linkedin);
   const portfolio=safeHref(brand.portfolioLink);
-  const projects=(brand.recentProjects||[]).map(p=>`<div class="brand-project"><strong>${esc(p.title||'Project')}</strong><span>${esc(p.category||'Category')} · ${esc(p.budget||'Budget not listed')} · ${esc(p.status||'status')}</span>${p.deadline?`<span>Deadline: ${esc(p.deadline)}</span>`:''}</div>`).join('')||'<div class="brand-project"><span>No public projects listed yet.</span></div>';
+  const projects=(brand.recentProjects||[]).map(p=>`<div class="brand-project"><strong>${esc(p.title||'Project')}</strong><span>${esc(p.category||'Category')} · ${esc(p.budget||'Budget not listed')} · ${esc(p.status||'status')}</span>${p.description?`<span>${esc(shortenText(p.description,180))}</span>`:''}${p.deadline?`<span>Deadline: ${esc(p.deadline)}</span>`:''}</div>`).join('')||'<div class="brand-project"><span>No public projects listed yet.</span></div>';
   content.innerHTML=`
     <div class="brand-hero">
       <div class="brand-avatar">${brand.avatar?`<img src="${esc(brand.avatar)}" alt="">`:esc(initials)}</div>
