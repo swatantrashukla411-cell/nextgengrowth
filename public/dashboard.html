@@ -240,10 +240,6 @@
     .ptg{padding:2px 8px;background:var(--gp);border:1px solid var(--br);border-radius:100px;font-size:.65rem;font-weight:500;color:var(--tm)}
     .ptg.mt{background:var(--gl);color:var(--gm);border-color:var(--gb);font-weight:700}
     .pf_{display:flex;align-items:center;justify-content:space-between;padding-top:9px;border-top:1px solid var(--br)}
-    .project-desc{background:var(--gp);border:1px solid var(--br);border-radius:10px;padding:10px;line-height:1.45}
-    .project-desc strong{display:block;font-size:.7rem;color:var(--td);margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
-    .project-desc p{font-size:.78rem;color:var(--tm);white-space:pre-wrap;overflow-wrap:anywhere}
-    .project-desc.empty p{color:var(--ts);font-style:italic}
     .project-actions{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
     .pp{font-family:'Clash Display',sans-serif;font-size:1rem;font-weight:700;color:var(--gm)}
     .pm{font-size:.68rem;color:var(--ts)}
@@ -1287,17 +1283,12 @@ function renderProjects(){
     
     const brandId=String(j.brandId||'');
     const brandBtn=brandId?`<button class="pa" style="background:white" onclick="event.stopPropagation();openBrandProfile('${brandId}')">Brand Details</button>`:'';
-    const desc=getProjectDescription(j);
-    const descHtml=desc
-      ? `<div class="project-desc"><strong>Project Description</strong><p>${esc(shortenText(desc))}</p></div>`
-      : `<div class="project-desc empty"><strong>Project Description</strong><p>No detailed description was added by this brand yet.</p></div>`;
-
     // CHANGED: Determine button UI based on hasApplied state
     const btnHtml = hasApplied
       ? `<button class="pa" style="background:var(--gm);color:white;border-color:var(--gm);cursor:default" onclick="event.stopPropagation()">Applied ✓</button>`
       : `<button class="pa" onclick="event.stopPropagation();applyJob('${jobId}')">Apply</button>`;
 
-    return`<div class="pc project-card ${m?'matched':''}">${m?'<div class="match-bd">🤖 Match</div>':''}<div class="pt_"><div class="pi">${j.ico}</div><div style="padding-right:${m?'70px':'0'}"><div class="pb_">${esc(j.brand)}</div><div class="pn">${esc(j.title)}</div></div></div>${descHtml}<div class="ptgs">${(j.tags||[]).map(t=>`<span class="ptg ${mt.includes(t)?'mt':''}">${esc(t)}</span>`).join('')}</div><div class="pf_"><div><div class="pp">${esc(j.pay)}</div><div class="pm">⏱ ${esc(j.days)} · 📍 Remote</div></div><div class="project-actions">${bdg[j.badge]||''}<button class="pa" style="background:white" onclick="event.stopPropagation();openProjectDetails('${jobId}')">Full Details</button>${brandBtn}${btnHtml}</div></div></div>`;
+    return`<div class="pc project-card ${m?'matched':''}">${m?'<div class="match-bd">🤖 Match</div>':''}<div class="pt_"><div class="pi">${j.ico}</div><div style="padding-right:${m?'70px':'0'}"><div class="pb_">${esc(j.brand)}</div><div class="pn">${esc(j.title)}</div></div></div><div class="ptgs">${(j.tags||[]).map(t=>`<span class="ptg ${mt.includes(t)?'mt':''}">${esc(t)}</span>`).join('')}</div><div class="pf_"><div><div class="pp">${esc(j.pay)}</div><div class="pm">⏱ ${esc(j.days)} · 📍 Remote</div></div><div class="project-actions">${bdg[j.badge]||''}<button class="pa" style="background:white" onclick="event.stopPropagation();openProjectDetails('${jobId}')">Full Details</button>${brandBtn}${btnHtml}</div></div></div>`;
   }).join('');
 }
 
