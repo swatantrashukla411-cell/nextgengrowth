@@ -1240,7 +1240,7 @@ function showToast(msg,type='info'){const t=document.getElementById('toast');t.t
 function logout(){
   const ok=confirm('Are you sure you want to log out of NextGenGrowth?');
   if(!ok)return;
-  gsap.to('.app',{opacity:0,duration:.3,onComplete:()=>{localStorage.removeItem('ngg_token');localStorage.removeItem('ngg_user');window.location.href='/login';}});
+  gsap.to('.app',{opacity:0,duration:.3,onComplete:()=>{localStorage.removeItem('ngg_token');localStorage.removeItem('ngg_user');window.location.href='/';}});
 }
 
 window.addEventListener('DOMContentLoaded',()=>{

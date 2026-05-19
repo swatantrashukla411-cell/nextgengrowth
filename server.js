@@ -1325,6 +1325,23 @@ function otpEmailTemplate(name,otp){
 </div>`;
 }
 
+function resetPasswordEmailTemplate(name,otp){
+  return`<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;background:#f7fdf9;padding:20px">
+  <div style="background:linear-gradient(135deg,#0a7c44,#064e2b);border-radius:16px;padding:28px;text-align:center;margin-bottom:20px">
+    <h2 style="color:white;margin:0">Reset Your Password</h2>
+    <p style="color:rgba(255,255,255,.8);margin:6px 0 0">NextGenGrowth</p>
+  </div>
+  <div style="background:white;border-radius:16px;padding:28px;border:1px solid #d1ead9">
+    <h3 style="color:#0a1f12;margin-top:0">Hi ${name||"there"},</h3>
+    <p style="color:#2d5a3d">Use this code to reset your NextGenGrowth password:</p>
+    <div style="background:#e8fdf2;border:2px solid #00c96b;border-radius:14px;padding:22px;text-align:center;margin:20px 0">
+      <span style="font-size:2.5rem;font-weight:900;letter-spacing:12px;color:#064e2b;font-family:monospace">${otp}</span>
+    </div>
+    <p style="color:#6b8f77;font-size:.85rem">This code expires in <strong>10 minutes</strong>. If you did not request it, ignore this email.</p>
+  </div>
+</div>`;
+}
+
 function welcomeEmail(name,role){
   return`<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;background:#f7fdf9;padding:20px">
   <div style="background:linear-gradient(135deg,#0a7c44,#064e2b);border-radius:16px;padding:28px;text-align:center;margin-bottom:20px">
@@ -1650,6 +1667,50 @@ app.post("/api/verify-otp",async(req,res)=>{
   }
 });
 
+app.post("/api/forgot-password/send-otp",authLimiter,async(req,res)=>{
+  try{
+    const email=String(req.body.email||"").trim().toLowerCase();
+    if(!email)return res.status(400).json({success:false,message:"Email required."});
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return res.status(400).json({success:false,message:"Invalid email format."});
+    const user=await User.findOne({email});
+    if(!user)return res.status(404).json({success:false,message:"No account found with this email."});
+    if(user.googleId&&!user.password)return res.status(400).json({success:false,message:"This account uses Google Sign-In. Please continue with Google."});
+
+    await OTP.deleteMany({email});
+    const otp=generateOTP();
+    const expiresAt=new Date(Date.now()+10*60*1000);
+    await OTP.create({email,otp,expiresAt});
+    await sendEmail(email,`${otp} — Reset Your NextGenGrowth Password`,resetPasswordEmailTemplate(user.firstName||"User",otp));
+    res.json({success:true,message:"Reset code sent to your email."});
+  }catch(err){
+    console.error("Forgot password OTP error:",err);
+    res.status(500).json({success:false,message:"Could not send reset code. Check email config."});
+  }
+});
+
+app.post("/api/forgot-password/reset",authLimiter,async(req,res)=>{
+  try{
+    const email=String(req.body.email||"").trim().toLowerCase();
+    const otp=String(req.body.otp||"").trim();
+    const password=String(req.body.password||"");
+    if(!email||!otp||!password)return res.status(400).json({success:false,message:"Email, OTP and new password required."});
+    if(password.length<8)return res.status(400).json({success:false,message:"Password must be 8+ characters."});
+    const record=await OTP.findOne({email,otp}).sort({createdAt:-1});
+    if(!record)return res.status(400).json({success:false,message:"Invalid reset code."});
+    if(record.expiresAt<new Date())return res.status(400).json({success:false,message:"Reset code expired. Request a new one."});
+    const user=await User.findOne({email});
+    if(!user)return res.status(404).json({success:false,message:"Account not found."});
+    if(user.googleId&&!user.password)return res.status(400).json({success:false,message:"This account uses Google Sign-In. Please continue with Google."});
+    user.password=await bcrypt.hash(password,12);
+    await user.save();
+    await OTP.deleteMany({email});
+    res.json({success:true,message:"Password reset successfully. Please login."});
+  }catch(err){
+    console.error("Password reset error:",err);
+    res.status(500).json({success:false,message:"Could not reset password."});
+  }
+});
+
 // ═══════════════════════════════════════════
 // AUTH ROUTES
 // ═══════════════════════════════════════════
@@ -1851,6 +1912,47 @@ app.get("/api/jobs",verifyToken,async(req,res)=>{
     }));
     res.json({success:true,jobs:result});
   }catch(err){res.status(500).json({success:false,message:"Server error."});}
+});
+
+app.get("/api/student/brand/:id",verifyToken,async(req,res)=>{
+  try{
+    if(req.user.role!=="student")return res.status(403).json({success:false,message:"Student only."});
+    if(!mongoose.Types.ObjectId.isValid(req.params.id))return res.status(400).json({success:false,message:"Invalid brand ID."});
+    const brand=await User.findOne({_id:req.params.id,role:"brand"})
+      .select("firstName lastName email companyName serviceNeeded bio linkedin portfolioLink brandLink avatar isApproved createdAt")
+      .lean();
+    if(!brand)return res.status(404).json({success:false,message:"Brand not found."});
+    const[projects,projectCount,openProjects,completedWorkspaces]=await Promise.all([
+      Job.find({brandId:brand._id}).select("title description budget category deadline status createdAt").sort({createdAt:-1}).limit(8).lean(),
+      Job.countDocuments({brandId:brand._id}),
+      Job.countDocuments({brandId:brand._id,status:"open"}),
+      ProjectWorkspace.countDocuments({brandId:brand._id,status:{$in:["approved","completed"]}}),
+    ]);
+    res.json({
+      success:true,
+      brand:{
+        id:brand._id,
+        firstName:brand.firstName||"",
+        lastName:brand.lastName||"",
+        name:`${brand.firstName||""} ${brand.lastName||""}`.trim(),
+        email:brand.email||"",
+        companyName:brand.companyName||"",
+        serviceNeeded:brand.serviceNeeded||"",
+        bio:brand.bio||"",
+        linkedin:brand.linkedin||"",
+        portfolioLink:brand.portfolioLink||"",
+        brandLink:brand.brandLink||"",
+        avatar:brand.avatar||"",
+        isApproved:!!brand.isApproved,
+        joinedAt:brand.createdAt,
+        stats:{projectCount,openProjects,completedWorkspaces},
+        recentProjects:projects,
+      },
+    });
+  }catch(err){
+    console.error("Student brand profile error:",err);
+    res.status(500).json({success:false,message:"Server error."});
+  }
 });
 
 // APPLY

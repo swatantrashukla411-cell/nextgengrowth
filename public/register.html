@@ -10,6 +10,17 @@
   <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
   <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
   <link rel="manifest" href="site.webmanifest">
+  <script>
+    (function(){
+      try{
+        const token=localStorage.getItem('ngg_token');
+        const user=JSON.parse(localStorage.getItem('ngg_user')||'null');
+        if(token&&user&&user.role){
+          location.replace(user.role==='brand'?'/brand-dashboard':'/dashboard');
+        }
+      }catch(e){}
+    })();
+  </script>
   <link
     href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Clash+Display:wght@400;500;600;700&display=swap"
     rel="stylesheet">
@@ -1262,7 +1273,7 @@
         let res = await r.json();
         if (res.success) {
           if (role === 'brand') { document.getElementById('pendingBox').classList.add('show'); btn.style.display = 'none'; setTimeout(() => window.location.href = '/login', 4000); }
-          else { toast('Account created!', 'success'); localStorage.setItem('ngg_token', res.token); setTimeout(() => window.location.href = '/dashboard', 1000); }
+          else { toast('Account created!', 'success'); localStorage.setItem('ngg_token', res.token); localStorage.setItem('ngg_user', JSON.stringify(res.user)); setTimeout(() => window.location.href = '/dashboard', 1000); }
         } else throw new Error(res.message || 'Registration failed');
       } catch (e) { err.textContent = e.message; err.classList.add('show'); }
       finally { btn.innerHTML = '<i class="fas fa-rocket"></i> Create Account'; btn.disabled = false; }
