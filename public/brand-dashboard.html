@@ -1,0 +1,2097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>Brand Dashboard – NextGenGrowth</title>
+  <link rel="icon" href="/favicon.ico" sizes="any"/>
+<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"/>
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"/>
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
+  <link rel="manifest" href="/site.webmanifest"/>
+  <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --gd:#022c22;
+      --gm:#047857;
+      --gb:#10b981;
+      --gg:#34d399;
+      --gl:#ecfdf5;
+      --gp:#f8fafc;
+      --white:#ffffff;
+      --off:#f1f5f9;
+      --td:#0f172a;
+      --tm:#334155;
+      --ts:#64748b;
+      --br:#e2e8f0;
+      --sw:260px;
+    }
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .skeleton {
+      background: linear-gradient(90deg, var(--br) 25%, var(--gp) 50%, var(--br) 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 6px;
+      color: transparent !important;
+      pointer-events: none;
+      min-height: 1em;
+    }
+    html,body{height:100%;font-family:'Outfit',sans-serif;background:var(--off);color:var(--td);overflow:hidden}
+    .app{display:flex;height:100vh;height:100dvh;overflow:hidden}
+    .sidebar{width:var(--sw);background:#1d4ed8;display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;z-index:20;position:relative}
+    .sidebar::after{content:'';position:absolute;bottom:-60px;left:-60px;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.05);pointer-events:none}
+    .sb-logo{padding:20px 18px 16px;display:flex;align-items:center;gap:9px;font-family:'Clash Display',sans-serif;font-size:1.1rem;font-weight:700;color:white;border-bottom:1px solid rgba(255,255,255,.15);flex-shrink:0;text-decoration:none}
+    .ld{width:30px;height:30px;border-radius:9px;background:#fff;box-shadow:0 8px 18px rgba(0,0,0,.18);flex-shrink:0;overflow:hidden}
+    .ld img{width:100%;height:100%;object-fit:cover;display:block}
+    @keyframes pulse{0%,100%{box-shadow:0 0 6px #93c5fd;transform:scale(1)}50%{box-shadow:0 0 18px #93c5fd;transform:scale(1.3)}}
+    .sb-user{margin:12px 10px;padding:11px 12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:11px;display:flex;align-items:center;gap:9px;flex-shrink:0}
+    .av{width:36px;height:36px;border-radius:9px;flex-shrink:0;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-family:'Clash Display',sans-serif;font-size:.85rem;font-weight:700;color:white}
+    .sb-nm{font-weight:600;font-size:.83rem;color:white;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px}
+    .sb-bg{display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);color:#93c5fd;font-size:.63rem;font-weight:600;padding:2px 7px;border-radius:100px;margin-top:2px}
+    .nav{padding:6px 8px;flex:1;overflow-y:auto}
+    .nl{font-size:.63rem;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.5);padding:9px 10px 4px}
+    .ni{display:flex;align-items:center;gap:9px;padding:10px 12px;border-radius:9px;cursor:pointer;transition:all .2s;margin-bottom:2px;color:rgba(255,255,255,.7);font-size:.86rem;font-weight:500;border:none;background:transparent;width:100%;text-align:left}
+    .ni:hover{background:rgba(255,255,255,.1);color:white}
+    .ni.active{background:rgba(255,255,255,.2);color:white;border:1px solid rgba(255,255,255,.2)}
+    .nicon{width:17px;height:17px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+    .nb{margin-left:auto;background:#93c5fd;color:#1d4ed8;font-size:.62rem;font-weight:700;padding:2px 6px;border-radius:100px}
+    .sbf{padding:10px;border-top:1px solid rgba(255,255,255,.15);flex-shrink:0}
+    .promo{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:11px;padding:13px;color:white}
+    .promo h4{font-family:'Clash Display',sans-serif;font-size:.82rem;margin-bottom:3px}
+    .promo p{font-size:.7rem;opacity:.8;margin-bottom:9px;line-height:1.4}
+    .pb{display:block;background:white;color:#1d4ed8;text-align:center;padding:6px;border-radius:7px;font-size:.76rem;font-weight:700;border:none;cursor:pointer;width:100%}
+    .main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+    .topbar{background:rgba(255,255,255,0.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--br);padding:0 24px;height:58px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;position:sticky;top:0;z-index:50}
+    .topbar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,#60a5fa,#3b82f6,#1d4ed8);background-size:200%;animation:gm 3s linear infinite}
+    @keyframes gm{0%{background-position:0%}100%{background-position:200%}}
+    .tl{display:flex;align-items:center;gap:12px}
+    .tt{font-family:'Clash Display',sans-serif;font-size:1.05rem;font-weight:700}
+    .ts_{font-size:.72rem;color:var(--ts)}
+    .tr_{display:flex;align-items:center;gap:9px}
+    .tav{width:32px;height:32px;border-radius:8px;cursor:pointer;flex-shrink:0;background:linear-gradient(135deg,#3b82f6,#1d4ed8);display:flex;align-items:center;justify-content:center;font-family:'Clash Display',sans-serif;font-size:.76rem;font-weight:700;color:white}
+    .mb{display:none;background:none;border:none;cursor:pointer;color:var(--td);padding:4px}
+    .sb-close{display:none;position:absolute;top:13px;right:13px;width:34px;height:34px;border:none;border-radius:9px;background:rgba(255,255,255,.13);color:white;align-items:center;justify-content:center;cursor:pointer;z-index:3}
+    .drawer-overlay{position:fixed;inset:0;background:rgba(10,31,18,.48);opacity:0;pointer-events:none;transition:opacity .25s ease;z-index:900}
+    .drawer-overlay.show{opacity:1;pointer-events:auto}
+    .content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+    .page{display:none;padding:22px 26px 40px;animation:fs .3s ease both}
+    .page.active{display:block}
+    @keyframes fs{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .ph{margin-bottom:20px}
+    .ph h2{font-family:'Clash Display',sans-serif;font-size:1.45rem;font-weight:700;letter-spacing:-.5px;margin-bottom:4px}
+    .ph p{font-size:.86rem;color:var(--ts)}
+    .card{background:var(--white);border:1px solid var(--br);border-radius:14px;padding:18px}
+    .st{font-family:'Clash Display',sans-serif;font-size:.92rem;font-weight:700;color:var(--td);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+    .st .sa{margin-left:auto;font-family:'Outfit',sans-serif;font-size:.76rem;font-weight:600;color:#1d4ed8;cursor:pointer}
+    .g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+    .sc{background:var(--white);border:1px solid var(--br);border-radius:13px;padding:16px;transition:all .3s}
+    .sc:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,.04);border-color:#93c5fd}
+    .sic{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.95rem;margin-bottom:11px}
+    .ib2{background:#eff6ff}.ig{background:var(--gl)}.ia{background:#fef9e7}
+    .sn{font-family:'Clash Display',sans-serif;font-size:1.6rem;font-weight:700;color:var(--td);display:block}
+    .sl{font-size:.73rem;color:var(--ts);margin-top:2px}
+    .btn{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:9px;font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .2s;border:none}
+    .bpri{background:linear-gradient(135deg,#2563eb,#1d4ed8);color:white;box-shadow:0 3px 12px rgba(37,99,235,.2)}
+    .bpri:hover{transform:translateY(-1px)}
+    .bgre{background:linear-gradient(135deg,var(--gm),var(--gd));color:white;box-shadow:0 3px 12px rgba(10,124,68,.2)}
+    .bgre:hover{transform:translateY(-1px)}
+    .bpay{background:linear-gradient(135deg,#0a7c44,#064e2b);color:white;box-shadow:0 3px 12px rgba(10,124,68,.18)}
+    .bpay:hover{transform:translateY(-1px)}
+    .bout{background:transparent;border:1.5px solid var(--br);color:var(--tm)}
+    .bout:hover{background:var(--gp);border-color:var(--gb);color:var(--gm)}
+    .bdan{background:#fef2f2;border:1.5px solid #fecaca;color:#dc2626}
+    .bdan:hover{background:#fee2e2}
+    .bsm{padding:5px 11px;font-size:.77rem;border-radius:7px}
+    .tag{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border-radius:100px;font-size:.68rem;font-weight:600}
+    .topen{background:var(--gl);color:var(--gm);border:1px solid var(--br)}
+    .tclosed{background:#f3f4f6;color:#6b7280;border:1px solid #e5e7eb}
+    .trev{background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe}
+    .tacc{background:var(--gl);color:var(--gm);border:1px solid var(--br)}
+    .trej{background:#fef2f2;color:#dc2626;border:1px solid #fecaca}
+    .wb{background:linear-gradient(135deg,#1d4ed8,#1e3a8a);border-radius:16px;padding:24px 28px;display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;position:relative;overflow:hidden}
+    .wb::before{content:'';position:absolute;top:-50px;right:80px;width:180px;height:180px;border-radius:50%;filter:blur(50px);background:rgba(96,165,250,.15)}
+    .wb-pill{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);color:white;font-size:.66rem;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:4px 10px;border-radius:100px;margin-bottom:9px}
+    .wb-pd{width:5px;height:5px;border-radius:50%;background:#93c5fd;animation:pulse 2s infinite}
+    .wb-t{font-family:'Clash Display',sans-serif;font-size:1.4rem;font-weight:700;color:white;letter-spacing:-.5px;margin-bottom:5px}
+    .wb-d{font-size:.82rem;color:rgba(255,255,255,.8);line-height:1.5}
+    .wb-btn{display:inline-flex;align-items:center;gap:7px;background:white;color:#1d4ed8;padding:10px 18px;border-radius:10px;font-family:'Clash Display',sans-serif;font-size:.85rem;font-weight:700;border:none;cursor:pointer;box-shadow:0 3px 12px rgba(0,0,0,.14);transition:all .2s;position:relative;z-index:2;margin-top:12px}
+    .wb-btn:hover{transform:translateY(-2px)}
+    /* APPLICATIONS LIST */
+    .app-card{background:var(--white);border:1px solid var(--br);border-radius:13px;padding:18px;margin-bottom:12px;transition:all .2s}
+    .app-card:hover{border-color:#93c5fd;box-shadow:0 4px 14px rgba(0,0,0,.07)}
+    .app-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
+    .app-student{display:flex;align-items:center;gap:12px}
+    .app-av{width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,var(--gb),var(--gd));display:flex;align-items:center;justify-content:center;font-family:'Clash Display',sans-serif;font-size:.95rem;font-weight:700;color:white;flex-shrink:0}
+    .app-nm{font-family:'Clash Display',sans-serif;font-size:.95rem;font-weight:700;color:var(--td)}
+    .app-cl{font-size:.76rem;color:var(--ts);margin-top:2px}
+    .app-skills{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+    .app-sk{padding:3px 10px;background:var(--gp);border:1px solid var(--br);border-radius:100px;font-size:.69rem;font-weight:500;color:var(--tm)}
+    .app-job{background:var(--gp);border:1px solid var(--br);border-radius:10px;padding:11px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+    .app-job-t{font-size:.84rem;font-weight:600;color:var(--td)}
+    .app-job-p{font-family:'Clash Display',sans-serif;font-size:1rem;font-weight:700;color:var(--gm)}
+    .app-bio{font-size:.8rem;color:var(--ts);margin-bottom:12px;line-height:1.5;background:var(--off);border-radius:8px;padding:10px;border:1px solid var(--br)}
+    .app-actions{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+    .app-date{font-size:.73rem;color:var(--ts);margin-left:auto}
+    .pay-box{width:100%;background:#f8fffb;border:1px solid var(--br);border-radius:10px;padding:11px;margin-top:2px}
+    .pay-box label{display:block;font-size:.72rem;font-weight:700;color:var(--tm);margin-bottom:6px}
+    .pay-row{display:grid;grid-template-columns:minmax(120px,1fr) auto;gap:8px;align-items:center}
+    .pay-input{width:100%;background:white;border:1.5px solid var(--br);border-radius:8px;padding:8px 10px;color:var(--td);font-family:'Outfit',sans-serif;font-size:.82rem;outline:none}
+    .pay-input:focus{border-color:var(--gb);box-shadow:0 0 0 3px rgba(0,201,107,.1)}
+    .paid-note{display:inline-flex;align-items:center;gap:5px;background:var(--gl);border:1px solid var(--br);color:var(--gm);border-radius:100px;padding:5px 11px;font-size:.78rem;font-weight:700}
+    .locked-note{display:inline-flex;align-items:center;gap:5px;background:#eff6ff;border:1px solid #bfdbfe;color:#1d4ed8;border-radius:100px;padding:5px 11px;font-size:.78rem;font-weight:700}
+    .ux-flow{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 12px}
+    .ux-step{display:inline-flex;align-items:center;gap:5px;padding:5px 8px;border-radius:999px;border:1px solid var(--br);background:var(--gp);color:var(--ts);font-size:.68rem;font-weight:800}
+    .ux-step.done{background:var(--gl);border-color:var(--br);color:var(--gm)}
+    .ux-step.active{background:#fff7ed;border-color:#fed7aa;color:#c2410c}
+    .ux-note{margin:-2px 0 12px;border-left:3px solid var(--gb);background:#f8fffb;border-radius:8px;padding:8px 10px;color:var(--tm);font-size:.76rem;line-height:1.45}
+    .workspace-box{width:100%;background:#f8fbff;border:1px solid #bfdbfe;border-radius:11px;padding:12px;margin-top:8px}
+    .workspace-box h4{font-family:'Clash Display',sans-serif;font-size:.86rem;color:var(--td);margin-bottom:8px}
+    .ws-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .ws-row{display:grid;grid-template-columns:minmax(90px,.6fr) 1fr;gap:8px;margin-bottom:8px}
+    .ws-status{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:100px;background:white;border:1px solid #bfdbfe;color:#1d4ed8;font-size:.72rem;font-weight:700;margin-bottom:8px}
+    .ws-submission{background:white;border:1px solid var(--br);border-radius:9px;padding:10px;margin-top:10px}
+    .ws-link{color:#1d4ed8;font-weight:700;text-decoration:none;word-break:break-word}
+    .student-profile-page{display:none;position:fixed;inset:0;z-index:10000;background:linear-gradient(180deg,#f8fffb 0%,#eefbf5 100%);overflow-y:auto;padding:24px}
+    .sp-shell{max-width:1120px;margin:0 auto}
+    .sp-topline{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+    .sp-back{border:1px solid var(--br);background:white;color:var(--tm);border-radius:10px;padding:9px 13px;font-family:'Outfit',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer}
+    .sp-loading{display:inline-flex;align-items:center;gap:8px;color:var(--ts);font-size:.8rem;font-weight:700}
+    .sp-loading .spin{border-color:rgba(10,124,68,.2);border-top-color:var(--gm)}
+    .sp-hero{background:white;border:1px solid var(--br);border-radius:18px;padding:22px;display:flex;gap:18px;align-items:flex-start;margin-bottom:14px;box-shadow:0 16px 42px rgba(10,31,18,.07)}
+    .sp-bigav{width:82px;height:82px;border-radius:22px;background:linear-gradient(135deg,var(--gb),var(--gd));color:white;display:flex;align-items:center;justify-content:center;font-family:'Clash Display',sans-serif;font-size:1.7rem;font-weight:800;flex-shrink:0;box-shadow:0 12px 26px rgba(10,124,68,.2)}
+    .sp-name{font-family:'Clash Display',sans-serif;font-size:1.6rem;font-weight:800;color:var(--td);margin-bottom:4px;letter-spacing:-.4px}
+    .sp-meta{font-size:.86rem;color:var(--ts);display:flex;gap:8px;flex-wrap:wrap}
+    .sp-meta span{background:var(--gp);border:1px solid var(--br);border-radius:100px;padding:4px 9px}
+    .sp-bio-preview{font-size:.9rem;color:var(--tm);line-height:1.55;margin-top:12px;max-width:760px}
+    .sp-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+    .sp-close{margin-left:auto;width:38px;height:38px;border-radius:10px;border:1px solid var(--br);background:white;color:var(--ts);font-size:1.2rem;cursor:pointer}
+    .sp-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+    .sp-stat{background:white;border:1px solid var(--br);border-radius:13px;padding:14px;box-shadow:0 8px 22px rgba(10,31,18,.04)}
+    .sp-stat strong{display:block;font-family:'Clash Display',sans-serif;font-size:1.28rem;color:var(--td)}
+    .sp-stat span{font-size:.74rem;color:var(--ts);font-weight:600}
+    .sp-layout{display:grid;grid-template-columns:1.15fr .85fr;gap:14px}
+    .sp-section{background:white;border:1px solid var(--br);border-radius:13px;padding:16px;margin-bottom:14px}
+    .sp-section h3{font-family:'Clash Display',sans-serif;font-size:.98rem;margin-bottom:10px}
+    .sp-list{display:flex;flex-direction:column;gap:8px}
+    .sp-item{border:1px solid var(--br);background:var(--gp);border-radius:10px;padding:10px}
+    .sp-item strong{display:block;font-size:.84rem;color:var(--td);margin-bottom:2px}
+    .sp-item span{font-size:.74rem;color:var(--ts)}
+    .sp-quality{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .sp-chip{background:var(--gp);border:1px solid var(--br);border-radius:11px;padding:10px}
+    .sp-chip strong{display:block;font-size:.78rem;color:var(--td);margin-bottom:2px}
+    .sp-chip span{font-size:.72rem;color:var(--ts);line-height:1.35}
+    .sp-empty-note{border:1px dashed var(--br);background:#fbfffd;color:var(--ts);border-radius:10px;padding:12px;font-size:.82rem;line-height:1.45}
+    .badge-pill{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:100px;border:1px solid var(--br);font-size:.72rem;font-weight:800;background:var(--gp);color:var(--tm)}
+    .badge-beginner{background:#f8fafc;color:#475569;border-color:#e2e8f0}
+    .badge-verified{background:#eff6ff;color:#1d4ed8;border-color:#bfdbfe}
+    .badge-top-rated{background:#fff7ed;color:#c2410c;border-color:#fed7aa}
+    .answer-box{background:#f8fffb;border:1px solid var(--br);border-radius:10px;padding:10px;margin-bottom:12px}
+    .answer-box strong{display:block;font-size:.78rem;color:var(--td);margin-bottom:4px}
+    .answer-box p{font-size:.8rem;color:var(--tm);line-height:1.45;margin:0 0 7px}
+    .ftabs{display:flex;gap:3px;background:var(--gp);border:1px solid var(--br);border-radius:10px;padding:3px;margin-bottom:16px;width:fit-content}
+    .ftab{padding:7px 16px;border-radius:7px;font-size:.82rem;font-weight:500;color:var(--ts);cursor:pointer;border:none;background:transparent;transition:all .2s;white-space:nowrap}
+    .ftab.active{background:white;color:#1d4ed8;font-weight:700;box-shadow:0 2px 7px rgba(0,0,0,.07)}
+    /* POST PROJECT */
+    .pf{background:var(--white);border:1.5px solid var(--br);border-radius:14px;padding:22px}
+    .fg{margin-bottom:14px}
+    .fg label{display:block;font-size:.77rem;font-weight:600;color:var(--tm);margin-bottom:5px}
+    .fi{width:100%;background:var(--off);border:1.5px solid var(--br);border-radius:9px;padding:10px 13px;color:var(--td);font-family:'Outfit',sans-serif;font-size:.88rem;outline:none;transition:all .2s}
+    .fi:focus{border-color:var(--gb);background:white;box-shadow:0 0 0 3px rgba(0,201,107,.1)}
+    .fi::placeholder{color:#b0c9bb}
+    .price-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:5px}
+    .price-opt{border:1.5px solid var(--br);border-radius:10px;padding:12px;text-align:center;cursor:pointer;transition:all .2s}
+    .price-opt:hover{border-color:var(--gb)}
+    .price-opt.sel{border-color:#1d4ed8;background:#eff6ff}
+    .price-opt strong{display:block;font-family:'Clash Display',sans-serif;font-size:1rem;font-weight:700;color:var(--td)}
+    .price-opt span{font-size:.72rem;color:var(--ts)}
+    .brief-ai{background:linear-gradient(135deg,#f8fbff,#f0fdf6);border:1.5px solid #bfdbfe;border-radius:13px;padding:14px;margin-bottom:16px}
+    .brief-ai-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
+    .brief-ai-title{font-family:'Clash Display',sans-serif;font-size:.95rem;font-weight:800;color:var(--td)}
+    .brief-ai-sub{display:block;font-size:.74rem;color:var(--ts);line-height:1.35;margin-top:2px}
+    .brief-pill{background:white;border:1px solid #bfdbfe;color:#1d4ed8;border-radius:100px;padding:4px 9px;font-size:.66rem;font-weight:800;white-space:nowrap}
+    .brief-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px}
+    .brief-result{display:none;background:white;border:1px solid var(--br);border-radius:11px;padding:13px;margin-top:12px}
+    .brief-result.show{display:block}
+    .brief-score{display:inline-flex;align-items:center;gap:6px;background:var(--gp);border:1px solid var(--br);color:var(--gm);border-radius:100px;padding:5px 10px;font-size:.72rem;font-weight:800;margin-bottom:9px}
+    .brief-score.warn{background:#fff7ed;border-color:#fed7aa;color:#c2410c}
+    .brief-draft-title{font-family:'Clash Display',sans-serif;font-size:.98rem;font-weight:800;color:var(--td);margin-bottom:5px}
+    .brief-copy{font-size:.8rem;color:var(--tm);line-height:1.5;margin-bottom:10px;white-space:pre-wrap}
+    .brief-list{display:flex;flex-direction:column;gap:6px;margin:8px 0 10px}
+    .brief-list div{background:var(--off);border:1px solid var(--br);border-radius:9px;padding:8px 10px;font-size:.78rem;color:var(--tm);line-height:1.4}
+    .brief-list strong{color:var(--td)}
+    /* PROJECTS LIST */
+    .pj-list{display:flex;flex-direction:column;gap:10px}
+    .pj-card{background:var(--white);border:1px solid var(--br);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:13px;transition:all .2s}
+    .pj-card:hover{border-color:#93c5fd;box-shadow:0 3px 12px rgba(0,0,0,.06)}
+    .pj-ico{width:40px;height:40px;border-radius:10px;background:#eff6ff;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
+    .pj-info{flex:1;min-width:0}
+    .pj-title{font-weight:600;font-size:.87rem;color:var(--td);margin-bottom:2px}
+    .pj-meta{font-size:.73rem;color:var(--ts);display:flex;gap:10px}
+    .pj-desc{font-size:.76rem;color:var(--tm);line-height:1.45;margin-top:7px;background:var(--gp);border:1px solid var(--br);border-radius:9px;padding:8px;white-space:pre-wrap;overflow-wrap:anywhere}
+    .pj-right{text-align:right;flex-shrink:0}
+    .pj-budget{font-family:'Clash Display',sans-serif;font-size:.95rem;font-weight:700;color:var(--gm)}
+    /* BROWSE STUDENTS */
+    .std-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px}
+    .std-card{background:var(--white);border:1px solid var(--br);border-radius:13px;padding:18px;transition:all .25s}
+    .std-card:hover{transform:translateY(-3px);box-shadow:0 7px 22px rgba(0,0,0,.09);border-color:var(--gb)}
+    .std-av{width:52px;height:52px;border-radius:50%;margin:0 auto 10px;background:linear-gradient(135deg,var(--gb),var(--gd));display:flex;align-items:center;justify-content:center;font-family:'Clash Display',sans-serif;font-size:1.1rem;font-weight:700;color:white}
+    .std-nm{font-family:'Clash Display',sans-serif;font-size:.9rem;font-weight:700;text-align:center;margin-bottom:2px}
+    .std-cl{font-size:.75rem;color:var(--ts);text-align:center;margin-bottom:10px}
+    .std-bio{font-size:.74rem;color:var(--ts);line-height:1.45;text-align:center;margin:0 0 11px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:32px}
+    .std-skills{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-bottom:12px}
+    .std-sk{padding:3px 9px;background:var(--gp);border:1px solid var(--br);border-radius:100px;font-size:.67rem;color:var(--tm)}
+    .std-stats{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px}
+    .std-stat{background:var(--gp);border:1px solid var(--br);border-radius:9px;padding:7px;text-align:center}
+    .std-stat strong{display:block;font-family:'Clash Display',sans-serif;font-size:.9rem;color:var(--td)}
+    .std-stat span{font-size:.62rem;color:var(--ts);font-weight:600}
+    .hire-btn{width:100%;padding:8px;background:var(--gp);border:1.5px solid var(--br);border-radius:8px;color:var(--gm);font-family:'Outfit',sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .2s}
+    .hire-btn:hover{background:var(--gm);color:white}
+    .empty-s{text-align:center;padding:40px 20px;color:var(--ts)}
+    .empty-s .ei{font-size:2.5rem;margin-bottom:12px}
+    .empty-s h3{font-family:'Clash Display',sans-serif;font-size:1rem;color:var(--td);margin-bottom:6px}
+    .empty-s p{font-size:.82rem;margin-bottom:16px}
+    .spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:white;border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle;margin-right:5px}
+    @keyframes sp{to{transform:rotate(360deg)}}
+    .toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(80px);padding:11px 20px;border-radius:100px;font-size:.83rem;font-weight:500;z-index:999;opacity:0;white-space:nowrap;transition:transform .4s cubic-bezier(.34,1.56,.64,1),opacity .3s;max-width:90vw}
+    .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+    .toast.success{background:var(--gd);color:white}
+    .toast.error{background:#dc2626;color:white}
+    .toast.info{background:var(--td);color:white}
+    .overlay{position:fixed;inset:0;background:rgba(10,31,18,.45);opacity:0;pointer-events:none;transition:opacity .25s ease;z-index:9999}
+    .overlay.show{opacity:1;pointer-events:auto}
+    .content::-webkit-scrollbar{width:3px}
+    .content::-webkit-scrollbar-thumb{background:var(--br);border-radius:100px}
+    /* ══ AI CHAT WIDGET STYLES ══ */
+.bottom-nav{display:none;position:fixed;left:0;right:0;bottom:0;background:white;border-top:1px solid var(--br);padding:6px 0;padding-bottom:calc(6px + env(safe-area-inset-bottom,0px));z-index:300;grid-template-columns:repeat(5,1fr)}
+.bn-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:0;background:transparent;color:var(--ts);font-family:'Outfit',sans-serif;font-size:.66rem;font-weight:700;min-height:48px;cursor:pointer}
+.bn-item svg{width:19px;height:19px;stroke:currentColor}
+.bn-item.active{color:#1d4ed8}
+.ai-chat-btn { position: fixed; bottom: 18px; right: 18px; width:52px; height:52px; background: linear-gradient(135deg, var(--gm), var(--gd)); color: white; border: none; padding: 0; border-radius: 16px; font-family: 'Clash Display', sans-serif; font-size: .78rem; letter-spacing:.04em; font-weight: 800; cursor: pointer; box-shadow: 0 14px 28px rgba(6,78,43,.24); z-index: 10000; transition: transform 0.2s, box-shadow .2s; display:grid; place-items:center; }
+.ai-chat-btn:hover { transform: translateY(-2px); box-shadow:0 18px 34px rgba(6,78,43,.3); }
+.ai-chat-btn::after{content:"";position:absolute;top:8px;right:8px;width:8px;height:8px;border-radius:50%;background:var(--gg);box-shadow:0 0 0 4px rgba(0,255,136,.15)}
+.ai-chat-window { display: none; position: fixed; bottom: 80px; right: 20px; width: 340px; height: 450px; background: white; border: 1px solid var(--br); border-radius: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); z-index: 10000; flex-direction: column; overflow: hidden; }
+.ai-chat-header { background: linear-gradient(135deg, var(--gm), var(--gd)); color: white; padding: 14px 18px; font-family: 'Clash Display', sans-serif; display: flex; justify-content: space-between; align-items: center; }
+.ai-chat-body { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: var(--off); }
+.ai-msg { background: white; border: 1px solid var(--br); padding: 10px 14px; border-radius: 12px 12px 12px 0; font-size: .85rem; color: var(--td); max-width: 85%; align-self: flex-start; line-height: 1.4; }
+.user-msg { background: var(--gl); color: var(--tm); padding: 10px 14px; border-radius: 12px 12px 0 12px; font-size: .85rem; max-width: 85%; align-self: flex-end; border: 1px solid var(--br); line-height: 1.4; }
+.ai-chat-input { display: flex; padding: 12px; background: white; border-top: 1px solid var(--br); gap: 8px; }
+.ai-chat-input input { flex: 1; padding: 10px 14px; border: 1px solid var(--br); border-radius: 9px; outline: none; font-family: 'Outfit', sans-serif; font-size: .85rem; }
+.ai-chat-input button { background: var(--gm); color: white; border: none; padding: 0 16px; border-radius: 9px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+.ai-chat-input button:hover { background: var(--gd); }
+    @media(max-width:860px){
+      .sidebar{position:fixed;top:0;left:0;bottom:0;height:100dvh;width:min(92vw,320px);max-width:320px;transform:translate3d(-104%,0,0)!important;transition:transform .28s ease;z-index:1000;box-shadow:0 20px 50px rgba(0,0,0,.2);will-change:transform}
+      .sidebar.open{transform:translate3d(0,0,0)!important}
+      .sb-close{display:flex}
+      .main{width:100%;flex:1 1 auto;min-width:0}
+      .topbar{padding:0 14px;height:60px}
+      .mb{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border:1px solid var(--br);border-radius:9px;background:var(--white)}
+      .tr_>.btn{display:none}
+      .tt{font-size:.98rem}
+      .ts_{font-size:.68rem}
+      .page{padding:18px 14px 96px}
+      .bottom-nav{display:grid}
+      .g2,.g3,.g4{grid-template-columns:1fr}
+      .wb{padding:20px;align-items:flex-start}
+      .sc{padding:14px}
+      .ftabs{width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+      .ftab{flex-shrink:0}
+      .price-grid{grid-template-columns:1fr}
+      .pj-card{align-items:flex-start}
+      .pj-meta{flex-wrap:wrap;gap:6px}
+      .app-top,.app-job{flex-direction:column;gap:10px;align-items:flex-start}
+      .app-date{width:100%;margin-left:0}
+      .pay-row{grid-template-columns:1fr}
+      .pay-row .btn{justify-content:center;width:100%}
+      .ws-grid,.ws-row{grid-template-columns:1fr}
+      .student-profile-page{padding:14px}
+      .sp-hero{flex-direction:column}
+      .sp-close{position:absolute;top:18px;right:18px}
+      .sp-stats,.sp-layout,.sp-quality{grid-template-columns:1fr}
+      .ai-chat-btn{bottom:82px;right:14px;width:48px;height:48px;border-radius:15px}
+      .ai-chat-window{left:12px;right:12px;width:auto;bottom:140px;height:min(62vh,430px)}
+    }
+    @media(max-width:560px){
+      .sidebar{width:100vw;max-width:none}
+      .sb-nm{max-width:68vw}
+      .ph h2{font-size:1.22rem}
+      .ph p{font-size:.8rem}
+      .app-student{align-items:flex-start}
+      .toast{white-space:normal;text-align:center;border-radius:14px;bottom:auto !important;top:20px !important;transform:translateX(-50%) translateY(-80px) !important;}
+      .toast.show{transform:translateX(-50%) translateY(0) !important;}
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+
+<aside class="sidebar" id="sidebar">
+  <a href="#" class="sb-logo"><div class="ld"><img src="android-chrome-192x192.png" alt=""></div>NextGenGrowth</a>
+  <button class="sb-close" onclick="closeMenu()" aria-label="Close menu">
+    <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+  <div class="sb-user">
+    <div class="av" id="sbAv">?</div>
+    <div style="overflow:hidden;min-width:0">
+      <div class="sb-nm skeleton" id="sbNm">Loading...</div>
+      <div class="sb-bg">🏢 Brand</div>
+    </div>
+  </div>
+  <nav class="nav">
+    <div class="nl">Main</div>
+    <button class="ni active" onclick="goTo('home',this)"><span class="nicon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>Dashboard</button>
+    <button class="ni" onclick="goTo('post',this)"><span class="nicon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg></span>Post a Project</button>
+    <button class="ni" onclick="goTo('projects',this)"><span class="nicon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg></span>My Projects<span class="nb" id="projBadge">0</span></button>
+    <button class="ni" onclick="goTo('applications',this)"><span class="nicon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></span>Applications<span class="nb" id="appsBadge">0</span></button>
+    <button class="ni" onclick="goTo('students',this)"><span class="nicon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg></span>Browse Students</button>
+    <button class="ni" onclick="goTo('longterm',this)"><span class="nicon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2m-9 4h10M5 7h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V9a2 2 0 012-2z"/></svg></span>Long-Term Hiring<span class="nb" id="ltBadge">0</span></button>
+    <div class="nl">Account</div>
+    <button class="ni" onclick="goTo('profile',this)"><span class="nicon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg></span>Brand Profile</button>
+    <button class="ni" onclick="logout()"><span class="nicon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg></span>Logout</button>
+  </nav>
+  <div class="sbf">
+    <div class="promo">
+      <h4>🎯 Find Talent Fast!</h4>
+      <p>Post a project and get applications from skilled students within 24hrs.</p>
+      <button class="pb" onclick="goTo('post',null)">Post a Project</button>
+      <button class="pb" style="margin-top:8px;background:#e8fdf2;color:#064e2b" onclick="goTo('longterm',null)">Hire Monthly Talent</button>
+    </div>
+  </div>
+</aside>
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeMenu()"></div>
+
+<div class="main">
+  <header class="topbar">
+    <div class="tl">
+      <button class="mb" onclick="toggleMenu()" aria-label="Open menu">
+        <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <div><div class="tt" id="pgT">Dashboard</div><div class="ts_ skeleton" id="pgD" style="display:inline-block;min-width:100px">Loading...</div></div>
+    </div>
+    <div class="tr_">
+      <button class="btn bpri" style="font-size:.82rem;padding:8px 14px" onclick="goTo('post',null)">+ Post Project</button>
+      <div class="tav" id="tbAv">?</div>
+    </div>
+  </header>
+
+  <div class="content" id="mc">
+
+    <!-- HOME -->
+    <div class="page active" id="page-home">
+      <div class="wb">
+        <div style="position:relative;z-index:2">
+          <div class="wb-pill"><span class="wb-pd"></span>Brand Dashboard</div>
+          <div class="wb-t" id="wbGreet">Welcome! 🏢</div>
+          <div class="wb-d">Post projects and get matched with skilled student talent. Mentor-reviewed quality, fast delivery.</div>
+          <button class="wb-btn" onclick="goTo('post',null)">+ Post a Project</button>
+          <button class="wb-btn" style="margin-left:8px;background:#fff;color:#064e2b" onclick="goTo('longterm',null)">Hire Long-Term Student Talent</button>
+        </div>
+      </div>
+
+      <div class="g4" style="margin-bottom:18px">
+        <div class="sc"><div class="sic ib2">📋</div><span class="sn" id="statProj">0</span><div class="sl">Projects Posted</div></div>
+        <div class="sc"><div class="sic ig">🟢</div><span class="sn" id="statOpen">0</span><div class="sl">Open Projects</div></div>
+        <div class="sc"><div class="sic ia">📥</div><span class="sn" id="statApps">0</span><div class="sl">Applications Received</div></div>
+        <div class="sc"><div class="sic ib2">🎓</div><span class="sn">500+</span><div class="sl">Students Available</div></div>
+      </div>
+
+      <div class="g2">
+        <div>
+          <!-- Pending Applications Alert -->
+          <div id="pendingAlert" style="display:none;background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:13px;padding:16px;margin-bottom:14px;cursor:pointer" onclick="goTo('applications',null)">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="font-size:1.5rem">📥</div>
+              <div>
+                <div style="font-family:'Clash Display',sans-serif;font-size:.92rem;font-weight:700;color:#1d4ed8;margin-bottom:3px">New Applications Waiting!</div>
+                <div style="font-size:.8rem;color:#3b82f6" id="pendingCount">Students have applied to your projects — review now!</div>
+              </div>
+              <div style="margin-left:auto;background:#1d4ed8;color:white;padding:6px 14px;border-radius:100px;font-size:.78rem;font-weight:700">Review →</div>
+            </div>
+          </div>
+
+          <!-- Getting started -->
+          <div class="card" id="brandGS" style="background:var(--gp);border-style:dashed;margin-bottom:14px">
+            <div class="st">🚀 Get Started in 3 Steps</div>
+            <div style="display:flex;flex-direction:column;gap:9px">
+              <div style="display:flex;gap:11px;align-items:flex-start;padding:12px;background:white;border-radius:10px;cursor:pointer" onclick="goTo('post',null)">
+                <div style="width:28px;height:28px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;color:white;flex-shrink:0">1</div>
+                <div><strong style="display:block;font-size:.85rem;font-weight:600;color:var(--td);margin-bottom:2px">Post a Project</strong><span style="font-size:.75rem;color:var(--ts)">Describe what you need with budget & deadline</span></div>
+              </div>
+              <div style="display:flex;gap:11px;align-items:flex-start;padding:12px;background:white;border-radius:10px;cursor:pointer" onclick="goTo('applications',null)">
+                <div style="width:28px;height:28px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;color:white;flex-shrink:0">2</div>
+                <div><strong style="display:block;font-size:.85rem;font-weight:600;color:var(--td);margin-bottom:2px">Review Applications</strong><span style="font-size:.75rem;color:var(--ts)">See student profiles, skills and portfolios</span></div>
+              </div>
+              <div style="display:flex;gap:11px;align-items:flex-start;padding:12px;background:white;border-radius:10px">
+                <div style="width:28px;height:28px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.78rem;font-weight:700;color:white;flex-shrink:0">3</div>
+                <div><strong style="display:block;font-size:.85rem;font-weight:600;color:var(--td);margin-bottom:2px">Get Quality Work</strong><span style="font-size:.75rem;color:var(--ts)">Mentor-reviewed delivery — satisfaction guaranteed</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- My projects -->
+          <div class="card" id="brandProjectsCard" style="display:none">
+            <div class="st">My Projects<span class="sa" onclick="goTo('projects',null)">See all →</span></div>
+            <div class="pj-list" id="homeProjList"></div>
+          </div>
+          <div class="card" id="homeApprovedBrandProjectsCard" style="display:none;margin-top:12px">
+            <div class="st">Approved Projects<span class="sa" onclick="goTo('projects',null)">Manage →</span></div>
+            <div class="pj-list" id="homeApprovedBrandProjects"></div>
+          </div>
+        </div>
+
+        <div>
+          <div class="card" style="margin-bottom:12px">
+            <div class="st">✅ Why NextGenGrowth?</div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;gap:10px;align-items:flex-start"><div style="font-size:1.2rem;flex-shrink:0">💸</div><div><strong style="display:block;font-size:.83rem;font-weight:600;color:var(--td);margin-bottom:1px">Save up to 40%</strong><span style="font-size:.75rem;color:var(--ts)">vs traditional agencies</span></div></div>
+              <div style="display:flex;gap:10px;align-items:flex-start"><div style="font-size:1.2rem;flex-shrink:0">✅</div><div><strong style="display:block;font-size:.83rem;font-weight:600;color:var(--td);margin-bottom:1px">Mentor-Reviewed Quality</strong><span style="font-size:.75rem;color:var(--ts)">Pros check work before delivery</span></div></div>
+              <div style="display:flex;gap:10px;align-items:flex-start"><div style="font-size:1.2rem;flex-shrink:0">🚀</div><div><strong style="display:block;font-size:.83rem;font-weight:600;color:var(--td);margin-bottom:1px">Fast Turnaround</strong><span style="font-size:.75rem;color:var(--ts)">Most projects done in 2-5 days</span></div></div>
+              <div style="display:flex;gap:10px;align-items:flex-start"><div style="font-size:1.2rem;flex-shrink:0">🎓</div><div><strong style="display:block;font-size:.83rem;font-weight:600;color:var(--td);margin-bottom:1px">Gen-Z Native Skills</strong><span style="font-size:.75rem;color:var(--ts)">Students understand Reels, TikTok, trends</span></div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="st">Popular Services</div>
+            <div style="display:flex;flex-wrap:wrap;gap:7px">
+              <span style="padding:5px 12px;background:var(--gl);border:1px solid var(--br);border-radius:100px;font-size:.78rem;font-weight:500;color:var(--tm);cursor:pointer" onclick="goTo('post',null)">🎬 Video Editing</span>
+              <span style="padding:5px 12px;background:var(--gl);border:1px solid var(--br);border-radius:100px;font-size:.78rem;font-weight:500;color:var(--tm);cursor:pointer" onclick="goTo('post',null)">🎨 Graphic Design</span>
+              <span style="padding:5px 12px;background:var(--gl);border:1px solid var(--br);border-radius:100px;font-size:.78rem;font-weight:500;color:var(--tm);cursor:pointer" onclick="goTo('post',null)">💻 Website Design</span>
+              <span style="padding:5px 12px;background:var(--gl);border:1px solid var(--br);border-radius:100px;font-size:.78rem;font-weight:500;color:var(--tm);cursor:pointer" onclick="goTo('post',null)">✍️ Blog Writing</span>
+              <span style="padding:5px 12px;background:var(--gl);border:1px solid var(--br);border-radius:100px;font-size:.78rem;font-weight:500;color:var(--tm);cursor:pointer" onclick="goTo('post',null)">📱 Social Media</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- POST PROJECT -->
+    <div class="page" id="page-post">
+      <div class="ph"><h2>Post a Project ✍️</h2><p>Tell students what you need. We'll match the right talent automatically.</p></div>
+      <div class="g2">
+        <div class="pf">
+          <div class="brief-ai">
+            <div class="brief-ai-head">
+              <div>
+                <div class="brief-ai-title">AI Brief Builder</div>
+                <span class="brief-ai-sub">Paste the rough client ask. AI will score it, ask missing questions, and draft a student-ready scope.</span>
+              </div>
+              <span class="brief-pill">SMART SCOPE</span>
+            </div>
+            <textarea class="fi" id="briefRaw" rows="4" placeholder="Example: I need some social media stuff to sell more shoes..."></textarea>
+            <div class="brief-actions">
+              <button class="btn bpri" id="briefGenBtn" onclick="generateBriefDraft()">Generate Scope</button>
+              <button class="btn bout" onclick="clearBriefDraft()">Clear</button>
+            </div>
+            <div class="brief-result" id="briefDraftResult"></div>
+          </div>
+          <div class="fg"><label>Project Title *</label><input class="fi" type="text" id="pjTitle" placeholder="e.g. Instagram Reels Editor for Fashion Brand"/></div>
+          <div class="fg"><label>Category *</label>
+            <select class="fi" id="pjCat" style="padding-left:13px">
+              <option value="">Select category...</option>
+              <option value="video">🎬 Video Editing / Reels</option>
+              <option value="design">🎨 Graphic Design</option>
+              <option value="web">💻 Website Development</option>
+              <option value="writing">✍️ Content Writing / SEO</option>
+              <option value="social">📱 Social Media Management</option>
+              <option value="photo">📸 Photography / Photo Editing</option>
+              <option value="other">📦 Other</option>
+            </select>
+          </div>
+          <div class="fg"><label>Project Description *</label><textarea class="fi" id="pjDesc" rows="4" placeholder="Describe exactly what you need. More detail = better applications..."></textarea></div>
+          <div class="fg">
+            <label>Budget *</label>
+            <input class="fi" type="text" id="pjBudget" placeholder="Enter any amount or range, e.g. ₹250, ₹999, ₹2,500 – ₹7,000, negotiable" oninput="formatProjectBudgetInput(this)"/>
+          </div>
+          <div class="fg"><label>Deadline</label><input class="fi" type="text" id="pjDeadline" placeholder="e.g. 3-5 days, 1 week, flexible"/></div>
+          <div class="fg"><label>Application Questions</label><textarea class="fi" id="pjQuestions" rows="3" placeholder="Optional: one question per line. Students must answer these before applying."></textarea></div>
+          <button class="btn bgre" id="postBtn" onclick="postProject()" style="width:100%;justify-content:center">🚀 Post Project</button>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom:14px;background:var(--gp)">
+            <div class="st">📋 Tips for Better Applications</div>
+            <div style="display:flex;flex-direction:column;gap:9px;font-size:.82rem;color:var(--tm)">
+              <div>✅ Be specific — "5 Instagram Reels, 30-60 sec each"</div>
+              <div>✅ Mention your brand vibe/style</div>
+              <div>✅ Set realistic budget</div>
+              <div>✅ Give clear deadline</div>
+              <div>✅ Add reference links in description</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="st">What Happens Next?</div>
+            <div style="display:flex;flex-direction:column;gap:8px;font-size:.82rem">
+              <div style="display:flex;gap:8px"><span style="color:var(--gm);font-weight:700;flex-shrink:0">01</span><span style="color:var(--ts)">Project goes live immediately</span></div>
+              <div style="display:flex;gap:8px"><span style="color:var(--gm);font-weight:700;flex-shrink:0">02</span><span style="color:var(--ts)">Matched students get notified</span></div>
+              <div style="display:flex;gap:8px"><span style="color:var(--gm);font-weight:700;flex-shrink:0">03</span><span style="color:var(--ts)">You receive applications in dashboard</span></div>
+              <div style="display:flex;gap:8px"><span style="color:var(--gm);font-weight:700;flex-shrink:0">04</span><span style="color:var(--ts)">YOU review & accept the best student</span></div>
+              <div style="display:flex;gap:8px"><span style="color:var(--gm);font-weight:700;flex-shrink:0">05</span><span style="color:var(--ts)">Mentor reviews quality before delivery</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MY PROJECTS -->
+    <div class="page" id="page-projects">
+      <div class="ph"><h2>My Projects 📋</h2><p>Open projects stay here. Approved projects move into the approved section with the selected student.</p></div>
+      <div style="display:flex;gap:10px;margin-bottom:16px"><button class="btn bpri" onclick="goTo('post',null)">+ Post New Project</button></div>
+      <div class="card" id="brandApprovedProjectsCard" style="display:none;margin-bottom:14px">
+        <div class="st">Approved Projects</div>
+        <div class="pj-list" id="brandApprovedProjectsList"></div>
+      </div>
+      <div class="card" id="brandLongTermProjectsCard" style="margin-bottom:14px">
+        <div class="st">Long-Term Projects<span class="sa" onclick="goTo('longterm',null)">Manage →</span></div>
+        <div class="pj-list" id="brandLongTermProjectsList">
+          <div class="empty-s"><div class="ei">💼</div><h3>No long-term projects yet</h3><p>Use a sample template below or create a monthly hiring request.</p></div>
+        </div>
+      </div>
+      <div class="st">Open Projects</div>
+      <div class="pj-list" id="projListFull">
+        <div class="empty-s"><div class="ei">📋</div><h3>No projects yet</h3><p>Post your first project!</p><button class="btn bpri" onclick="goTo('post',null)">+ Post First Project</button></div>
+      </div>
+    </div>
+
+    <!-- ✅ APPLICATIONS — Brand accept/reject kare -->
+    <div class="page" id="page-applications">
+      <div class="ph"><h2>Applications 📥</h2><p>Students who applied to your projects — YOU decide who to hire!</p></div>
+
+      <!-- Tab filter -->
+      <div class="ftabs">
+        <button class="ftab active" onclick="filterBrandApps('all',this)">All Applications</button>
+        <button class="ftab" onclick="filterBrandApps('review',this)">🔍 Under Review</button>
+        <button class="ftab" onclick="filterBrandApps('accepted',this)">✅ Accepted</button>
+        <button class="ftab" onclick="filterBrandApps('rejected',this)">❌ Rejected</button>
+      </div>
+
+      <div id="brandAppList">
+        <div class="empty-s">
+          <div class="ei">📥</div>
+          <h3>No applications yet</h3>
+          <p>Post a project to start receiving applications from students.</p>
+          <button class="btn bpri" onclick="goTo('post',null)">+ Post a Project</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- BROWSE STUDENTS -->
+    <div class="page" id="page-students">
+      <div class="ph"><h2>Browse Students 🎓</h2><p>Live student profiles from your NextGenGrowth community.</p></div>
+      <div class="std-grid" id="studentGrid">
+        <div class="empty-s" style="grid-column:1/-1"><div class="ei">🎓</div><h3>Loading students...</h3><p>Fetching live student profiles.</p></div>
+      </div>
+    </div>
+
+    <!-- LONG-TERM HIRING -->
+    <div class="page" id="page-longterm">
+      <div class="ph"><h2>Hire Long-Term Student Talent 💼</h2><p>Hire skilled student creators for monthly work. Start with a 7-day paid trial, then continue long-term if satisfied.</p></div>
+      <div class="g2">
+        <div class="card">
+          <div class="st" style="margin-bottom:14px">Monthly Hiring Request</div>
+          <div class="g2">
+            <div class="fg"><label>Brand Name *</label><input class="fi" id="ltBrandName" placeholder="Your brand or startup name"></div>
+            <div class="fg"><label>Founder / Manager Name</label><input class="fi" id="ltManager" placeholder="Person managing this role"></div>
+          </div>
+          <div class="g2">
+            <div class="fg"><label>Email *</label><input class="fi" id="ltEmail" type="email" placeholder="work@email.com"></div>
+            <div class="fg"><label>WhatsApp Number</label><input class="fi" id="ltWhatsapp" inputmode="tel" placeholder="+91 98765 43210" onfocus="ensureIndianPhonePrefix(this)" oninput="formatIndianPhoneInput(this)"></div>
+          </div>
+          <div class="fg"><label>Role Required *</label><input class="fi" id="ltRole" placeholder="Video Editor / SMM Intern / Web Developer"></div>
+          <div class="fg"><label>Skills Required *</label><input class="fi" id="ltSkills" placeholder="Canva, Reels, Editing, Web, SEO"></div>
+          <div class="g2">
+            <div class="fg"><label>Monthly Budget *</label><input class="fi" id="ltBudget" inputmode="numeric" placeholder="₹10,000" oninput="formatMoneyInput(this)"></div>
+            <div class="fg"><label>Duration</label><select class="fi" id="ltDuration"><option>1 month</option><option>3 months</option><option>Ongoing</option></select></div>
+          </div>
+          <div class="g2">
+            <div class="fg"><label>Work Type</label><select class="fi" id="ltWorkType"><option value="remote">Remote</option><option value="on-site">On-site</option><option value="hybrid">Hybrid</option></select></div>
+            <div class="fg"><label>Hours per Week</label><input class="fi" id="ltHours" value="10 hours/week" placeholder="5 / 10 / 20 hours"></div>
+          </div>
+          <div class="fg"><label>Expected Weekly Output</label><input class="fi" id="ltWeekly" placeholder="Example: 4 reels per week"></div>
+          <div class="g2">
+            <div class="fg"><label>7-Day Trial Pay</label><input class="fi" id="ltTrialPay" inputmode="numeric" placeholder="Example: ₹1,000" oninput="formatMoneyInput(this)"></div>
+            <div class="fg"><label>When do you want to start?</label><input class="fi" id="ltStart" value="Within 7 days" placeholder="Immediately / next week"></div>
+          </div>
+          <div class="fg"><label>Trial Task</label><textarea class="fi" id="ltTrial" rows="3" placeholder="Small paid task for the 7-day trial"></textarea></div>
+          <button class="btn bgre" id="ltSubmitBtn" onclick="submitLongTermRole()" style="width:100%;justify-content:center">Request Talent</button>
+        </div>
+        <div>
+          <div class="card" style="background:var(--gp);margin-bottom:14px">
+            <div class="st">Manual MVP Rules</div>
+            <div style="display:flex;flex-direction:column;gap:8px;font-size:.82rem;color:var(--tm)">
+              <div>01 Brand submits role requirements.</div>
+              <div>02 Students apply from their dashboard.</div>
+              <div>03 Admin shortlists 3 suitable students.</div>
+              <div>04 Brand requests intro; contact stays hidden.</div>
+              <div>05 Contact unlocks only after paid trial confirmation.</div>
+              <div>06 If the trial does not work, NextGenGrowth helps find a replacement.</div>
+            </div>
+          </div>
+          <div class="card" style="margin-bottom:14px">
+            <div class="st">Quick Templates</div>
+            <div style="display:grid;gap:9px">
+              <button class="btn bout" onclick="useLongTermTemplate('video')" style="justify-content:flex-start">🎬 Monthly Video Editor</button>
+              <button class="btn bout" onclick="useLongTermTemplate('social')" style="justify-content:flex-start">📱 Social Media Intern</button>
+              <button class="btn bout" onclick="useLongTermTemplate('web')" style="justify-content:flex-start">💻 Web Developer</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="st">Your Long-Term Requests</div>
+            <div id="longTermRoleList"><div class="empty-s"><div class="ei">💼</div><h3>No long-term roles yet</h3><p>Create your first monthly hiring request.</p></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BRAND PROFILE -->
+    <div class="page" id="page-profile">
+      <div class="ph"><h2>Brand Profile 🏢</h2><p>Keep your brand profile complete.</p></div>
+      <div class="g2">
+        <div class="card" style="text-align:center;padding:28px">
+          <div style="width:72px;height:72px;border-radius:16px;margin:0 auto 14px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);display:flex;align-items:center;justify-content:center;font-family:'Clash Display',sans-serif;font-size:1.6rem;font-weight:700;color:white" id="bpAv">?</div>
+          <div style="font-family:'Clash Display',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:3px" id="bpNm">Your Brand</div>
+          <div style="font-size:.8rem;color:var(--ts);margin-bottom:16px" id="bpEmail">—</div>
+          <div style="display:flex;flex-direction:column;gap:8px;text-align:left">
+            <div style="display:flex;justify-content:space-between;font-size:.83rem"><span style="color:var(--ts)">Member Since</span><span style="font-weight:600" id="bpJoined">—</span></div>
+            <div style="display:flex;justify-content:space-between;font-size:.83rem"><span style="color:var(--ts)">Projects Posted</span><span style="font-weight:600;color:var(--gm)" id="bpProj">0</span></div>
+            <div style="display:flex;justify-content:space-between;gap:10px;font-size:.83rem"><span style="color:var(--ts)">Hiring For</span><span style="font-weight:600;text-align:right" id="bpNeed">—</span></div>
+            <div style="display:flex;justify-content:space-between;gap:10px;font-size:.83rem"><span style="color:var(--ts)">Brand Link</span><a id="bpLink" href="#" target="_blank" style="font-weight:600;color:#1d4ed8;text-align:right">Add link</a></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="st" style="margin-bottom:16px">Edit Brand Profile</div>
+          <div class="g2">
+            <div class="fg"><label>First Name</label><input class="fi" type="text" id="bpfn" placeholder="Your name"/></div>
+            <div class="fg"><label>Last Name</label><input class="fi" type="text" id="bpln" placeholder="Last name"/></div>
+          </div>
+          <div class="fg"><label>Company / Brand Name</label><input class="fi" type="text" id="bpco" placeholder="e.g. StyleCo India"/></div>
+          <div class="fg"><label>Email (cannot change)</label><input class="fi" type="email" id="bpem" readonly style="opacity:.6;cursor:not-allowed"/></div>
+          <div class="fg"><label>Website / Instagram / Brand Link</label><input class="fi" type="url" id="bpbrandlink" placeholder="https://yourbrand.com or Instagram profile"/></div>
+          <div class="g2">
+            <div class="fg"><label>LinkedIn</label><input class="fi" type="url" id="bplinkedin" placeholder="Company or founder LinkedIn"/></div>
+            <div class="fg"><label>Case Study / Portfolio Link</label><input class="fi" type="url" id="bpportfolio" placeholder="Past work, deck, or proof link"/></div>
+          </div>
+          <div class="fg"><label>What You Usually Need</label><input class="fi" type="text" id="bpservice" placeholder="e.g. reels editing, website design, social media growth"/></div>
+          <div class="fg"><label>About Your Brand</label><textarea class="fi" id="bpbio" rows="4" placeholder="What does your brand do, who do you serve, and what kind of student talent should apply?"></textarea></div>
+          <button class="btn bpri" onclick="saveBrandProfile()" style="width:100%;justify-content:center">💾 Save Profile</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+  <nav class="bottom-nav" id="bottomNav">
+    <button class="bn-item active" id="bn-home" onclick="goTo('home',null)">
+      <svg fill="none" viewBox="0 0 24 24" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <span>Home</span>
+    </button>
+    <button class="bn-item" id="bn-post" onclick="goTo('post',null)">
+      <svg fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" d="M12 4v16m8-8H4"/></svg>
+      <span>Post</span>
+    </button>
+    <button class="bn-item" id="bn-projects" onclick="goTo('projects',null)">
+      <svg fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+      <span>Projects</span>
+    </button>
+    <button class="bn-item" id="bn-applications" onclick="goTo('applications',null)">
+      <svg fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      <span>Apps</span>
+    </button>
+    <button class="bn-item" id="bn-profile" onclick="goTo('profile',null)">
+      <svg fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+      <span>Profile</span>
+    </button>
+  </nav>
+</div>
+<div class="student-profile-page" id="studentProfileModal">
+  <div class="sp-shell" id="studentProfileContent"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+  // ══ AI CHAT LOGIC ══
+function toggleAIChat() {
+  const win = document.getElementById('aiChatWindow');
+  win.style.display = win.style.display === 'flex' ? 'none' : 'flex';
+  
+  // Update header based on role
+  if (_u && _u.role === 'brand') {
+    document.getElementById('aiChatTitle').textContent = "NextGen Brand Guide";
+  }
+}
+
+async function sendAIMessage() {
+  const input = document.getElementById('aiChatInput');
+  const msg = input.value.trim();
+  if(!msg) return;
+
+  const body = document.getElementById('aiChatBody');
+  
+  // 1. Show the user's message
+  body.innerHTML += `<div class="user-msg">${esc(msg)}</div>`;
+  input.value = '';
+  body.scrollTop = body.scrollHeight;
+
+  // 2. Show a loading indicator
+  const loadingId = 'loading-' + Date.now();
+  body.innerHTML += `<div class="ai-msg" id="${loadingId}"><span class="spin"></span>Thinking...</div>`;
+  body.scrollTop = body.scrollHeight;
+
+  try {
+    // 3. Automatically detect if this is a student or a brand
+    const aiUserType = (_u && _u.role === 'brand') ? 'brand' : 'student';
+
+    // 4. Send to your Railway backend
+    const response = await fetch('/api/ask-ai', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        userType: aiUserType, 
+        userMessage: msg 
+      })
+    });
+
+    const data = await response.json();
+    
+    // 5. Remove loading indicator and show AI response
+    document.getElementById(loadingId).remove();
+
+   if (data.reply) {
+         // The marked.parse() command translates it to perfect HTML!
+         body.innerHTML += `<div class="ai-msg">${marked.parse(data.reply)}</div>`;
+      } else {
+       body.innerHTML += `<div class="ai-msg" style="color:red">Error: ${data.error || "Could not get response."}</div>`;
+    }
+  } catch(e) {
+    document.getElementById(loadingId).remove();
+    body.innerHTML += `<div class="ai-msg" style="color:red">Connection failed. Make sure the server is running.</div>`;
+  }
+  
+  body.scrollTop = body.scrollHeight;
+}
+
+// Allow pressing 'Enter' to send
+function handleAIKeyPress(e) {
+  if(e.key === 'Enter') sendAIMessage();
+}
+// AUTH GUARD
+const _tk=localStorage.getItem('ngg_token');
+const _u=JSON.parse(localStorage.getItem('ngg_user')||'null');
+if(!_tk||!_u){window.location.href='/login';}
+if(_u&&_u.role&&_u.role!=='brand'){window.location.href='/login';}
+
+// STATE
+let myProjects=[], brandApps=[], brandWorkspaces=[], brandStudents=[], longTermRoles=[], curAppFilter='all', latestBriefDraft=null;
+const studentProfileCache=new Map();
+const LONG_TERM_SAMPLE_ROLES={
+  video:{
+    roleTitle:'Monthly Video Editor',
+    skills:'CapCut, Reels, Captions, YouTube Shorts',
+    budget:'₹8,000',
+    hours:'10 hours/week',
+    weekly:'4 reels per week with captions and basic thumbnails',
+    trialPay:'₹1,000',
+    trial:'Edit 3 short reels from supplied clips with captions, hook text, and clean pacing.',
+    start:'Within 7 days',
+  },
+  social:{
+    roleTitle:'Social Media Intern',
+    skills:'Canva, Instagram, Content Calendar, Captions',
+    budget:'₹6,000',
+    hours:'8 hours/week',
+    weekly:'3 posts, 2 reels ideas, and 1 weekly content calendar',
+    trialPay:'₹800',
+    trial:'Create a 7-day content calendar with 3 caption drafts and 2 reel concepts.',
+    start:'Within 7 days',
+  },
+  web:{
+    roleTitle:'Web Developer',
+    skills:'HTML, CSS, JavaScript, Landing Pages, SEO basics',
+    budget:'₹10,000',
+    hours:'12 hours/week',
+    weekly:'1 landing page section or 2 website improvements per week',
+    trialPay:'₹1,500',
+    trial:'Build one responsive landing page section from a reference and submit a live/GitHub link.',
+    start:'Next week',
+  },
+};
+
+function getAppId(app){return app?._id||app?.id||'';}
+function esc(value){return String(value??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function shortenText(text,max=180){
+  const value=String(text||'').trim();
+  return value.length>max?value.slice(0,max).trim()+'...':value;
+}
+function normalizeUrl(value){
+  const raw=String(value||'').trim();
+  if(!raw)return '';
+  return /^https?:\/\//i.test(raw)?raw:`https://${raw}`;
+}
+function getInitials(name){return String(name||'Student').split(' ').filter(Boolean).map(p=>p[0]).join('').slice(0,2).toUpperCase()||'?';}
+function parsePayAmount(pay){
+  const match=String(pay||'').replace(/,/g,'').match(/(\d+(?:\.\d+)?)/);
+  return match?Number(match[1]):'';
+}
+function formatINR(amount){
+  const n=Number(amount||0);
+  return n>0?`₹${n.toLocaleString('en-IN')}`:'';
+}
+function formatMoneyValue(value){
+  const digits=String(value||'').replace(/[^\d]/g,'');
+  return digits?`₹${Number(digits).toLocaleString('en-IN')}`:'';
+}
+function formatMoneyInput(el){
+  if(!el)return;
+  el.value=formatMoneyValue(el.value);
+}
+function formatProjectBudgetInput(el) {
+  if (!el) return;
+  let val = el.value;
+  val = val.replace(/^(rs\.?\s*|inr\s*)/i, '₹');
+  if (!val.trim()) {
+    el.value = '';
+    return;
+  }
+  const cleanDigits = val.replace(/\D/g, '');
+  if (/^₹?\d*$/.test(val.trim())) {
+    el.value = cleanDigits ? `₹${Number(cleanDigits).toLocaleString('en-IN')}` : '';
+    return;
+  }
+  if (val.includes('-')) {
+    const parts = val.split('-');
+    const formattedParts = parts.map(p => {
+      const d = p.replace(/\D/g, '');
+      return d ? `₹${Number(d).toLocaleString('en-IN')}` : p.trim();
+    });
+    el.value = formattedParts.join(' - ');
+    return;
+  }
+  if (!val.startsWith('₹') && /^\d/.test(val)) {
+    el.value = '₹' + val;
+  }
+}
+function normalizeIndianPhoneValue(value){
+  let str = String(value || '');
+  if (str.startsWith('+91')) {
+    str = str.slice(3);
+  }
+  let digits = str.replace(/\D/g, '');
+  if (digits.startsWith('91') && digits.length > 10) {
+    digits = digits.slice(2);
+  }
+  if (digits.startsWith('0')) {
+    digits = digits.replace(/^0+/, '');
+  }
+  digits = digits.slice(0, 10);
+  if (!digits) return '+91 ';
+  if (digits.length === 10) {
+    return `+91 ${digits.slice(0, 5)} ${digits.slice(5)}`;
+  }
+  return `+91 ${digits}`;
+}
+function ensureIndianPhonePrefix(el){
+  if(el&&!el.value.trim())el.value='+91 ';
+}
+function formatIndianPhoneInput(el){
+  if(!el)return;
+  const formatted=normalizeIndianPhoneValue(el.value);
+  el.value=formatted||'+91 ';
+}
+function setInputDefault(id,value){
+  const el=document.getElementById(id);
+  if(el&&!el.value.trim())el.value=value;
+}
+function initLongTermDefaults(){
+  setInputDefault('ltWhatsapp','+91 ');
+  setInputDefault('ltHours','10 hours/week');
+  setInputDefault('ltStart','Within 7 days');
+}
+function useLongTermTemplate(type){
+  const t=LONG_TERM_SAMPLE_ROLES[type]||LONG_TERM_SAMPLE_ROLES.video;
+  const set=(id,value)=>{const el=document.getElementById(id);if(el)el.value=value;};
+  set('ltRole',t.roleTitle);
+  set('ltSkills',t.skills);
+  set('ltBudget',t.budget);
+  set('ltHours',t.hours);
+  set('ltWeekly',t.weekly);
+  set('ltTrialPay',t.trialPay);
+  set('ltTrial',t.trial);
+  set('ltStart',t.start);
+  goTo('longterm',null);
+  showToast(`${t.roleTitle} template added. Review and submit.`, 'success');
+}
+function getWorkspace(appId){return brandWorkspaces.find(w=>String(w.applicationId)===String(appId));}
+function badgeHtml(level){
+  const map={
+    beginner:{label:'Beginner',cls:'badge-beginner',icon:'🌱'},
+    verified:{label:'Verified',cls:'badge-verified',icon:'✅'},
+    'top-rated':{label:'Top Rated',cls:'badge-top-rated',icon:'⭐'}
+  };
+  const b=map[level]||map.beginner;
+  return `<span class="badge-pill ${b.cls}">${b.icon} ${b.label}</span>`;
+}
+function workspaceStatusText(status){
+  return {
+    resources_pending:'Resources pending',
+    in_progress:'In progress',
+    submitted:'Submitted for review',
+    revision_requested:'Revision requested',
+    approved:'Approved',
+    completed:'Completed'
+  }[status]||'Workspace';
+}
+
+function renderUxFlow(steps){
+  return `<div class="ux-flow">${steps.map(step=>`<span class="ux-step ${step.done?'done':step.active?'active':''}">${step.done?'✓':step.active?'•':'○'} ${esc(step.label)}</span>`).join('')}</div>`;
+}
+
+function brandAppFlow(app,isPaid,ws){
+  const status=app?.status||'review';
+  if(status==='rejected'){
+    return {
+      steps:[{label:'Reviewed',done:true},{label:'Rejected',active:true}],
+      note:'Application is closed. Keep the project focused on shortlisted or accepted students.',
+    };
+  }
+  return {
+    steps:[
+      {label:'Review',done:status!=='review',active:status==='review'},
+      {label:'Accept 1 Student',done:status==='accepted',active:false},
+      {label:'Payment',done:isPaid,active:status==='accepted'&&!isPaid},
+      {label:'Resources',done:!!ws&&ws.status!=='resources_pending',active:isPaid&&(!ws||ws.status==='resources_pending')},
+      {label:'Approve Work',done:['approved','completed'].includes(ws?.status),active:ws?.status==='submitted'},
+    ],
+    note:brandNextStep(app,isPaid,ws),
+  };
+}
+
+function brandNextStep(app,isPaid,ws){
+  if(app?.status==='review')return 'Review profile, portfolio, answers, and select only one student for this project.';
+  if(app?.status==='accepted'&&!isPaid)return 'Next step: pay through NextGenGrowth to start the protected workspace.';
+  if(isPaid&&(!ws||ws.status==='resources_pending'))return 'Next step: add brief, resources, deadline, and acceptance criteria for the student.';
+  if(ws?.status==='in_progress')return 'Student is working. Wait for submission or update resources if needed.';
+  if(ws?.status==='revision_requested')return 'Revision requested. Wait for the student to resubmit the updated work.';
+  if(ws?.status==='submitted')return 'Student submitted work. Review it, then approve or request revision.';
+  if(['approved','completed'].includes(ws?.status))return 'Work approved. Keep this student in mind for future or monthly hiring.';
+  return 'NextGenGrowth will show the next action as this project moves forward.';
+}
+
+// LOAD BRAND DATA
+function loadBrandData(){
+  if(!_u)return;
+  const name=_u.name||`${_u.firstName||''} ${_u.lastName||''}`.trim()||'Brand';
+  const email=_u.email||'';
+  const company=_u.companyName||name;
+  const joined=_u.createdAt?new Date(_u.createdAt).toLocaleDateString('en-IN',{month:'long',year:'numeric'}):'Recently';
+  const initials=(company.slice(0,2)).toUpperCase();
+  const fn=_u.firstName||name.split(' ')[0]||'';
+  const brandLink=_u.brandLink||_u.portfolioLink||_u.linkedin||'';
+  ['sbAv','tbAv','bpAv'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=initials;});
+  document.getElementById('sbNm').textContent=company||name;
+  document.getElementById('bpNm').textContent=company||name;
+  document.getElementById('bpEmail').textContent=email;
+  document.getElementById('bpJoined').textContent=joined;
+  const needEl=document.getElementById('bpNeed');
+  if(needEl)needEl.textContent=_u.serviceNeeded?shortenText(_u.serviceNeeded,32):'Add details';
+  const linkEl=document.getElementById('bpLink');
+  if(linkEl){
+    if(brandLink){linkEl.href=normalizeUrl(brandLink);linkEl.textContent='Open link';}
+    else{linkEl.removeAttribute('href');linkEl.textContent='Add link';}
+  }
+  const h=new Date().getHours();
+  const greet=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+  document.getElementById('wbGreet').textContent=`${greet}, ${fn}! 🏢`;
+  const fields={
+    bpfn:_u.firstName||fn,
+    bpln:_u.lastName||'',
+    bpco:_u.companyName||'',
+    bpem:email,
+    bpbrandlink:_u.brandLink||'',
+    bplinkedin:_u.linkedin||'',
+    bpportfolio:_u.portfolioLink||'',
+    bpservice:_u.serviceNeeded||'',
+    bpbio:_u.bio||'',
+    ltBrandName:_u.companyName||company||'',
+    ltManager:name,
+    ltEmail:email
+  };
+  Object.entries(fields).forEach(([id,val])=>{const e=document.getElementById(id);if(e)e.value=val||'';});
+  initLongTermDefaults();
+}
+
+// LOAD BRAND STATS + PROJECTS
+async function loadBrandStats(){
+  try{
+    const data=await fetch('/api/brand/stats',{headers:{'Authorization':'Bearer '+_tk}}).then(r=>r.json());
+    if(!data.success)return;
+    const s=data.stats;
+    document.getElementById('statProj').textContent=s.totalProjects;
+    document.getElementById('statOpen').textContent=s.openProjects;
+    document.getElementById('projBadge').textContent=s.totalProjects;
+    document.getElementById('bpProj').textContent=s.totalProjects;
+    myProjects=data.projects||[];
+    if(myProjects.length>0){
+      document.getElementById('brandGS').style.display='none';
+    }
+    const openProjects=myProjects.filter(p=>p.status==='open');
+    document.getElementById('brandProjectsCard').style.display=openProjects.length?'block':'none';
+    if(openProjects.length)renderHomeProjList(openProjects.slice(0,3));
+    renderFullProjList(openProjects);
+    renderApprovedBrandProjects();
+  }catch(e){console.log('Brand stats error:',e);}
+}
+
+// ✅ LOAD BRAND APPLICATIONS — Real API
+async function loadBrandApplications(){
+  try{
+    const [data,workspaceData]=await Promise.all([
+      fetch('/api/brand/applications',{headers:{'Authorization':'Bearer '+_tk}}).then(r=>r.json()),
+      fetch('/api/brand/workspaces',{headers:{'Authorization':'Bearer '+_tk}}).then(r=>r.json()).catch(()=>({success:false,workspaces:[]}))
+    ]);
+    if(!data.success)return;
+    brandApps=data.applications||[];
+    brandWorkspaces=workspaceData.success?(workspaceData.workspaces||[]):[];
+    const reviewCount=brandApps.filter(a=>a.status==='review').length;
+    document.getElementById('appsBadge').textContent=brandApps.length;
+    document.getElementById('statApps').textContent=brandApps.length;
+    // Show pending alert on home
+    if(reviewCount>0){
+      document.getElementById('pendingAlert').style.display='block';
+      document.getElementById('pendingCount').textContent=`${reviewCount} student(s) are waiting for your decision!`;
+    }
+    renderBrandApps();
+    renderApprovedBrandProjects();
+  }catch(e){console.log('Brand apps error:',e);}
+}
+
+async function loadBrandStudents(){
+  const grid=document.getElementById('studentGrid');
+  try{
+    if(grid)grid.innerHTML='<div class="empty-s" style="grid-column:1/-1"><div class="ei">🎓</div><h3>Loading students...</h3><p>Fetching live student profiles.</p></div>';
+    const data=await fetch('/api/brand/students',{headers:{'Authorization':'Bearer '+_tk}}).then(r=>r.json());
+    if(!data.success)throw new Error(data.message||'Could not load students');
+    brandStudents=data.students||[];
+    renderBrowseStudents();
+    setTimeout(()=>brandStudents.slice(0,6).forEach(s=>fetchStudentProfile(s.id).catch(()=>{})),250);
+  }catch(e){
+    console.log('Brand students error:',e);
+    if(grid)grid.innerHTML='<div class="empty-s" style="grid-column:1/-1"><div class="ei">⚠️</div><h3>Could not load students</h3><p>Please refresh and try again.</p></div>';
+  }
+}
+
+function renderBrowseStudents(){
+  const el=document.getElementById('studentGrid');
+  if(!el)return;
+  if(!brandStudents.length){
+    el.innerHTML='<div class="empty-s" style="grid-column:1/-1"><div class="ei">🎓</div><h3>No students yet</h3><p>Students will appear here after they create profiles.</p></div>';
+    return;
+  }
+  const emojiMap={'Video Editing':'🎬','Graphic Design':'🎨','Web Development':'💻','Content Writing':'✍️','Social Media':'📱','Photography':'📸','Audio':'🎵','Data & Excel':'📊','AI Tools':'🤖'};
+  el.innerHTML=brandStudents.map(s=>{
+    const name=s.name||'Student';
+    const skills=(s.skills||[]).slice(0,4).map(sk=>`<span class="std-sk">${emojiMap[sk]||'•'} ${esc(sk)}</span>`).join('')||'<span style="color:var(--ts);font-size:.76rem">No skills added yet</span>';
+    const stats=s.stats||{};
+    const level=s.badge?.level||s.studentBadge||'beginner';
+    return`
+      <div class="std-card">
+        <div class="std-av">${s.avatar?`<img src="${esc(s.avatar)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:16px">`:getInitials(name)}</div>
+        <div class="std-nm">${esc(name)}</div>
+        <div style="margin:5px 0">${badgeHtml(level)}</div>
+        ${s.headline?`<div style="font-size:.78rem;color:var(--tm);font-weight:700;margin-bottom:5px">${esc(s.headline)}</div>`:''}
+        <div class="std-cl">${esc(s.college||'College not listed')}${s.year?` · ${esc(s.year)}`:''}</div>
+        <p class="std-bio">${esc(s.bio||'Profile is being built. Skills and portfolio will appear as the student updates it.')}</p>
+        <div class="std-skills">${skills}</div>
+        <div class="std-stats">
+          <div class="std-stat"><strong>${stats.rating?Number(stats.rating).toFixed(1):'New'}</strong><span>Rating</span></div>
+          <div class="std-stat"><strong>${stats.completed||0}</strong><span>Works</span></div>
+        </div>
+        <button class="hire-btn" onclick="viewBrowseStudentProfile('${esc(s.id)}')">👤 View Profile</button>
+      </div>
+    `;
+  }).join('');
+}
+
+async function loadLongTermRoles(){
+  const el=document.getElementById('longTermRoleList');
+  try{
+    if(el)el.innerHTML='<div class="empty-s"><div class="ei">💼</div><h3>Loading requests...</h3><p>Fetching monthly hiring roles.</p></div>';
+    const data=await fetch('/api/brand/long-term-roles',{headers:{'Authorization':'Bearer '+_tk}}).then(r=>r.json());
+    if(!data.success)throw new Error(data.message||'Could not load long-term roles');
+    longTermRoles=data.roles||[];
+    const badge=document.getElementById('ltBadge');
+    if(badge)badge.textContent=longTermRoles.length;
+    renderLongTermRoles();
+    renderLongTermProjectSection();
+  }catch(e){
+    if(el)el.innerHTML='<div class="empty-s"><div class="ei">⚠️</div><h3>Could not load roles</h3><p>Please refresh and try again.</p></div>';
+  }
+}
+
+function renderLongTermProjectSection(){
+  const el=document.getElementById('brandLongTermProjectsList');
+  if(!el)return;
+  if(!longTermRoles.length){
+    el.innerHTML=Object.entries(LONG_TERM_SAMPLE_ROLES).map(([key,t])=>`
+      <div class="pj-card">
+        <div class="pj-ico">💼</div>
+        <div class="pj-info">
+          <div class="pj-title">${esc(t.roleTitle)}</div>
+          <div class="pj-meta"><span>Remote</span><span>${esc(t.hours)}</span><span>7-day trial</span></div>
+          <div class="pj-desc">${esc(t.weekly)}</div>
+        </div>
+        <div class="pj-right">
+          <div class="pj-budget">${esc(t.budget)}</div>
+          <button class="btn bout bsm" onclick="useLongTermTemplate('${esc(key)}')">Use Template</button>
+        </div>
+      </div>
+    `).join('');
+    return;
+  }
+  el.innerHTML=longTermRoles.map(role=>`
+    <div class="pj-card">
+      <div class="pj-ico">💼</div>
+      <div class="pj-info">
+        <div class="pj-title">${esc(role.roleTitle||'Long-term role')}</div>
+        <div class="pj-meta">
+          <span>${esc(role.duration||'1 month')}</span>
+          <span>${esc(role.workType||'remote')}</span>
+          <span>${esc(role.hoursPerWeek||'10 hours/week')}</span>
+        </div>
+        <div class="pj-desc">${esc(role.expectedWeeklyOutput||role.trialTask||'Admin will shortlist suitable students for this monthly role.')}</div>
+      </div>
+      <div class="pj-right">
+        <div class="pj-budget">${esc(role.monthlyBudget||'Budget open')}</div>
+        <span class="tag ${role.status==='open'?'topen':'tacc'}">${esc(role.status||'open')}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderLongTermRoles(){
+  const el=document.getElementById('longTermRoleList');
+  if(!el)return;
+  if(!longTermRoles.length){
+    el.innerHTML='<div class="empty-s"><div class="ei">💼</div><h3>No long-term roles yet</h3><p>Create your first monthly hiring request.</p></div>';
+    return;
+  }
+  const statusMap={open:'Open',shortlisting:'Shortlisting',trial:'Trial',active:'Active',closed:'Closed'};
+  el.innerHTML=longTermRoles.map(role=>{
+    const apps=role.applications||[];
+    const appRows=apps.length?apps.map(a=>{
+      const contact=a.contactLocked?'Contact locked until paid trial':`${a.email||''}${a.whatsapp?` · ${a.whatsapp}`:''}`;
+      return`
+        <div style="border:1px solid var(--br);border-radius:10px;padding:10px;margin-top:8px;background:white">
+          <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start;flex-wrap:wrap">
+            <div>
+              <strong style="font-size:.86rem;color:var(--td)">${esc(a.name||'Student')}</strong>
+              <div style="font-size:.74rem;color:var(--ts);margin-top:2px">${esc(a.college||'College not listed')} · ${badgeHtml(a.badgeAtApply||'beginner')}</div>
+            </div>
+            <span class="tag ${a.status==='shortlisted'||a.status==='hired'||a.status==='trial'?'tacc':a.status==='rejected'?'trej':'trev'}">${esc(a.status||'applied')}</span>
+          </div>
+          <div style="font-size:.78rem;color:var(--tm);margin-top:8px">${esc(shortenText(a.pitch||a.pastExperience||'No pitch added yet.',150))}</div>
+          <div style="font-size:.75rem;color:var(--ts);margin-top:6px">Pay: ${esc(a.expectedMonthlyPay||'Not set')} · Hours: ${esc(a.availableHoursPerWeek||'Not set')}</div>
+          <div style="font-size:.75rem;color:${a.contactLocked?'var(--ts)':'var(--gm)'};margin-top:6px">${esc(contact)}</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:9px">
+            ${a.portfolioLink?`<a class="btn bout bsm" href="${esc(normalizeUrl(a.portfolioLink))}" target="_blank" style="text-decoration:none">Portfolio</a>`:''}
+            <button class="btn bpri bsm" onclick="requestLongTermIntro('${esc(a.id||a._id)}',this)">Request Intro Call</button>
+          </div>
+        </div>`;
+    }).join(''):'<div style="font-size:.78rem;color:var(--ts);padding:10px 0">No shortlisted students yet. Admin will show the best matches here.</div>';
+    return`
+      <div style="border:1.5px solid var(--br);border-radius:13px;padding:14px;margin-bottom:12px;background:#fff">
+        <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">
+          <div>
+            <div style="font-family:'Clash Display',sans-serif;font-weight:800;color:var(--td);font-size:1rem">${esc(role.roleTitle)}</div>
+            <div style="font-size:.78rem;color:var(--ts);margin-top:4px">${esc(role.duration)} · ${esc(role.workType)} · ${esc(role.hoursPerWeek||'Hours flexible')}</div>
+          </div>
+          <span class="tag tacc">${statusMap[role.status]||role.status}</span>
+        </div>
+        <div style="font-family:'Clash Display',sans-serif;font-weight:800;color:var(--gm);margin-top:10px">${esc(role.monthlyBudget)}</div>
+        <div style="font-size:.78rem;color:var(--tm);margin-top:6px">${esc((role.skillsNeeded||[]).join(', ')||'Skills not listed')}</div>
+        <div style="font-size:.78rem;color:var(--ts);margin-top:6px">Trial: ${esc(role.trialTask||'To be defined')} ${role.trialPay?`· ${esc(role.trialPay)}`:''}</div>
+        <div style="margin-top:12px"><strong style="font-size:.78rem;color:var(--td)">Shortlisted Students (${apps.length})</strong>${appRows}</div>
+      </div>`;
+  }).join('');
+}
+
+async function submitLongTermRole(){
+  formatMoneyInput(document.getElementById('ltBudget'));
+  formatMoneyInput(document.getElementById('ltTrialPay'));
+  const whatsappValue=normalizeIndianPhoneValue(document.getElementById('ltWhatsapp').value);
+  const body={
+    brandName:document.getElementById('ltBrandName').value.trim(),
+    managerName:document.getElementById('ltManager').value.trim(),
+    email:document.getElementById('ltEmail').value.trim(),
+    whatsapp:whatsappValue,
+    roleTitle:document.getElementById('ltRole').value.trim(),
+    skillsNeeded:document.getElementById('ltSkills').value.trim(),
+    monthlyBudget:document.getElementById('ltBudget').value.trim(),
+    duration:document.getElementById('ltDuration').value,
+    workType:document.getElementById('ltWorkType').value,
+    hoursPerWeek:document.getElementById('ltHours').value.trim(),
+    expectedWeeklyOutput:document.getElementById('ltWeekly').value.trim(),
+    trialPay:document.getElementById('ltTrialPay').value.trim(),
+    trialTask:document.getElementById('ltTrial').value.trim(),
+    startTimeline:document.getElementById('ltStart').value.trim(),
+  };
+  if(!body.brandName||!body.email||!body.roleTitle||!body.skillsNeeded||!body.monthlyBudget){
+    showToast('Fill brand, email, role, skills and monthly budget.','error');
+    return;
+  }
+  const btn=document.getElementById('ltSubmitBtn');
+  const orig=btn.innerHTML;
+  btn.innerHTML='<span class="spin"></span>Submitting...';
+  btn.disabled=true;
+  try{
+    const res=await fetch('/api/brand/long-term-role',{method:'POST',headers:{'Authorization':'Bearer '+_tk,'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const data=await res.json();
+    if(data.success){
+      showToast(data.message||'Hiring request saved.','success');
+      ['ltRole','ltSkills','ltBudget','ltWeekly','ltTrialPay','ltTrial'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+      ['ltHours','ltStart','ltWhatsapp'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+      initLongTermDefaults();
+      await loadLongTermRoles();
+      goTo('projects',null);
+    }else showToast(data.message||'Could not save request.','error');
+  }catch{
+    showToast('Could not submit long-term hiring request.','error');
+  }
+  btn.innerHTML=orig;
+  btn.disabled=false;
+}
+
+async function requestLongTermIntro(appId,btn){
+  if(!confirm('Request intro call? Contact details unlock only after paid trial confirmation.'))return;
+  const orig=btn.innerHTML;
+  btn.innerHTML='<span class="spin"></span>Requesting...';
+  btn.disabled=true;
+  try{
+    const res=await fetch(`/api/brand/long-term-application/${appId}/request-intro`,{method:'POST',headers:{'Authorization':'Bearer '+_tk,'Content-Type':'application/json'}});
+    const data=await res.json();
+    if(data.success){
+      showToast('Intro requested. Admin will review paid trial next.','success');
+      await loadLongTermRoles();
+    }else showToast(data.message||'Could not request intro.','error');
+  }catch{
+    showToast('Intro request failed.','error');
+  }
+  btn.innerHTML=orig;
+  btn.disabled=false;
+}
+
+function renderHomeProjList(projs){
+  const el=document.getElementById('homeProjList');
+  if(!projs.length)return;
+  el.innerHTML=projs.map(p=>`<div class="pj-card"><div class="pj-ico">📋</div><div class="pj-info"><div class="pj-title">${esc(p.title)}</div><div class="pj-meta"><span>📂 ${esc(p.category)}</span><span>📅 ${new Date(p.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</span></div>${p.description?`<div class="pj-desc">${esc(shortenText(p.description))}</div>`:''}</div><div class="pj-right"><div class="pj-budget">${esc(p.budget)}</div><span class="tag ${p.status==='open'?'topen':'tclosed'}">${p.status==='open'?'🟢 Open':'✓ Closed'}</span></div></div>`).join('');
+}
+
+function renderFullProjList(projs){
+  const el=document.getElementById('projListFull');
+  if(!projs.length){el.innerHTML='<div class="empty-s"><div class="ei">📋</div><h3>No open projects</h3><p>Post a new project, or check approved projects above.</p><button class="btn bpri" onclick="goTo(\'post\',null)">+ Post Project</button></div>';return;}
+  el.innerHTML=projs.map(p=>`<div class="pj-card"><div class="pj-ico">📋</div><div class="pj-info"><div class="pj-title">${esc(p.title)}</div><div class="pj-meta"><span>📂 ${esc(p.category)}</span><span>📅 Posted ${new Date(p.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</span>${p.deadline?`<span>⏱ ${esc(p.deadline)}</span>`:''}</div>${p.description?`<div class="pj-desc">${esc(p.description)}</div>`:''}</div><div class="pj-right"><div class="pj-budget">${esc(p.budget)}</div><span class="tag ${p.status==='open'?'topen':'tclosed'}">${p.status==='open'?'🟢 Open':'✓ Closed'}</span></div></div>`).join('');
+}
+
+function renderApprovedBrandProjects(){
+  const approved=(brandApps||[]).filter(a=>a.status==='accepted');
+  const card=document.getElementById('brandApprovedProjectsCard');
+  const list=document.getElementById('brandApprovedProjectsList');
+  const homeCard=document.getElementById('homeApprovedBrandProjectsCard');
+  const homeList=document.getElementById('homeApprovedBrandProjects');
+  if(!approved.length){
+    if(card)card.style.display='none';
+    if(homeCard)homeCard.style.display='none';
+    return;
+  }
+  const renderItems=items=>items.map(a=>{
+    const appId=getAppId(a);
+    const s=a.student||{};
+    const ws=getWorkspace(appId);
+    const paid=a.paymentStatus==='paid'||Number(a.paidAmount)>0;
+    const status=ws?workspaceStatusText(ws.status):(paid?'Payment secured':'Payment pending');
+    return`
+      <div class="pj-card">
+        <div class="pj-ico">✅</div>
+        <div class="pj-info">
+          <div class="pj-title">${esc(a.jobTitle||'Approved project')}</div>
+          <div class="pj-meta"><span>👤 ${esc(s.name||'Selected student')}</span><span>${esc(status)}</span><span>${esc(a.pay||'Budget')}</span></div>
+        </div>
+        <div class="pj-right">
+          ${paid?`<span class="paid-note">💳 ${Number(a.paidAmount)>0?`Paid ${formatINR(a.paidAmount)}`:'Paid'}</span>`:'<span class="tag trev">Payment pending</span>'}
+          <button class="btn bout bsm" onclick="goTo('applications',null)">Open</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+  if(card&&list){card.style.display='block';list.innerHTML=renderItems(approved);}
+  if(homeCard&&homeList){homeCard.style.display='block';homeList.innerHTML=renderItems(approved.slice(0,3));}
+}
+
+function renderWorkspaceBox(appId){
+  const ws=getWorkspace(appId);
+  const res=ws?.resources||[];
+  const r0=res[0]||{}, r1=res[1]||{};
+  const status=workspaceStatusText(ws?.status||'resources_pending');
+  const submission=ws?.submissionLink?`
+    <div class="ws-submission">
+      <div style="font-size:.78rem;font-weight:700;color:var(--td);margin-bottom:5px">Student Submission</div>
+      <a class="ws-link" href="${esc(ws.submissionLink)}" target="_blank">🔗 Open submitted work</a>
+      ${ws.submissionNote?`<p style="font-size:.78rem;color:var(--ts);line-height:1.45;margin-top:7px">${esc(ws.submissionNote)}</p>`:''}
+      ${ws.status==='submitted'?`
+        <textarea class="fi" id="rev-${appId}" rows="2" placeholder="Revision note, if needed..." style="margin-top:9px"></textarea>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+          <button class="btn bgre bsm" onclick="reviewWorkspace('${appId}','approve',this)">✅ Approve Work</button>
+          <button class="btn bout bsm" onclick="reviewWorkspace('${appId}','revision',this)">↻ Request Revision</button>
+        </div>
+      `:''}
+      ${ws.status==='approved'?`<div class="paid-note" style="margin-top:8px">✅ Work approved</div>`:''}
+    </div>
+  `:'';
+
+  return`
+    <div class="workspace-box">
+      <h4>Project Workspace</h4>
+      <div class="ws-status">📌 ${status}</div>
+      <div class="fg"><label>Brief for student</label><textarea class="fi" id="brief-${appId}" rows="3" placeholder="Add project instructions, content requirements, brand tone, deliverables...">${esc(ws?.brief||'')}</textarea></div>
+      <div class="fg"><label>Deadline / Delivery note</label><input class="fi" id="deadline-${appId}" value="${esc(ws?.deadline||'')}" placeholder="e.g. First draft by Friday, final by Sunday"></div>
+      <div class="ws-grid">
+        <div class="ws-row"><input class="fi" id="res-title-1-${appId}" value="${esc(r0.title||'')}" placeholder="Resource title"><input class="fi" id="res-url-1-${appId}" value="${esc(r0.url||'')}" placeholder="https://drive.google.com/..."></div>
+        <div class="ws-row"><input class="fi" id="res-title-2-${appId}" value="${esc(r1.title||'')}" placeholder="Resource title"><input class="fi" id="res-url-2-${appId}" value="${esc(r1.url||'')}" placeholder="https://canva.com/..."></div>
+      </div>
+      <button class="btn bpri bsm" onclick="saveWorkspace('${appId}',this)">💾 Save Resources</button>
+      ${submission}
+    </div>
+  `;
+}
+
+// ✅ RENDER BRAND APPLICATIONS with Accept/Reject
+function renderBrandApps(){
+  const el=document.getElementById('brandAppList');
+  let list=brandApps;
+  if(curAppFilter!=='all')list=list.filter(a=>a.status===curAppFilter);
+  if(!list.length){
+    el.innerHTML=`<div class="empty-s"><div class="ei">📥</div><h3>${curAppFilter==='all'?'No applications yet':'No applications with this status'}</h3><p>${curAppFilter==='all'?'Post a project to start receiving applications from students.':'Try a different filter.'}</p>${curAppFilter==='all'?'<button class="btn bpri" onclick="goTo(\'post\',null)">+ Post a Project</button>':''}</div>`;
+    return;
+  }
+  const stMap={review:'<span class="tag trev">🔍 Under Review</span>',accepted:'<span class="tag tacc">✅ Accepted</span>',rejected:'<span class="tag trej">❌ Rejected</span>'};
+  const emojiMap={'Video Editing':'🎬','Graphic Design':'🎨','Web Development':'💻','Content Writing':'✍️','Social Media':'📱','Photography':'📸','Audio':'🎵','Data & Excel':'📊','AI Tools':'🤖'};
+  el.innerHTML=list.map(a=>{
+    const s=a.student||{};
+    const appId=getAppId(a);
+    const ini=s.name?s.name.split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase():'??';
+    const skills=s.skills&&s.skills.length?s.skills.map(sk=>`<span class="app-sk">${emojiMap[sk]||'•'} ${sk}</span>`).join(''):'<span style="color:var(--ts);font-size:.78rem">No skills listed</span>';
+    const badgeLevel=a.studentBadgeAtApply||s.badge?.level||s.studentBadge||'beginner';
+    const answers=(a.applicationAnswers||[]).map(ans=>`<div class="answer-box"><strong>${esc(ans.question||'Project question')}</strong><p>${esc(ans.answer||'No answer')}</p></div>`).join('');
+    const isPaid=a.paymentStatus==='paid'||Number(a.paidAmount)>0;
+    const projectMinimum=parsePayAmount(a.pay)||1;
+    const defaultAmount=Number(a.paidAmount)||projectMinimum;
+    const pendingPayment=getPendingPayment(appId);
+    const selectedForProject=brandApps.find(other=>getAppId(other)!==appId&&String(other.jobId||'')===String(a.jobId||'')&&other.status==='accepted');
+    const selectedName=selectedForProject?.student?.name||'A student';
+    const workspace=getWorkspace(appId);
+    const flow=brandAppFlow(a,isPaid,workspace);
+    return`
+    <div class="app-card">
+      <div class="app-top">
+        <div class="app-student">
+          <div class="app-av">${s.avatar?`<img src="${esc(s.avatar)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:14px">`:ini}</div>
+          <div>
+            <div class="app-nm">${s.name||'Unknown Student'}</div>
+            <div class="app-cl">🎓 ${s.college||'College not listed'} · ${s.email||''}</div>
+            <div style="margin-top:5px">${badgeHtml(badgeLevel)}</div>
+          </div>
+        </div>
+        ${stMap[a.status]||''}
+      </div>
+      <div class="app-skills">${skills}</div>
+      ${s.headline?`<div class="app-bio">⚡ ${esc(s.headline)}</div>`:''}
+      ${s.bio?`<div class="app-bio">💬 "${s.bio}"</div>`:''}
+      ${answers}
+      <div class="app-job">
+        <div>
+          <div class="app-job-t">📋 ${a.jobTitle}</div>
+          <div style="font-size:.73rem;color:var(--ts);margin-top:2px">Applied ${new Date(a.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</div>
+        </div>
+        <div class="app-job-p">${a.pay}</div>
+      </div>
+      ${s.linkedin?`<div style="font-size:.78rem;margin-bottom:12px"><a href="${s.linkedin}" target="_blank" style="color:#1d4ed8;font-weight:600">🔗 View LinkedIn Profile →</a></div>`:''}
+      ${renderUxFlow(flow.steps)}
+      <div class="ux-note">${esc(flow.note)}</div>
+      <div class="app-actions">
+        ${a.status==='review'?`
+          <button class="btn bout bsm" onclick="viewStudentProfile('${appId}')">👤 View Profile</button>
+          ${selectedForProject?`<span class="locked-note">✅ ${selectedName} already selected</span>`:`<button class="btn bgre bsm" onclick="handleApp('${appId}','accepted',this)">✅ Accept</button>`}
+          <button class="btn bdan bsm" onclick="handleApp('${appId}','rejected',this)">❌ Reject</button>
+        `:a.status==='accepted'?`
+          <button class="btn bout bsm" onclick="viewStudentProfile('${appId}')">👤 View Profile</button>
+          <span style="color:var(--gm);font-weight:600;font-size:.83rem">✅ You accepted this application</span>
+          ${isPaid?`<span class="paid-note">💳 ${Number(a.paidAmount)>0?`Paid ${formatINR(a.paidAmount)}`:'Paid'}</span>`:pendingPayment?`
+            <div class="pay-box">
+              <label>Payment verification pending</label>
+              <div style="font-size:.74rem;color:var(--ts);margin-bottom:8px">Payment ID: ${esc(pendingPayment.razorpay_payment_id||'saved')}</div>
+              <div class="pay-row">
+                <button class="btn bpay bsm" onclick="retryPendingPayment('${appId}',this)">↻ Verify Last Payment</button>
+              </div>
+            </div>
+          `:`
+            <div class="pay-box">
+              <label for="pay-${appId}">Payment Amount (minimum ${formatINR(projectMinimum)})</label>
+              <div class="pay-row">
+                <input class="pay-input" id="pay-${appId}" type="number" min="${projectMinimum}" step="1" value="${defaultAmount||''}" placeholder="Enter amount in ₹">
+                <button class="btn bpay bsm" onclick="startPayment('${appId}',this)">💳 Pay Student</button>
+              </div>
+            </div>
+          `}
+          ${isPaid?renderWorkspaceBox(appId):''}
+        `:
+        `<span style="color:#dc2626;font-weight:600;font-size:.83rem">❌ You rejected this application</span>`}
+        <span class="app-date">Applied ${new Date(a.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterBrandApps(f,btn){
+  curAppFilter=f;
+  document.querySelectorAll('#page-applications .ftab').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderBrandApps();
+}
+
+function wait(ms){return new Promise(resolve=>setTimeout(resolve,ms));}
+
+const PENDING_PAYMENTS_KEY='ngg_pending_razorpay_payments';
+
+function getPendingPayments(){
+  try{return JSON.parse(localStorage.getItem(PENDING_PAYMENTS_KEY)||'{}')||{};}
+  catch{return {};}
+}
+
+function getPendingPayment(appId){
+  return getPendingPayments()[appId]||null;
+}
+
+function savePendingPayment(appId,payload){
+  const pending=getPendingPayments();
+  pending[appId]={...payload,savedAt:Date.now()};
+  localStorage.setItem(PENDING_PAYMENTS_KEY,JSON.stringify(pending));
+}
+
+function clearPendingPayment(appId){
+  const pending=getPendingPayments();
+  delete pending[appId];
+  localStorage.setItem(PENDING_PAYMENTS_KEY,JSON.stringify(pending));
+}
+
+async function readApiResponse(res){
+  const text=await res.text();
+  try{
+    return text?JSON.parse(text):{};
+  }catch{
+    return {success:false,message:`Server returned ${res.status}. ${text.replace(/<[^>]*>/g,' ').trim().slice(0,140)||'Please try again.'}`};
+  }
+}
+
+async function verifyRazorpayPayment(payload){
+  let lastError=null;
+  for(let attempt=1;attempt<=3;attempt++){
+    try{
+      const verifyRes=await fetch('/api/payment/verify',{
+        method:'POST',
+        headers:{'Authorization':'Bearer '+_tk,'Content-Type':'application/json'},
+        body:JSON.stringify(payload)
+      });
+      const data=await readApiResponse(verifyRes);
+      return {ok:verifyRes.ok&&data.success,data,status:verifyRes.status};
+    }catch(err){
+      lastError=err;
+      if(attempt<3)await wait(900*attempt);
+    }
+  }
+  return {
+    ok:false,
+    status:0,
+    data:{success:false,message:`Payment completed in Razorpay, but verification could not reach the server. Save payment ID: ${payload.razorpay_payment_id||'not available'}.`},
+    error:lastError,
+  };
+}
+
+async function reconcileRazorpayPayment(appId,payload){
+  const res=await fetch('/api/payment/reconcile',{
+    method:'POST',
+    headers:{'Authorization':'Bearer '+_tk,'Content-Type':'application/json'},
+    body:JSON.stringify({applicationId:appId,razorpay_payment_id:payload.razorpay_payment_id})
+  });
+  const data=await readApiResponse(res);
+  return {ok:res.ok&&data.success,data,status:res.status};
+}
+
+async function completeRazorpayVerification(appId,payload){
+  savePendingPayment(appId,payload);
+  const verified=await verifyRazorpayPayment({...payload,applicationId:appId});
+  if(verified.ok){
+    clearPendingPayment(appId);
+    return verified;
+  }
+  if(payload.razorpay_payment_id){
+    try{
+      const reconciled=await reconcileRazorpayPayment(appId,payload);
+      if(reconciled.ok){
+        clearPendingPayment(appId);
+        return reconciled;
+      }
+      return reconciled;
+    }catch(err){
+      return verified;
+    }
+  }
+  return verified;
+}
+
+async function retryPendingPayment(appId,btn){
+  const pending=getPendingPayment(appId);
+  if(!pending){showToast('No saved payment found. Refresh and try again.','error');return;}
+  const orig=btn.innerHTML;
+  btn.innerHTML='<span class="spin"></span>Verifying...';
+  btn.disabled=true;
+  const result=await completeRazorpayVerification(appId,pending);
+  if(result.ok){
+    showToast('Payment verified successfully. ✅','success');
+    await loadBrandApplications();
+  }else{
+    showToast(result.data?.message||'Still could not verify payment. Check Razorpay dashboard.','error');
+  }
+  btn.innerHTML=orig;
+  btn.disabled=false;
+}
+
+// ✅ ACCEPT or REJECT — sends email to student automatically!
+async function handleApp(id, status, btn){
+  const action=status==='accepted'?'Accept':'Reject';
+  if(!confirm(`${action} this application? Student will be notified by email.`))return;
+  const orig=btn.innerHTML;
+  btn.innerHTML='<span class="spin"></span>Sending email...';btn.disabled=true;
+  try{
+    const res=await fetch(`/api/brand/application/${id}`,{
+      method:'PUT',
+      headers:{'Authorization':'Bearer '+_tk,'Content-Type':'application/json'},
+      body:JSON.stringify({status})
+    });
+    const data=await res.json();
+    if(data.success){
+      showToast(status==='accepted'?'✅ Accepted! Student notified by email 📧':'❌ Rejected. Student notified.', status==='accepted'?'success':'info');
+      await Promise.all([loadBrandApplications(),loadBrandStats()]);
+    }else showToast(data.message,'error');
+  }catch{showToast('Action failed. Check connection.','error');}
+  btn.innerHTML=orig;btn.disabled=false;
+}
+
+async function startPayment(appId, btn){
+  const app=brandApps.find(a=>getAppId(a)===appId);
+  if(!app){showToast('Application not found. Refresh and try again.','error');return;}
+  if(app.paymentStatus==='paid'||Number(app.paidAmount)>0){showToast('This application is already paid.','info');return;}
+  const input=document.getElementById(`pay-${appId}`);
+  const amount=Number(String(input?.value||'').replace(/,/g,''));
+  const minimumAmount=parsePayAmount(app.pay)||1;
+  if(!Number.isFinite(amount)||amount<minimumAmount){
+    showToast(`Minimum payment for this project is ${formatINR(minimumAmount)}.`,'error');
+    if(input)input.focus();
+    return;
+  }
+  if(!window.Razorpay){
+    showToast('Razorpay checkout could not load. Check your internet connection.','error');
+    return;
+  }
+
+  const orig=btn.innerHTML;
+  btn.innerHTML='<span class="spin"></span>Creating order...';
+  btn.disabled=true;
+  try{
+    const orderRes=await fetch('/api/payment/create-order',{
+      method:'POST',
+      headers:{'Authorization':'Bearer '+_tk,'Content-Type':'application/json'},
+      body:JSON.stringify({applicationId:appId,amount,description:app.jobTitle||'Project payment'})
+    });
+    const order=await orderRes.json();
+    if(!order.success){
+      showToast(order.message||'Could not create payment order.','error');
+      btn.innerHTML=orig;btn.disabled=false;
+      return;
+    }
+
+    const resetButton=()=>{btn.innerHTML=orig;btn.disabled=false;};
+    const checkout=new Razorpay({
+      key:order.key,
+      amount:order.amount,
+      currency:order.currency||'INR',
+      name:'NextGenGrowth',
+      description:order.jobTitle||app.jobTitle||'Project payment',
+      order_id:order.orderId||order.order_id,
+      prefill:{
+        name:order.studentName||app.student?.name||'',
+        email:app.student?.email||''
+      },
+      notes:{
+        applicationId:appId,
+        jobTitle:app.jobTitle||''
+      },
+      theme:{color:'#0a7c44'},
+      modal:{ondismiss:()=>{showToast('Payment cancelled.','info');resetButton();}},
+      handler:async(response)=>{
+        btn.innerHTML='<span class="spin"></span>Verifying payment...';
+        const result=await completeRazorpayVerification(appId,response);
+        if(result.ok){
+          showToast('Payment successful! Student notified. ✅','success');
+          await loadBrandApplications();
+        }else{
+          console.log('Payment verification failed:',result);
+          showToast(result.data?.message||'Payment verification failed. Please refresh and check payment status.','error');
+        }
+        resetButton();
+      }
+    });
+    checkout.on('payment.failed',response=>{
+      showToast(response.error?.description||'Payment failed. Please try again.','error');
+      resetButton();
+    });
+    checkout.open();
+  }catch(e){
+    console.log('Payment error:',e);
+    showToast('Payment could not start. Check server and Razorpay credentials.','error');
+    btn.innerHTML=orig;btn.disabled=false;
+  }
+}
+
+function collectResources(appId){
+  return [1,2].map(i=>({
+    title:document.getElementById(`res-title-${i}-${appId}`)?.value.trim()||'',
+    url:document.getElementById(`res-url-${i}-${appId}`)?.value.trim()||''
+  })).filter(r=>r.title&&r.url);
+}
+
+async function saveWorkspace(appId,btn){
+  const orig=btn.innerHTML;
+  btn.innerHTML='<span class="spin"></span>Saving...';
+  btn.disabled=true;
+  try{
+    const body={
+      brief:document.getElementById(`brief-${appId}`)?.value.trim()||'',
+      deadline:document.getElementById(`deadline-${appId}`)?.value.trim()||'',
+      resources:collectResources(appId)
+    };
+    const res=await fetch(`/api/brand/workspace/${appId}/resources`,{
+      method:'PUT',
+      headers:{'Authorization':'Bearer '+_tk,'Content-Type':'application/json'},
+      body:JSON.stringify(body)
+    });
+    const data=await res.json();
+    if(data.success){
+      showToast('Resources saved. Student can start work. ✅','success');
+      await loadBrandApplications();
+    }else showToast(data.message||'Could not save resources.','error');
+  }catch{
+    showToast('Could not save workspace. Check connection.','error');
+  }
+  btn.innerHTML=orig;
+  btn.disabled=false;
+}
+
+async function reviewWorkspace(appId,action,btn){
+  const note=document.getElementById(`rev-${appId}`)?.value.trim()||'';
+  if(action==='revision'&&!note){showToast('Add a revision note first.','error');return;}
+  if(action==='approve'&&!confirm('Approve this submitted work and release the student earning?'))return;
+  const orig=btn.innerHTML;
+  btn.innerHTML='<span class="spin"></span>Updating...';
+  btn.disabled=true;
+  try{
+    const res=await fetch(`/api/brand/workspace/${appId}/review`,{
+      method:'PUT',
+      headers:{'Authorization':'Bearer '+_tk,'Content-Type':'application/json'},
+      body:JSON.stringify({action,revisionNote:note})
+    });
+    const data=await res.json();
+    if(data.success){
+      showToast(action==='approve'?'Work approved and earning released. ✅':'Revision requested.','success');
+      await loadBrandApplications();
+    }else showToast(data.message||'Review failed.','error');
+  }catch{
+    showToast('Could not update review. Check connection.','error');
+  }
+  btn.innerHTML=orig;
+  btn.disabled=false;
+}
+
+function briefDeliverableLine(item){
+  const qty=item.quantity?`${item.quantity} x `:'';
+  const format=item.format?` (${item.format})`:'';
+  const notes=item.notes?` - ${item.notes}`:'';
+  return `${qty}${item.title||'Deliverable'}${format}${notes}`;
+}
+
+function composeBriefDescription(draft){
+  const sections=[];
+  if(draft.description)sections.push(draft.description.trim());
+  if(draft.deliverables?.length){
+    sections.push('Deliverables:\n'+draft.deliverables.map(item=>`- ${briefDeliverableLine(item)}`).join('\n'));
+  }
+  if(draft.success_metrics?.length){
+    sections.push('Success criteria:\n'+draft.success_metrics.map(item=>`- ${item}`).join('\n'));
+  }
+  if(draft.scope_notes?.length){
+    sections.push('Scope notes:\n'+draft.scope_notes.map(item=>`- ${item}`).join('\n'));
+  }
+  return sections.join('\n\n').trim();
+}
+
+function renderBriefDraft(draft){
+  const el=document.getElementById('briefDraftResult');
+  if(!el)return;
+  const score=Number(draft.clarity_score||0);
+  const isClarifying=draft.status==='needs_clarification';
+  const deliverables=(draft.deliverables||[]).map(item=>`<div><strong>${esc(item.quantity||'1')}:</strong> ${esc(item.title||'Deliverable')}${item.format?` <span>(${esc(item.format)})</span>`:''}${item.notes?`<br>${esc(item.notes)}`:''}</div>`).join('');
+  const questions=(draft.clarification_questions||[]).map(q=>`<div>${esc(q)}</div>`).join('');
+  const appQuestions=(draft.application_questions||[]).map(q=>`<div>${esc(q)}</div>`).join('');
+  el.classList.add('show');
+  if(isClarifying){
+    el.innerHTML=`
+      <div class="brief-score warn">Brief score ${score}/100</div>
+      <div class="brief-draft-title">Need a few details first</div>
+      <div class="brief-copy">Answer these in the rough brief box, then generate again.</div>
+      <div class="brief-list">${questions||'<div>Add target audience, platform, quantity, and deadline.</div>'}</div>
+    `;
+    return;
+  }
+  el.innerHTML=`
+    <div class="brief-score">Brief score ${score}/100</div>
+    <div class="brief-draft-title">${esc(draft.title||'Project draft')}</div>
+    <div class="brief-copy">${esc(draft.description||'')}</div>
+    ${deliverables?`<div class="brief-list">${deliverables}</div>`:''}
+    ${appQuestions?`<div class="brief-copy" style="margin-bottom:6px;font-weight:700;color:var(--td)">Suggested applicant questions</div><div class="brief-list">${appQuestions}</div>`:''}
+    <button class="btn bgre" onclick="applyBriefDraft()">Apply to Project Form</button>
+  `;
+}
+
+async function generateBriefDraft(){
+  const raw=document.getElementById('briefRaw')?.value.trim()||'';
+  if(raw.length<20){showToast('Add a rough brief first.','error');return;}
+  const btn=document.getElementById('briefGenBtn');
+  const orig=btn.innerHTML;
+  btn.innerHTML='<span class="spin"></span>Generating...';btn.disabled=true;
+  try{
+    const res=await fetch('/api/ai/brand/brief-generator',{
+      method:'POST',
+      headers:{'Authorization':'Bearer '+_tk,'Content-Type':'application/json'},
+      body:JSON.stringify({rawBrief:raw})
+    });
+    const data=await res.json().catch(()=>({success:false,message:'Invalid AI response.'}));
+    if(!res.ok||!data.success)throw new Error(data.message||'Could not generate scope.');
+    latestBriefDraft=data.draft;
+    renderBriefDraft(latestBriefDraft);
+    showToast(latestBriefDraft.status==='needs_clarification'?'AI needs a few more details.':'AI scope ready. Review before posting.','info');
+  }catch(err){
+    showToast(err.message||'Could not generate scope.','error');
+  }
+  btn.innerHTML=orig;btn.disabled=false;
+}
+
+function applyBriefDraft(){
+  if(!latestBriefDraft||latestBriefDraft.status==='needs_clarification'){
+    showToast('Answer clarification questions before applying.','error');
+    return;
+  }
+  const category=['video','design','web','writing','social','photo','other'].includes(latestBriefDraft.category)?latestBriefDraft.category:'other';
+  document.getElementById('pjTitle').value=latestBriefDraft.title||'';
+  document.getElementById('pjCat').value=category;
+  document.getElementById('pjDesc').value=composeBriefDescription(latestBriefDraft);
+  document.getElementById('pjBudget').value=latestBriefDraft.suggested_budget||'';
+  document.getElementById('pjDeadline').value=latestBriefDraft.suggested_deadline||'';
+  document.getElementById('pjQuestions').value=(latestBriefDraft.application_questions||[]).join('\n');
+  showToast('Draft applied. Review once, then post.','success');
+}
+
+function clearBriefDraft(){
+  latestBriefDraft=null;
+  const raw=document.getElementById('briefRaw');
+  const result=document.getElementById('briefDraftResult');
+  if(raw)raw.value='';
+  if(result){result.classList.remove('show');result.innerHTML='';}
+}
+
+// POST PROJECT
+async function postProject(){
+  const title=document.getElementById('pjTitle').value.trim();
+  const category=document.getElementById('pjCat').value;
+  const desc=document.getElementById('pjDesc').value.trim();
+  const budget=document.getElementById('pjBudget').value.trim();
+  const deadline=document.getElementById('pjDeadline').value.trim();
+  const applicationQuestions=document.getElementById('pjQuestions').value.split(/\n+/).map(q=>q.trim()).filter(Boolean).slice(0,5);
+  if(!title){showToast('Enter a project title','error');return;}
+  if(!category){showToast('Select a category','error');return;}
+  if(!desc){showToast('Enter a project description so students can review details before applying.','error');return;}
+  if(!budget){showToast('Set a budget','error');return;}
+  const btn=document.getElementById('postBtn');
+  btn.innerHTML='<span class="spin"></span>Posting...';btn.disabled=true;
+  try{
+    const res=await fetch('/api/brand/project',{method:'POST',headers:{'Authorization':'Bearer '+_tk,'Content-Type':'application/json'},body:JSON.stringify({title,description:desc,budget,category,deadline,applicationQuestions})});
+    const data=await res.json();
+    if(data.success){
+      showToast('Project posted! Students will see it now 🚀','success');
+      ['pjTitle','pjDesc','pjBudget','pjDeadline','pjQuestions'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+      document.getElementById('pjCat').value='';
+      await loadBrandStats();
+      setTimeout(()=>goTo('projects',null),1500);
+    }else showToast(data.message||'Failed','error');
+  }catch{showToast('Could not connect. Server running?','error');}
+  btn.innerHTML='🚀 Post Project';btn.disabled=false;
+}
+
+// SAVE PROFILE
+async function saveBrandProfile(){
+  const fn=document.getElementById('bpfn').value.trim();
+  const ln=document.getElementById('bpln').value.trim();
+  const companyName=document.getElementById('bpco').value.trim();
+  const brandLink=document.getElementById('bpbrandlink').value.trim();
+  const linkedin=document.getElementById('bplinkedin').value.trim();
+  const portfolioLink=document.getElementById('bpportfolio').value.trim();
+  const serviceNeeded=document.getElementById('bpservice').value.trim();
+  const bio=document.getElementById('bpbio').value.trim();
+  if(!fn){showToast('Enter your name','error');return;}
+  try{
+    const res=await fetch('/api/profile',{method:'PUT',headers:{'Authorization':'Bearer '+_tk,'Content-Type':'application/json'},body:JSON.stringify({firstName:fn,lastName:ln,companyName,brandLink,linkedin,portfolioLink,serviceNeeded,bio})});
+    const data=await res.json();
+    if(data.success){const up={..._u,...data.user};localStorage.setItem('ngg_user',JSON.stringify(up));Object.assign(_u,data.user);loadBrandData();showToast('Brand profile saved! 🎉','success');}
+    else showToast(data.message,'error');
+  }catch{showToast('Saved locally!','info');}
+}
+
+function openMenu(){
+  document.getElementById('sidebar')?.classList.add('open');
+  document.getElementById('drawerOverlay')?.classList.add('show');
+  document.body.classList.add('menu-open');
+}
+function closeMenu(){
+  document.getElementById('sidebar')?.classList.remove('open');
+  document.getElementById('drawerOverlay')?.classList.remove('show');
+  document.body.classList.remove('menu-open');
+}
+function toggleMenu(){
+  const sidebar=document.getElementById('sidebar');
+  if(sidebar?.classList.contains('open'))closeMenu();
+  else openMenu();
+}
+function resetMobileDrawer(){
+  gsap.set('#sidebar',{clearProps:'transform,opacity'});
+  closeMenu();
+}
+
+// NAVIGATION
+const PT={home:'Dashboard',post:'Post a Project',projects:'My Projects',applications:'Applications',students:'Browse Students',longterm:'Long-Term Hiring',profile:'Brand Profile'};
+function setBottomNav(page){
+  document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('active'));
+  const el=document.getElementById('bn-'+page);
+  if(el)el.classList.add('active');
+}
+function goTo(pg,navBtn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const el=document.getElementById('page-'+pg);if(el)el.classList.add('active');
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  if(navBtn)navBtn.classList.add('active');
+  else document.querySelectorAll('.ni').forEach(n=>{if((n.getAttribute('onclick')||'').includes("'"+pg+"'"))n.classList.add('active');});
+  setBottomNav(pg);
+  document.getElementById('pgT').textContent=PT[pg]||'Dashboard';
+  document.getElementById('mc').scrollTop=0;
+  if(pg==='applications')renderBrandApps();
+  if(pg==='projects'){renderApprovedBrandProjects();loadLongTermRoles();}
+  if(pg==='students')loadBrandStudents();
+  if(pg==='longterm')loadLongTermRoles();
+  if(window.innerWidth<=860)closeMenu();
+  gsap.fromTo('#page-'+pg,{opacity:0,y:10},{opacity:1,y:0,duration:.28,ease:'power2.out'});
+}
+
+function showToast(msg,type='info'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type+' show';setTimeout(()=>t.className='toast',4000);}
+function logout(){
+  const ok=confirm('Are you sure you want to log out of NextGenGrowth?');
+  if(!ok)return;
+  const finish=()=>{
+    localStorage.removeItem('ngg_token');
+    localStorage.removeItem('ngg_user');
+    window.location.href='/login?logged_out=1';
+  };
+  const clearServerSession=()=>fetch('/api/logout',{method:'POST',keepalive:true}).catch(()=>{});
+  const run=()=>clearServerSession().finally(finish);
+  if(window.gsap)gsap.to('.app',{opacity:0,duration:.3,onComplete:run});
+  else run();
+}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  const d=new Date();
+  document.getElementById('pgD').textContent=d.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  loadBrandData();
+  loadBrandStats();
+  loadBrandApplications(); // ✅ Load real applications
+  loadLongTermRoles();
+  const intro=gsap.timeline({defaults:{ease:'power3.out'}});
+  if(window.innerWidth>860){
+    intro.fromTo('.sidebar',{x:-20,opacity:0},{x:0,opacity:1,duration:.5});
+  }else{
+    resetMobileDrawer();
+  }
+  intro
+    .fromTo('.topbar',{y:-10,opacity:0},{y:0,opacity:1,duration:.4},window.innerWidth>860?'-.3':0)
+    .fromTo('#page-home',{y:14,opacity:0},{y:0,opacity:1,duration:.4},'-.2');
+});
+window.addEventListener('resize',()=>{
+  if(window.innerWidth<=860)resetMobileDrawer();
+  else{gsap.set('#sidebar',{clearProps:'transform,opacity'});closeMenu();}
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeMenu();closeStudentProfile();}});
+// FULL STUDENT PROFILE
+function openStudentProfilePage(){
+  const modal=document.getElementById('studentProfileModal');
+  modal.style.display='block';
+  document.body.style.overflow='hidden';
+}
+
+async function fetchStudentProfile(studentId){
+  const key=String(studentId||'');
+  if(studentProfileCache.has(key))return studentProfileCache.get(key);
+  const res=await fetch(`/api/brand/student/${encodeURIComponent(key)}/profile`,{headers:{'Authorization':'Bearer '+_tk}});
+  const data=await res.json();
+  if(!data.success)throw new Error(data.message||'Could not load profile');
+  studentProfileCache.set(key,data);
+  return data;
+}
+
+async function viewStudentProfile(appId) {
+  const app=brandApps.find(a=>getAppId(a)===appId);
+  if(!app||!app.student)return showToast('Student profile is not available yet.','error');
+  const studentId=app.student.id||app.student._id||app.studentId;
+  if(!studentId)return showToast('Student profile is not available yet.','error');
+  const fallback={student:app.student,stats:app.student.stats||{},recentApplications:[],recentWorks:[]};
+  openStudentProfilePage();
+  renderStudentProfile(fallback,{loading:true});
+  try{
+    renderStudentProfile(await fetchStudentProfile(studentId));
+  }catch(e){
+    renderStudentProfile(fallback,{error:e.message||'Showing saved profile data.'});
+  }
+}
+
+async function viewBrowseStudentProfile(studentId){
+  const student=brandStudents.find(s=>String(s.id)===String(studentId));
+  if(!student)return showToast('Student profile is not available yet.','error');
+  const fallback={student,stats:student.stats||{},recentApplications:[],recentWorks:[],isBrowseProfile:true};
+  openStudentProfilePage();
+  renderStudentProfile(fallback,{loading:true});
+  try{
+    renderStudentProfile(await fetchStudentProfile(studentId));
+  }catch(e){
+    renderStudentProfile(fallback,{error:e.message||'Full history is not available yet.'});
+  }
+}
+
+function linkButton(url,label,primary=false){
+  const value=String(url||'').trim();
+  if(!value)return '';
+  const href=/^https?:\/\//i.test(value)?value:`https://${value}`;
+  return `<a class="btn ${primary?'bpri':'bout'} bsm" href="${esc(href)}" target="_blank" rel="noopener">${label}</a>`;
+}
+
+function statusLabel(status){
+  return {review:'Under review',accepted:'Accepted',rejected:'Rejected',resources_pending:'Resources pending',in_progress:'In progress',submitted:'Submitted',revision_requested:'Revision requested',approved:'Approved',completed:'Completed'}[status]||status||'Status';
+}
+
+function renderStudentProfile(data,opts={}){
+  const s=data.student||{};
+  const st=data.stats||{};
+  const name=s.name||`${s.firstName||''} ${s.lastName||''}`.trim()||'Student';
+  const initials=getInitials(name);
+  const completed=st.completed||st.completedWorks||0;
+  const badgeLevel=data.badge?.level||s.badge?.level||s.studentBadge||'beginner';
+  const badgeText=data.badge?.label||({beginner:'Beginner',verified:'Verified','top-rated':'Top Rated'}[badgeLevel]||'Beginner');
+  const profileCompletion=Number(data.profileCompletion||s.profileCompletion||0);
+  const skills=(s.skills||[]).map(sk=>`<span class="app-sk">${esc(sk)}</span>`).join('')||'<span style="color:var(--ts);font-size:.8rem">No skills listed</span>';
+  const apps=(data.recentApplications||[]).map(a=>`<div class="sp-item"><strong>${esc(a.jobTitle||'Project')}</strong><span>${esc(a.brandName||'Brand')} · ${esc(a.pay||'Budget not listed')} · ${esc(statusLabel(a.status))}</span></div>`).join('')||'<div class="sp-empty-note">No application history is available yet.</div>';
+  const works=(data.recentWorks||[]).map(w=>`<div class="sp-item"><strong>${esc(w.jobTitle||'Project work')}</strong><span>${esc(statusLabel(w.status))}${w.approvedAt?' · '+new Date(w.approvedAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}):''}</span>${w.submissionLink?`<div style="margin-top:7px"><a class="ws-link" href="${esc(w.submissionLink)}" target="_blank" rel="noopener">Open submitted work</a></div>`:''}</div>`).join('')||'<div class="sp-empty-note">No approved work has been recorded yet. Review portfolio links before accepting.</div>';
+  const samples=(s.workSamples||[]).map(w=>{
+    const link=String(w.link||'').trim();
+    const href=/^https?:\/\//i.test(link)?link:`https://${link}`;
+    return `<div class="sp-item"><strong>${esc(w.title||'Work sample')}</strong><span>${esc(w.category||'Portfolio')}${w.description?' · '+esc(w.description):''}</span>${link?`<div style="margin-top:7px"><a class="ws-link" href="${esc(href)}" target="_blank" rel="noopener">Open sample</a></div>`:''}</div>`;
+  }).join('')||'<div class="sp-empty-note">No curated work samples added yet.</div>';
+  const links=[linkButton(s.portfolioLink,'Portfolio',true),linkButton(s.linkedin,'LinkedIn')].filter(Boolean).join('');
+  const loading=opts.loading?'<span class="sp-loading"><span class="spin"></span>Refreshing live profile...</span>':'<span></span>';
+  const error=opts.error?`<div class="sp-empty-note" style="margin-bottom:12px;border-color:#fed7aa;background:#fff7ed;color:#9a3412">${esc(opts.error)}</div>`:'';
+  document.getElementById('studentProfileContent').innerHTML=`
+    <div class="sp-topline">
+      <button class="sp-back" onclick="closeStudentProfile()">← Back to dashboard</button>
+      ${loading}
+    </div>
+    ${error}
+    <div class="sp-hero">
+      <div class="sp-bigav">${s.avatar?`<img src="${esc(s.avatar)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:22px">`:initials}</div>
+      <div style="flex:1;min-width:0">
+        <div class="sp-name">${esc(name)}</div>
+        <div style="margin:5px 0 8px">${badgeHtml(badgeLevel)}${s.verificationStatus==='pending'?'<span class="badge-pill badge-beginner" style="margin-left:7px">Verification pending</span>':''}</div>
+        <div class="sp-meta"><span>🎓 ${esc(s.college||'College not listed')}</span><span>${esc(s.year||'Year not set')}</span>${s.email?`<span>${esc(s.email)}</span>`:''}</div>
+        ${s.headline?`<div class="sp-bio-preview" style="margin-top:10px;font-weight:800;color:var(--td)">${esc(s.headline)}</div>`:''}
+        <div class="sp-bio-preview">${esc(s.bio||'This student has not added a bio yet. Ask for portfolio samples before final acceptance.')}</div>
+        <div class="app-skills" style="margin-top:12px">${skills}</div>
+        <div class="sp-actions">${links||'<span class="sp-empty-note">No portfolio or LinkedIn link added yet.</span>'}</div>
+      </div>
+      <button class="sp-close" onclick="closeStudentProfile()">×</button>
+    </div>
+    <div class="sp-stats">
+      <div class="sp-stat"><strong>${st.rating?Number(st.rating).toFixed(1)+' ⭐':'New'}</strong><span>Quality rating</span></div>
+      <div class="sp-stat"><strong>${completed}</strong><span>Completed work</span></div>
+      <div class="sp-stat"><strong>${esc(badgeText)}</strong><span>Talent badge</span></div>
+      <div class="sp-stat"><strong>${formatINR(st.totalEarned||0)||'₹0'}</strong><span>Total earned</span></div>
+    </div>
+    <div class="sp-layout">
+      <div>
+        <div class="sp-section">
+          <h3>Quality Signals</h3>
+          <div class="sp-quality">
+            <div class="sp-chip"><strong>${completed>0?'Delivery verified':'New talent'}</strong><span>${completed>0?'Has approved/completed workspace history on NextGenGrowth.':'Check portfolio and assign a small trial milestone first.'}</span></div>
+            <div class="sp-chip"><strong>${s.portfolioLink?'Portfolio linked':'Portfolio missing'}</strong><span>${s.portfolioLink?'External work samples are available for review.':'Ask the student to add samples before major work.'}</span></div>
+            <div class="sp-chip"><strong>${s.skills?.length||0} skills listed</strong><span>Match these against the exact project deliverables.</span></div>
+            <div class="sp-chip"><strong>${profileCompletion||'—'}% profile</strong><span>Use stronger profiles for larger budgets and tight deadlines.</span></div>
+          </div>
+        </div>
+        <div class="sp-section"><h3>Curated Work Samples</h3><div class="sp-list">${samples}</div></div>
+        <div class="sp-section"><h3>Recent Applications</h3><div class="sp-list">${apps}</div></div>
+      </div>
+      <div>
+        <div class="sp-section"><h3>Recent Work</h3><div class="sp-list">${works}</div></div>
+        <div class="sp-section"><h3>Hiring Note</h3><p style="font-size:.86rem;color:var(--tm);line-height:1.6">For important projects, start with one accepted student, add resources in the workspace, review the first draft, then approve final work after delivery.</p></div>
+      </div>
+    </div>`;
+}
+
+function closeStudentProfile() {
+  document.getElementById('studentProfileModal').style.display='none';
+  document.body.style.overflow='';
+}
+</script>
+<!-- ══ FLOATING AI CHAT WIDGET ══ -->
+<button class="ai-chat-btn" onclick="toggleAIChat()" aria-label="Open NextGen AI Assistant" title="Ask AI">AI</button>
+<div class="ai-chat-window" id="aiChatWindow">
+  <div class="ai-chat-header">
+    <strong id="aiChatTitle">NextGen AI Assistant</strong>
+    <button onclick="toggleAIChat()" style="background:none;border:none;color:white;cursor:pointer;font-size:1.2rem">✕</button>
+  </div>
+  <div class="ai-chat-body" id="aiChatBody">
+    <div class="ai-msg">Hi! I am your NextGen AI Guide. How can I help you today?</div>
+  </div>
+  <div class="ai-chat-input">
+    <input type="text" id="aiChatInput" placeholder="Ask something..." onkeypress="handleAIKeyPress(event)">
+    <button onclick="sendAIMessage()">Send</button>
+  </div>
+</div>
+
+</body>
+</html>
