@@ -1919,21 +1919,45 @@ function renderLongTermApplications(){
 }
 
 function openLongTermApply(roleId){
-  const role=longTermRoles.find(r=>String(r.id||r._id)===String(roleId));
-  if(!role)return showToast('Role not found. Refresh and try again.','error');
-  document.getElementById('ltApplyRoleId').value=roleId;
-  document.getElementById('ltApplyRoleTitle').textContent=role.roleTitle||'Role';
-  document.getElementById('ltName').value=_u.name||`${_u.firstName||''} ${_u.lastName||''}`.trim();
-  document.getElementById('ltEmail').value=_u.email||'';
-  document.getElementById('ltWhatsapp').value=normalizeStudentPhone(_u.whatsapp||_u.phone||'');
-  document.getElementById('ltCollege').value=_u.college||'';
-  document.getElementById('ltSkills').value=(_u.skills||[]).join(', ');
-  document.getElementById('ltPortfolio').value=_u.portfolioLink||'';
-  document.getElementById('ltHours').value=document.getElementById('ltHours').value||'10 hours/week';
-  document.getElementById('ltExpectedPay').value=document.getElementById('ltExpectedPay').value||role.monthlyBudget||'₹5,000';
-  setLongTermApplyMessage('', 'info');
-  document.getElementById('ltApplyPanel').style.display='block';
-  document.getElementById('ltApplyPanel').scrollIntoView({behavior:'smooth',block:'start'});
+  try {
+    const role=longTermRoles.find(r=>String(r.id||r._id)===String(roleId));
+    if(!role)return showToast('Role not found. Refresh and try again.','error');
+    
+    const panel = document.getElementById('ltApplyPanel');
+    if (!panel) return showToast('Application form not found.','error');
+    
+    document.getElementById('ltApplyRoleId').value=roleId;
+    document.getElementById('ltApplyRoleTitle').textContent=role.roleTitle||'Role';
+    
+    const u = _u || {};
+    document.getElementById('ltName').value=u.name||`${u.firstName||''} ${u.lastName||''}`.trim();
+    document.getElementById('ltEmail').value=u.email||'';
+    document.getElementById('ltWhatsapp').value=normalizeStudentPhone(u.whatsapp||u.phone||'');
+    document.getElementById('ltCollege').value=u.college||'';
+    
+    let skillsStr = '';
+    if (Array.isArray(u.skills)) {
+      skillsStr = u.skills.join(', ');
+    } else if (typeof u.skills === 'string') {
+      skillsStr = u.skills;
+    }
+    document.getElementById('ltSkills').value=skillsStr;
+    
+    document.getElementById('ltPortfolio').value=u.portfolioLink||'';
+    
+    const hoursInput = document.getElementById('ltHours');
+    if (hoursInput) hoursInput.value = hoursInput.value || '10 hours/week';
+    
+    const payInput = document.getElementById('ltExpectedPay');
+    if (payInput) payInput.value = payInput.value || role.monthlyBudget || '₹5,000';
+    
+    setLongTermApplyMessage('', 'info');
+    panel.style.display='block';
+    panel.scrollIntoView({behavior:'smooth',block:'start'});
+  } catch(err) {
+    console.error("openLongTermApply error:", err);
+    showToast("Error opening application panel: " + err.message, "error");
+  }
 }
 
 function closeLongTermApply(){
