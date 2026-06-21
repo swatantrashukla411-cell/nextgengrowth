@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>Skill Compass AI - NextGenGrowth</title>
+  <meta name="description" content="Find your best-fit skill path with Skill Compass AI by NextGenGrowth. Get a 7-day trial plan, 30-day roadmap, proof tasks, and a focus plan."/>
+  <link rel="canonical" href="https://www.nextgengrowth.in/skill-compass"/>
+  <link rel="icon" href="/favicon.ico" sizes="any"/>
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"/>
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box}
+    :root{
+      --green-900:#063d25;
+      --green-800:#075232;
+      --green-700:#08733f;
+      --green-600:#0a8f4d;
+      --green-100:#dff8eb;
+      --green-50:#f0fdf6;
+      --ink:#0b1f14;
+      --muted:#5b7567;
+      --line:#d6eadf;
+      --soft:#f7fcf9;
+      --white:#fff;
+      --shadow:0 18px 50px rgba(6,61,37,.12);
+      --radius:22px;
+    }
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      color:var(--ink);
+      background:
+        linear-gradient(90deg,rgba(10,143,77,.05) 1px,transparent 1px),
+        linear-gradient(180deg,rgba(10,143,77,.05) 1px,transparent 1px),
+        var(--soft);
+      background-size:54px 54px;
+    }
+    a{color:inherit;text-decoration:none}
+    button,input,select,textarea{font:inherit}
+    .wrap{width:min(1160px,calc(100% - 32px));margin:0 auto}
+    .topbar{
+      position:sticky;top:0;z-index:10;
+      background:rgba(255,255,255,.92);
+      backdrop-filter:blur(16px);
+      border-bottom:1px solid var(--line);
+    }
+    .topbar-inner{
+      height:74px;display:flex;align-items:center;justify-content:space-between;gap:16px;
+    }
+    .brand{display:flex;align-items:center;gap:12px;font-weight:900;font-size:21px;letter-spacing:-.03em}
+    .brand img{width:44px;height:44px;border-radius:14px;box-shadow:0 10px 24px rgba(10,143,77,.18)}
+    .nav-actions{display:flex;gap:10px;align-items:center}
+    .pill{
+      display:inline-flex;align-items:center;justify-content:center;gap:8px;
+      min-height:42px;padding:0 16px;border-radius:999px;border:1px solid var(--line);
+      background:#fff;color:var(--green-800);font-weight:800;font-size:14px;
+    }
+    .pill.primary{background:var(--green-800);color:#fff;border-color:var(--green-800)}
+    main{padding:34px 0 70px}
+    .intro{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,360px);gap:20px;align-items:end;margin-bottom:20px}
+    .eyebrow{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 12px;color:var(--green-800);font-size:13px;font-weight:900}
+    .eyebrow span{width:8px;height:8px;border-radius:50%;background:var(--green-600)}
+    h1{font-size:clamp(32px,5vw,58px);line-height:1.02;margin:14px 0 12px;letter-spacing:-.05em}
+    .lead{margin:0;color:var(--muted);font-size:17px;line-height:1.65;max-width:760px}
+    .mini-panel{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:18px;box-shadow:0 12px 30px rgba(6,61,37,.08)}
+    .mini-panel strong{display:block;margin-bottom:8px}
+    .mini-panel p{margin:0;color:var(--muted);line-height:1.55;font-size:14px}
+    .grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(330px,.9fr);gap:22px;align-items:start}
+    .card{
+      background:rgba(255,255,255,.96);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    .card-head{padding:22px 24px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:14px;align-items:center}
+    .card-head h2{font-size:22px;margin:0;letter-spacing:-.03em}
+    .progress-shell{width:150px;height:10px;background:var(--green-100);border-radius:99px;overflow:hidden}
+    .progress-bar{height:100%;width:12%;background:linear-gradient(90deg,var(--green-700),#20c878);border-radius:inherit;transition:width .25s ease}
+    form{padding:24px;display:grid;gap:22px}
+    .field{display:grid;gap:9px}
+    label,.label{font-weight:900;font-size:14px;color:#173527}
+    .hint{font-size:12.5px;color:var(--muted);font-weight:600}
+    input[type="text"],select,textarea{
+      width:100%;
+      border:1px solid var(--line);
+      background:#fff;
+      color:var(--ink);
+      border-radius:14px;
+      padding:13px 14px;
+      outline:none;
+      transition:border-color .2s,box-shadow .2s;
+    }
+    textarea{min-height:96px;resize:vertical}
+    input:focus,select:focus,textarea:focus{border-color:var(--green-600);box-shadow:0 0 0 4px rgba(10,143,77,.12)}
+    .choice-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .choice-grid.two{grid-template-columns:repeat(2,1fr)}
+    .check-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+    .choice,.check{
+      position:relative;
+      display:flex;align-items:center;gap:10px;
+      padding:12px 13px;
+      min-height:50px;
+      border:1px solid var(--line);
+      background:#fff;
+      border-radius:14px;
+      cursor:pointer;
+      font-weight:850;
+      color:#244033;
+      transition:all .18s ease;
+    }
+    .choice input,.check input{position:absolute;opacity:0;pointer-events:none}
+    .dot{
+      width:18px;height:18px;border-radius:50%;
+      border:2px solid #9dcdb4;
+      display:inline-block;flex:0 0 auto;
+    }
+    .box{
+      width:18px;height:18px;border-radius:6px;
+      border:2px solid #9dcdb4;
+      display:inline-grid;place-items:center;flex:0 0 auto;
+      color:#fff;font-size:12px;
+    }
+    .choice:has(input:checked),.check:has(input:checked){
+      border-color:var(--green-600);
+      background:var(--green-50);
+      box-shadow:0 10px 24px rgba(10,143,77,.11);
+    }
+    .choice input:checked + .dot{border-color:var(--green-700);box-shadow:inset 0 0 0 4px #fff;background:var(--green-700)}
+    .check input:checked + .box{border-color:var(--green-700);background:var(--green-700)}
+    .check input:checked + .box::before{content:"✓"}
+    .submit-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:20px}
+    .btn{
+      min-height:48px;border:0;border-radius:14px;padding:0 18px;
+      display:inline-flex;align-items:center;justify-content:center;gap:8px;
+      font-weight:900;cursor:pointer;transition:transform .2s,box-shadow .2s,opacity .2s;
+    }
+    .btn:hover{transform:translateY(-1px)}
+    .btn-main{background:linear-gradient(135deg,var(--green-800),var(--green-600));color:#fff;box-shadow:0 12px 26px rgba(8,115,63,.24)}
+    .btn-secondary{background:#fff;color:var(--green-800);border:1px solid var(--line)}
+    .btn:disabled{opacity:.65;cursor:not-allowed;transform:none}
+    .side{display:grid;gap:16px}
+    .side-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:0 12px 30px rgba(6,61,37,.08)}
+    .side-card h3{margin:0 0 10px;font-size:18px}
+    .side-card ul{margin:0;padding:0;list-style:none;display:grid;gap:10px}
+    .side-card li{display:flex;gap:9px;color:var(--muted);font-weight:650;line-height:1.45;font-size:14px}
+    .side-card li::before{content:"";width:8px;height:8px;background:var(--green-600);border-radius:50%;margin-top:6px;flex:0 0 auto}
+    .loading,.error{display:none;margin-top:20px}
+    .loading.active,.error.active{display:block}
+    .loading-box,.error-box{
+      background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;
+    }
+    .loader{width:34px;height:34px;border-radius:50%;border:4px solid var(--green-100);border-top-color:var(--green-700);animation:spin .8s linear infinite;margin-bottom:12px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .results{display:none;margin-top:22px}
+    .results.active{display:block}
+    .result-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,360px);gap:18px;align-items:start}
+    .result-card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:22px;box-shadow:0 12px 30px rgba(6,61,37,.08)}
+    .primary-path{background:linear-gradient(145deg,#fff,var(--green-50));border-color:#bde6cd}
+    .result-card h3{margin:0 0 12px;font-size:20px;letter-spacing:-.03em}
+    .summary{margin:0;color:var(--muted);line-height:1.65;font-weight:650}
+    .score-row{display:flex;align-items:center;gap:14px;margin:14px 0}
+    .score{
+      width:70px;height:70px;border-radius:22px;
+      display:grid;place-items:center;
+      background:var(--green-800);color:#fff;
+      font-weight:950;font-size:20px;
+      box-shadow:0 14px 30px rgba(7,82,50,.22);
+    }
+    .tag-row{display:flex;gap:8px;flex-wrap:wrap}
+    .tag{display:inline-flex;align-items:center;border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 10px;font-size:12px;font-weight:900;color:var(--green-800)}
+    .alt-grid{display:grid;gap:10px}
+    .alt{border:1px solid var(--line);background:var(--soft);border-radius:16px;padding:14px}
+    .alt strong{display:flex;justify-content:space-between;gap:10px;margin-bottom:6px}
+    .plan-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:10px}
+    .day,.week{border:1px solid var(--line);border-radius:16px;background:#fff;padding:14px;min-width:0}
+    .day b,.week b{display:block;color:var(--green-800);margin-bottom:8px}
+    .day p,.week p{margin:0;color:var(--muted);font-size:13px;line-height:1.5;font-weight:650}
+    .roadmap{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+    .week ul{margin:10px 0 0;padding-left:18px;color:var(--muted);font-size:13px;line-height:1.5;font-weight:650}
+    .proof-list,.next-list{margin:0;padding-left:20px;color:var(--muted);line-height:1.7;font-weight:700}
+    .cta-card{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;background:var(--green-900);color:#fff;border:0}
+    .cta-card p{margin:6px 0 0;color:rgba(255,255,255,.78);line-height:1.5}
+    .cta-card .btn-secondary{background:#fff;color:var(--green-900)}
+    .source-badge{display:inline-flex;border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 10px;color:var(--muted);font-size:12px;font-weight:900}
+    @media(max-width:980px){
+      .intro,.grid,.result-grid{grid-template-columns:1fr}
+      .plan-grid{grid-template-columns:repeat(2,1fr)}
+    }
+    @media(max-width:680px){
+      .wrap{width:min(100% - 22px,1160px)}
+      .topbar-inner{height:66px}
+      .brand{font-size:18px}
+      .brand img{width:38px;height:38px;border-radius:12px}
+      .nav-actions .pill:first-child{display:none}
+      main{padding-top:22px}
+      .intro{gap:14px}
+      h1{font-size:34px}
+      .lead{font-size:15px}
+      .card-head{display:grid;padding:18px}
+      form{padding:18px;gap:18px}
+      .choice-grid,.choice-grid.two,.check-grid{grid-template-columns:1fr}
+      .submit-row .btn{width:100%}
+      .plan-grid,.roadmap{grid-template-columns:1fr}
+      .result-card{padding:18px}
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <a href="/" class="brand" aria-label="NextGenGrowth home">
+        <img src="/android-chrome-192x192.png" alt="NextGenGrowth logo"/>
+        <span>NextGenGrowth</span>
+      </a>
+      <nav class="nav-actions" aria-label="Page navigation">
+        <a class="pill" href="/">Home</a>
+        <a class="pill primary" href="/register">Create account</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="intro" aria-labelledby="pageTitle">
+      <div>
+        <div class="eyebrow"><span></span>Skill discovery, not another course</div>
+        <h1 id="pageTitle">Find one skill to test this week.</h1>
+        <p class="lead">Answer a few practical questions. Skill Compass AI will suggest your best-fit skill path, a 7-day trial plan, a 30-day roadmap, and first proof tasks you can add to your NextGenGrowth profile.</p>
+      </div>
+      <aside class="mini-panel">
+        <strong>Designed for confused students</strong>
+        <p>No fake guarantees. No course overload. Just one direction, one proof target, and a clear first week.</p>
+      </aside>
+    </section>
+
+    <section class="grid" aria-label="Skill Compass form">
+      <div class="card">
+        <div class="card-head">
+          <h2>Skill Compass Form</h2>
+          <div class="progress-shell" aria-hidden="true"><div class="progress-bar" id="progressBar"></div></div>
+        </div>
+        <form id="compassForm">
+          <div class="field">
+            <label for="name">Your name</label>
+            <input id="name" name="name" type="text" placeholder="e.g. Aarav" autocomplete="name"/>
+          </div>
+
+          <div class="field">
+            <div class="label">What device can you use daily?</div>
+            <div class="choice-grid" role="radiogroup" aria-label="Device">
+              <label class="choice"><input type="radio" name="device" value="phone" checked/><span class="dot"></span>Phone</label>
+              <label class="choice"><input type="radio" name="device" value="laptop"/><span class="dot"></span>Laptop</label>
+              <label class="choice"><input type="radio" name="device" value="both"/><span class="dot"></span>Both</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="label">How much focused time can you give daily?</div>
+            <div class="choice-grid" role="radiogroup" aria-label="Daily time">
+              <label class="choice"><input type="radio" name="dailyTime" value="30min"/><span class="dot"></span>30 min</label>
+              <label class="choice"><input type="radio" name="dailyTime" value="1hr" checked/><span class="dot"></span>1 hour</label>
+              <label class="choice"><input type="radio" name="dailyTime" value="2hr"/><span class="dot"></span>2 hours</label>
+              <label class="choice"><input type="radio" name="dailyTime" value="3hr+"/><span class="dot"></span>3+ hours</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="label">What interests you right now?</div>
+            <div class="hint">Pick 2-4 signals. It is okay if you are unsure.</div>
+            <div class="check-grid">
+              <label class="check"><input type="checkbox" name="interests" value="reels and video editing"/><span class="box"></span>Reels / video</label>
+              <label class="check"><input type="checkbox" name="interests" value="design and canva"/><span class="box"></span>Design / Canva</label>
+              <label class="check"><input type="checkbox" name="interests" value="websites and coding"/><span class="box"></span>Websites / coding</label>
+              <label class="check"><input type="checkbox" name="interests" value="writing and content"/><span class="box"></span>Writing</label>
+              <label class="check"><input type="checkbox" name="interests" value="social media and marketing"/><span class="box"></span>Social media</label>
+              <label class="check"><input type="checkbox" name="interests" value="ai tools and automation"/><span class="box"></span>AI tools</label>
+              <label class="check"><input type="checkbox" name="interests" value="data excel and reports"/><span class="box"></span>Data / Excel</label>
+              <label class="check"><input type="checkbox" name="interests" value="sales outreach and business"/><span class="box"></span>Sales / business</label>
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="label">What feels natural to you?</div>
+            <div class="check-grid">
+              <label class="check"><input type="checkbox" name="strengths" value="creative ideas"/><span class="box"></span>Creative ideas</label>
+              <label class="check"><input type="checkbox" name="strengths" value="visual taste"/><span class="box"></span>Visual taste</label>
+              <label class="check"><input type="checkbox" name="strengths" value="writing clearly"/><span class="box"></span>Writing clearly</label>
+              <label class="check"><input type="checkbox" name="strengths" value="talking to people"/><span class="box"></span>Talking to people</label>
+              <label class="check"><input type="checkbox" name="strengths" value="logical thinking"/><span class="box"></span>Logical thinking</label>
+              <label class="check"><input type="checkbox" name="strengths" value="organizing work"/><span class="box"></span>Organizing work</label>
+            </div>
+          </div>
+
+          <div class="choice-grid two">
+            <div class="field">
+              <label for="workStyle">Work style</label>
+              <select id="workStyle" name="workStyle">
+                <option value="I like solo focused work">Solo focused work</option>
+                <option value="I like creative visual work">Creative visual work</option>
+                <option value="I like talking and collaboration">Talking and collaboration</option>
+                <option value="I like structured step-by-step work">Structured step-by-step work</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="confidence">Current confidence</label>
+              <select id="confidence" name="confidence">
+                <option value="low but willing to start">Low, but willing to start</option>
+                <option value="medium and need direction">Medium, need direction</option>
+                <option value="good and ready for proof">Good, ready for proof</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="choice-grid two">
+            <div class="field">
+              <label for="englishComfort">English comfort</label>
+              <select id="englishComfort" name="englishComfort">
+                <option value="basic">Basic</option>
+                <option value="medium" selected>Medium</option>
+                <option value="strong">Strong</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="goal">Main goal</label>
+              <select id="goal" name="goal">
+                <option value="build portfolio">Build portfolio</option>
+                <option value="earn side income">Earn side income</option>
+                <option value="get internship">Get internship</option>
+                <option value="help family business or startup">Help a business/startup</option>
+                <option value="stop wasting time and start one skill">Stop wasting time</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="preferredOutput">What output would you like to create?</label>
+            <select id="preferredOutput" name="preferredOutput">
+              <option value="posts and reels">Posts and reels</option>
+              <option value="web page or app screen">Web page or app screen</option>
+              <option value="article or captions">Article or captions</option>
+              <option value="design poster or carousel">Design poster or carousel</option>
+              <option value="spreadsheet or report">Spreadsheet or report</option>
+              <option value="lead list or outreach script">Lead list or outreach script</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="currentSkills">Any current skills?</label>
+            <input id="currentSkills" name="currentSkills" type="text" placeholder="e.g. basic Canva, basic HTML, Instagram captions"/>
+          </div>
+
+          <div class="field">
+            <label for="distractions">What distracts you most?</label>
+            <textarea id="distractions" name="distractions" placeholder="e.g. reels, switching skills, overthinking, exams, no laptop"></textarea>
+          </div>
+
+          <div class="submit-row">
+            <button id="generateBtn" class="btn btn-main" type="submit">Generate my roadmap</button>
+            <a class="btn btn-secondary" href="/dashboard">Explore projects</a>
+          </div>
+        </form>
+      </div>
+
+      <aside class="side" aria-label="How this works">
+        <div class="side-card">
+          <h3>What you will get</h3>
+          <ul>
+            <li>One primary skill path with fit score.</li>
+            <li>Two alternate skills if the first one feels wrong.</li>
+            <li>A 7-day trial plan built around proof, not theory.</li>
+            <li>A 30-day roadmap to prepare for real brand projects.</li>
+          </ul>
+        </div>
+        <div class="side-card">
+          <h3>How to use it</h3>
+          <ul>
+            <li>Answer honestly based on your current setup.</li>
+            <li>Follow the 7-day trial before switching skills.</li>
+            <li>Add your best proof to your student profile.</li>
+          </ul>
+        </div>
+      </aside>
+    </section>
+
+    <section class="loading" id="loadingState" aria-live="polite">
+      <div class="loading-box">
+        <div class="loader"></div>
+        <strong>Building your skill roadmap...</strong>
+        <p class="summary">This usually takes a few seconds. If AI is not configured, NextGenGrowth will still create a useful fallback roadmap.</p>
+      </div>
+    </section>
+
+    <section class="error" id="errorState" aria-live="polite">
+      <div class="error-box">
+        <strong>Could not generate right now.</strong>
+        <p class="summary" id="errorText">Please try again in a moment.</p>
+      </div>
+    </section>
+
+    <section class="results" id="results" aria-live="polite"></section>
+  </main>
+
+  <script>
+    const form = document.getElementById('compassForm');
+    const loadingState = document.getElementById('loadingState');
+    const errorState = document.getElementById('errorState');
+    const errorText = document.getElementById('errorText');
+    const results = document.getElementById('results');
+    const generateBtn = document.getElementById('generateBtn');
+    const progressBar = document.getElementById('progressBar');
+
+    function escapeHtml(value){
+      return String(value ?? '').replace(/[&<>"']/g, ch => ({
+        '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+      }[ch]));
+    }
+
+    function checkedValues(name){
+      return Array.from(form.querySelectorAll(`input[name="${name}"]:checked`)).map(input => input.value);
+    }
+
+    function singleValue(name){
+      return form.querySelector(`[name="${name}"]:checked`)?.value || form.elements[name]?.value || '';
+    }
+
+    function payloadFromForm(){
+      return {
+        name: form.name.value.trim(),
+        device: singleValue('device'),
+        dailyTime: singleValue('dailyTime'),
+        interests: checkedValues('interests'),
+        strengths: checkedValues('strengths'),
+        workStyle: form.workStyle.value,
+        confidence: form.confidence.value,
+        englishComfort: form.englishComfort.value,
+        goal: form.goal.value,
+        distractions: form.distractions.value.trim(),
+        currentSkills: form.currentSkills.value.trim(),
+        preferredOutput: form.preferredOutput.value,
+      };
+    }
+
+    function updateProgress(){
+      const payload = payloadFromForm();
+      let score = 0;
+      if(payload.name) score += 1;
+      if(payload.device) score += 1;
+      if(payload.dailyTime) score += 1;
+      if(payload.interests.length) score += 2;
+      if(payload.strengths.length) score += 2;
+      if(payload.workStyle) score += 1;
+      if(payload.goal) score += 1;
+      if(payload.preferredOutput) score += 1;
+      progressBar.style.width = `${Math.max(12, Math.min(100, score * 10))}%`;
+    }
+
+    function list(items){
+      return (items || []).map(item => `<li>${escapeHtml(item)}</li>`).join('');
+    }
+
+    function renderResult(data){
+      const result = data.result;
+      const primary = result.primary_path;
+      const exploreHref = localStorage.getItem('ngg_token') ? '/dashboard' : '/login';
+      results.innerHTML = `
+        <div class="result-grid">
+          <article class="result-card primary-path">
+            <span class="source-badge">${data.source === 'ai' ? 'AI generated' : 'Smart fallback'}</span>
+            <h3 style="margin-top:14px">${escapeHtml(primary.skill)}</h3>
+            <p class="summary">${escapeHtml(result.student_summary)}</p>
+            <div class="score-row">
+              <div class="score">${escapeHtml(primary.fit_score)}%</div>
+              <div>
+                <strong>Why this fits</strong>
+                <p class="summary">${escapeHtml(primary.why_this_fits)}</p>
+              </div>
+            </div>
+            <p class="summary"><strong>First goal:</strong> ${escapeHtml(primary.first_goal)}</p>
+            <p class="summary"><strong>Earning potential:</strong> ${escapeHtml(primary.earning_potential)}</p>
+            <div class="tag-row" style="margin-top:14px">${(primary.tools_needed || []).map(tool => `<span class="tag">${escapeHtml(tool)}</span>`).join('')}</div>
+          </article>
+
+          <aside class="result-card">
+            <h3>Alternate paths</h3>
+            <div class="alt-grid">
+              ${(result.alternate_paths || []).map(path => `
+                <div class="alt">
+                  <strong><span>${escapeHtml(path.skill)}</span><span>${escapeHtml(path.fit_score)}%</span></strong>
+                  <p>${escapeHtml(path.why_this_fits)}</p>
+                </div>
+              `).join('')}
+            </div>
+          </aside>
+        </div>
+
+        <article class="result-card" style="margin-top:18px">
+          <h3>7-day trial plan</h3>
+          <div class="plan-grid">
+            ${(result.seven_day_trial || []).map(day => `
+              <div class="day">
+                <b>Day ${escapeHtml(day.day)}</b>
+                <p>${escapeHtml(day.task)}</p>
+                <p style="margin-top:8px"><strong>Output:</strong> ${escapeHtml(day.output)}</p>
+              </div>
+            `).join('')}
+          </div>
+        </article>
+
+        <article class="result-card" style="margin-top:18px">
+          <h3>30-day roadmap</h3>
+          <div class="roadmap">
+            ${(result.thirty_day_roadmap || []).map(week => `
+              <div class="week">
+                <b>Week ${escapeHtml(week.week)}: ${escapeHtml(week.focus)}</b>
+                <ul>${list(week.tasks)}</ul>
+                <p style="margin-top:10px"><strong>Proof:</strong> ${escapeHtml(week.proof_to_build)}</p>
+              </div>
+            `).join('')}
+          </div>
+        </article>
+
+        <div class="result-grid" style="margin-top:18px">
+          <article class="result-card">
+            <h3>First proof tasks</h3>
+            <ol class="proof-list">${list(result.first_proof_tasks)}</ol>
+          </article>
+          <article class="result-card">
+            <h3>Focus plan</h3>
+            <p class="summary"><strong>Daily routine:</strong> ${escapeHtml(result.focus_plan.daily_routine)}</p>
+            <p class="summary"><strong>Distraction rule:</strong> ${escapeHtml(result.focus_plan.distraction_rule)}</p>
+            <p class="summary"><strong>Accountability:</strong> ${escapeHtml(result.focus_plan.accountability_action)}</p>
+          </article>
+        </div>
+
+        <article class="result-card" style="margin-top:18px">
+          <h3>Next steps</h3>
+          <ol class="next-list">${list(result.next_steps)}</ol>
+        </article>
+
+        <article class="result-card cta-card" style="margin-top:18px">
+          <div>
+            <h3 style="margin-bottom:0">Save this roadmap and start building proof.</h3>
+            <p>Create your student account, add your skill, and upload your first proof link.</p>
+          </div>
+          <div class="submit-row" style="border:0;padding:0">
+            <a class="btn btn-secondary" href="/register">Create account to save roadmap</a>
+            <a class="btn btn-main" href="${exploreHref}">Explore projects</a>
+          </div>
+        </article>
+      `;
+      results.classList.add('active');
+      results.scrollIntoView({behavior:'smooth',block:'start'});
+    }
+
+    form.addEventListener('input', updateProgress);
+    form.addEventListener('change', updateProgress);
+    updateProgress();
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      errorState.classList.remove('active');
+      results.classList.remove('active');
+      loadingState.classList.add('active');
+      generateBtn.disabled = true;
+      generateBtn.textContent = 'Generating...';
+      try{
+        const response = await fetch('/api/ai/skill-compass', {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify(payloadFromForm())
+        });
+        const data = await response.json();
+        if(!response.ok || !data.success) throw new Error(data.message || 'Request failed');
+        renderResult(data);
+      }catch(error){
+        errorText.textContent = error.message || 'Please try again in a moment.';
+        errorState.classList.add('active');
+      }finally{
+        loadingState.classList.remove('active');
+        generateBtn.disabled = false;
+        generateBtn.textContent = 'Generate my roadmap';
+      }
+    });
+  </script>
+</body>
+</html>

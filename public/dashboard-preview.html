@@ -1,0 +1,2165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+  <title>Dashboard – NextGenGrowth</title>
+  <link rel="icon" href="/favicon.ico" sizes="any"/>
+<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"/>
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png"/>
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"/>
+  <link rel="manifest" href="/site.webmanifest"/>
+  <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  
+  <style>
+    :root {
+      --bg: #fbfbfd;
+      --text: #1d1d1f;
+      --subtext: #86868b;
+      --accent: #10b981;
+      --border: rgba(0,0,0,0.05);
+      --card-bg: rgba(255,255,255,0.7);
+    }
+    html, body {
+      height: 100%; margin: 0; 
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased;
+    }
+    * { box-sizing: border-box; }
+    
+    .app { display: flex; height: 100vh; overflow: hidden; }
+    
+    /* Disappearing Sidebar */
+    .sidebar {
+      width: 280px; padding: 40px 20px; display: flex; flex-direction: column;
+      background: transparent; border-right: 1px solid var(--border);
+    }
+    .av { display: none !important; }
+    .sb-nm { font-size: 1.8rem; font-weight: 700; padding: 0 16px; margin-bottom: 40px; letter-spacing: -0.02em; }
+    .ni {
+      background: transparent; border: none; color: var(--subtext); font-size: 1.05rem;
+      font-weight: 500; text-align: left; padding: 12px 16px; border-radius: 12px;
+      cursor: pointer; display: flex; align-items: center; gap: 12px; transition: 0.2s;
+      margin-bottom: 4px;
+    }
+    .ni:hover { color: var(--text); background: rgba(0,0,0,0.02); }
+    .ni.sel { color: var(--text); font-weight: 600; background: rgba(0,0,0,0.04); }
+    .ni svg { width: 20px; height: 20px; stroke-width: 1.5; }
+    .nb { background: var(--text); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; margin-left: auto; }
+    
+    /* Main Area */
+    .main { flex: 1; display: flex; flex-direction: column; overflow-y: auto; position: relative; }
+    
+    /* Minimalist Topbar */
+    .topbar { 
+      display: flex; justify-content: flex-end; padding: 24px 60px; 
+      background: transparent; position: absolute; right: 0; top: 0; z-index: 100; gap: 20px;
+    }
+    .tt, .ts_ { display: none; } /* Hide page title in topbar, keep it clean */
+    .ib { cursor: pointer; color: var(--text); }
+    .tav { width: 36px; height: 36px; background: var(--text); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; }
+    
+    .page { display: none; padding: 80px 60px; animation: fade 0.4s ease; max-width: 1200px; margin: 0 auto; width: 100%; }
+    .page.active { display: block; }
+    @keyframes fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
+    /* Welcome Text (Massive Typography) */
+    .wb { padding: 40px 0 60px; background: transparent !important; border: none !important; }
+    .wb-i, .wb-pill { display: none; } /* Hide icons and pills */
+    .wb-t { font-size: 4.5rem; font-weight: 800; letter-spacing: -0.04em; line-height: 1.1; margin-bottom: 12px; color: var(--text) !important; }
+    .wb-d { font-size: 1.4rem; color: var(--subtext) !important; font-weight: 500; letter-spacing: -0.01em; }
+    
+    /* Apple Cards (No borders, ultra light) */
+    .g4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 60px; }
+    .sc { background: var(--card-bg); backdrop-filter: blur(20px); border-radius: 24px; padding: 32px; box-shadow: 0 4px 24px rgba(0,0,0,0.02); transition: 0.3s; }
+    .sc:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.04); }
+    .sn { font-size: 3rem; font-weight: 700; letter-spacing: -0.03em; display: block; margin-top: 16px; color: var(--text) !important; }
+    .sl { font-size: 1rem; color: var(--subtext); font-weight: 600; margin-top: 8px; }
+    .sc- { display: none !important; } /* Hide subtext to reduce clutter */
+    .sic { display: none !important; } /* Hide emojis to keep it clean */
+    .sc::after { display: none; } /* Remove bottom green border */
+    
+    .card { background: var(--card-bg); border-radius: 24px; padding: 40px; margin-bottom: 24px; box-shadow: 0 4px 24px rgba(0,0,0,0.02); border: none; }
+    .st { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 24px; border: none; }
+    
+    /* Pill Buttons */
+    button { font-family: inherit; }
+    .btn, .wb-btn, .fbtn {
+      background: var(--text); color: white; padding: 12px 24px; border-radius: 100px;
+      font-weight: 600; font-size: 1rem; border: none; cursor: pointer; transition: 0.2s;
+    }
+    .btn:hover, .wb-btn:hover { transform: scale(1.02); }
+    .aif.active { background: var(--accent); color: white; }
+    
+    /* Forms & Inputs */
+    .fi { width: 100%; background: #f5f5f7; border: 1px solid transparent; padding: 16px 20px; border-radius: 16px; font-size: 1.1rem; transition: 0.2s; outline: none; }
+    .fi:focus { background: white; border-color: var(--accent); box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1); }
+    label { font-weight: 600; font-size: 0.9rem; color: var(--subtext); margin-bottom: 8px; display: block; }
+    
+    /* Skeleton */
+    @keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
+    .skeleton { color: transparent !important; background: #e5e5ea !important; border-radius: 8px; animation: pulse 1.5s infinite; }
+    
+    /* Project Cards */
+    .pc { background: white; border-radius: 20px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.02); transition: 0.3s; border: 1px solid var(--border); }
+    .pc:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.05); }
+    .pc-t { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 8px; }
+    .pc-c { color: var(--accent); font-weight: 600; margin-bottom: 16px; }
+    
+    /* Toasts */
+    .toast { position: fixed; top: 24px; left: 50%; transform: translate(-50%, -100px); background: rgba(0,0,0,0.8); color: white; padding: 12px 24px; border-radius: 100px; font-weight: 500; opacity: 0; transition: 0.4s; z-index: 9999; backdrop-filter: blur(10px); }
+    .toast.show { transform: translate(-50%, 0); opacity: 1; }
+  </style>
+
+</head>
+<body>
+<div class="app">
+
+<!-- DARK OVERLAY (mobile sidebar ke peeche) -->
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<!-- ══ SIDEBAR ══ -->
+<aside class="sidebar" id="sidebar">
+  <a href="#" class="sb-logo"><div class="ld"><img src="android-chrome-192x192.png" alt=""></div><span>NextGenGrowth</span></a>
+  <div class="sb-user">
+    <div class="av" id="sbAv">?</div>
+    <div style="overflow:hidden;min-width:0">
+      <div class="sb-nm skeleton" id="sbNm">Loading...</div>
+      <div class="sb-bg"><span style="width:5px;height:5px;border-radius:50%;background:var(--gb);display:inline-block"></span>Student</div>
+    </div>
+  </div>
+  <nav class="nav">
+    <div class="nl">Main</div>
+    <button class="ni active" onclick="goTo('home',this)"><span class="nicon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>Dashboard</button>
+    <button class="ni" onclick="goTo('projects',this)"><span class="nicon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg></span>Browse Projects<span class="nb">12</span></button>
+    <button class="ni" onclick="goTo('longterm',this)"><span class="nicon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2m-9 4h10M5 7h14a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V9a2 2 0 012-2z"/></svg></span>Long-Term Roles<span class="nb" id="ltRolesBadge">0</span></button>
+    <button class="ni" onclick="goTo('applications',this)"><span class="nicon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></span>My Applications<span class="nb" id="appsBadge">0</span></button>
+    <button class="ni" onclick="goTo('portfolio',this)"><span class="nicon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg></span>My Portfolio</button>
+    <button class="ni" onclick="goTo('earnings',this)"><span class="nicon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></span>Earnings</button>
+    <div class="nl">Learn</div>
+    <button class="ni" onclick="goTo('courses',this)"><span class="nicon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg></span>Skill Courses<span class="nb">New</span></button>
+    <button class="ni" onclick="goTo('mentors',this)"><span class="nicon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg></span>Mentors</button>
+    <div class="nl">Account</div>
+    <button class="ni" onclick="goTo('profile',this)"><span class="nicon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg></span>My Profile</button>
+    <button class="ni" onclick="goTo('kyc',this)"><span class="nicon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 14l2 2 4-4M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z"/></svg></span>Payout KYC<span class="nb" id="kycNavBadge">New</span></button>
+    <button class="ni" onclick="logout()"><span class="nicon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg></span>Logout</button>
+  </nav>
+  <div class="sbf">
+    <div class="promo">
+      <h4 id="promoH">🚀 Start Earning!</h4>
+      <p id="promoP">Browse projects matching your skills.</p>
+      <button class="pb" onclick="goTo('projects',null);closeSidebar()">View Projects</button>
+    </div>
+  </div>
+</aside>
+
+<!-- ══ MAIN ══ -->
+<div class="main">
+  <header class="topbar">
+    <div class="tl">
+      <!-- Hamburger — mobile only -->
+      <button class="mb" onclick="openSidebar()">
+        <svg width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+      </button>
+      <div>
+        <div><div class="tt" id="pgT">Dashboard</div><div class="ts_ skeleton" id="pgD" style="display:inline-block;min-width:100px">Loading...</div></div>
+      </div>
+    </div>
+    <div class="tr">
+      <div class="sw-bar"><svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="M21 21l-4.35-4.35"/></svg><input type="text" placeholder="Search projects..."/></div>
+      <div class="ib" id="notifBell" onclick="toggleNotifications(event)" title="Notifications"><svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg><span class="nd" id="notifDot" style="display:none"></span></div>
+      <div class="tav" id="tbAv">?</div>
+    </div>
+    <div class="notif-panel" id="notifPanel">
+      <div class="notif-head"><strong>Notifications</strong><span id="notifCount">0 new</span></div>
+      <div class="notif-list" id="notifList"><div class="notif-empty">No notifications yet.</div></div>
+    </div>
+  </header>
+
+  <div class="content" id="mc">
+
+    <!-- HOME -->
+    <div class="page active" id="page-home">
+      <div class="wb">
+        <div style="position:relative;z-index:2">
+          <div class="wb-pill"><span class="wb-pd"></span>Student Dashboard</div>
+          <div class="wb-t" id="wbGreet">Welcome! 👋</div>
+          <div class="wb-d" id="wbDesc">Add your skills to get matched with brand projects!</div>
+          <button class="wb-btn" onclick="goTo('projects',null)">
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            Browse Projects
+          </button>
+        </div>
+      </div>
+      <div class="g4" style="margin-bottom:16px">
+        <div class="sc"><div class="sic ig">💰</div><span class="sn" id="statEarned">₹0</span><div class="sl">Total Earned</div><div class="sc- empty" id="statEarnedSub">Start applying</div></div>
+        <div class="sc"><div class="sic it">✅</div><span class="sn" id="statProjects">0</span><div class="sl">Projects Done</div><div class="sc- empty" id="statProjectsSub">Complete first</div></div>
+        <div class="sc"><div class="sic ib2">📋</div><span class="sn" id="statApps">0</span><div class="sl">Applications</div><div class="sc- empty" id="statAppsSub">Apply below</div></div>
+        <div class="sc"><div class="sic ia">⭐</div><span class="sn" id="statRating">—</span><div class="sl">Avg Rating</div><div class="sc- empty">After first project</div></div>
+      </div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="st">🎯 Your Skills<span class="sa" onclick="goTo('profile',null)">Edit →</span></div>
+        <div class="skchips" id="homeSkills"><span style="color:var(--ts);font-size:.82rem">No skills yet. <a href="#" onclick="goTo('profile',null);return false" style="color:var(--gm);font-weight:600">Add skills →</a></span></div>
+      </div>
+      <div class="card" style="margin-bottom:14px;background:linear-gradient(135deg,#f0fdf6,#fff);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div>
+          <div class="st" style="margin-bottom:4px">🧭 Skill Compass AI</div>
+          <p style="font-size:.8rem;color:var(--ts);line-height:1.45">Confused about what to learn? Get one skill path, a 7-day trial plan, and first proof tasks.</p>
+        </div>
+        <button class="btn bpri" onclick="window.location.href='/skill-compass'">Find My Skill</button>
+      </div>
+      <div class="card" style="margin-bottom:14px;background:var(--gp);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div>
+          <div class="st" style="margin-bottom:4px">💼 Available Long-Term Roles</div>
+          <p style="font-size:.8rem;color:var(--ts);line-height:1.45">Apply for monthly brand work with a 7-day paid trial first.</p>
+        </div>
+        <button class="btn bpri" onclick="goTo('longterm',null)">View Roles</button>
+      </div>
+      <div class="h2c">
+        <div>
+          <div class="gs-card" id="gettingStarted">
+            <h3>🚀 4 Steps to Your First Project</h3>
+            <div class="gs-step" onclick="goTo('profile',null)"><div class="gs-num done">✓</div><div class="gs-txt"><strong>Account Created ✅</strong><span>You're registered!</span></div></div>
+            <div class="gs-step" onclick="goTo('profile',null)"><div class="gs-num" id="gsSkillNum">2</div><div class="gs-txt"><strong>Add Your Skills</strong><span>Tell brands what you can do</span></div></div>
+            <div class="gs-step" onclick="goTo('projects',null)"><div class="gs-num">3</div><div class="gs-txt"><strong>Apply to Projects</strong><span>Browse and apply — free!</span></div></div>
+            <div class="gs-step" onclick="goTo('portfolio',null)"><div class="gs-num">4</div><div class="gs-txt"><strong>Add Portfolio Proof</strong><span>Paste links to your best work</span></div></div>
+          </div>
+          <div class="card" id="matchedJobsCard" style="display:none">
+            <div class="st">🔥 Matched Projects<span class="sa" onclick="goTo('projects',null)">See all →</span></div>
+            <div id="homeMatchedJobs"><div style="color:var(--ts);font-size:.82rem;padding:8px 0">Loading matches...</div></div>
+          </div>
+          <div class="card" id="recentAppsCard" style="display:none;margin-top:12px">
+            <div class="st">📋 Recent Applications<span class="sa" onclick="goTo('applications',null)">See all →</span></div>
+            <div id="homeRecentApps"></div>
+          </div>
+          <div class="card" id="homeApprovedProjectsCard" style="display:none;margin-top:12px">
+            <div class="st">✅ Approved Projects<span class="sa" onclick="goTo('applications',null)">Manage →</span></div>
+            <div id="homeApprovedProjects"></div>
+          </div>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom:12px">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+              <div class="st" style="margin:0">Profile Strength</div>
+              <span style="font-family:'Clash Display',sans-serif;font-size:1rem;font-weight:700;color:var(--gm)" id="profPct">20%</span>
+            </div>
+            <div class="pbb"><div class="pbf" id="pcFill" style="width:0%"></div></div>
+            <div class="pr"><div class="pk pk-d">✓</div><span style="color:var(--ts);font-size:.76rem;text-decoration:line-through">Account created</span></div>
+            <div class="pr" id="pcSkillRow"><div class="pk pk-t"></div><span style="color:var(--gm);font-size:.76rem;font-weight:500;cursor:pointer" onclick="goTo('profile',null)">→ Add your skills</span></div>
+            <div class="pr" id="pcCollegeRow"><div class="pk pk-t"></div><span style="color:var(--gm);font-size:.76rem;font-weight:500;cursor:pointer" onclick="goTo('profile',null)">→ Add college name</span></div>
+            <div class="pr"><div class="pk pk-t"></div><span style="color:var(--gm);font-size:.76rem;font-weight:500;cursor:pointer" onclick="goTo('portfolio',null)">→ Add portfolio proof</span></div>
+          </div>
+          <div class="card">
+            <div class="st">Recent Activity</div>
+            <div id="activityFeed">
+              <div class="empty-s" style="padding:18px 10px">
+                <div class="ei">📭</div>
+                <h3>No activity yet</h3>
+                <p>Apply to your first project!</p>
+                <button class="btn bpri" style="font-size:.79rem" onclick="goTo('projects',null)">Browse Projects →</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BROWSE PROJECTS -->
+    <div class="page" id="page-projects">
+      <div class="ph"><h2>Browse Projects 🔍</h2><p>Real brand projects matched to your skills.</p></div>
+      <div id="aiBanner" style="display:none;background:linear-gradient(135deg,#f0fdf6,#dcfce7);border:1.5px solid var(--br);border-radius:11px;padding:12px 16px;margin-bottom:14px;align-items:center;gap:12px">
+        <div style="font-size:1.5rem;flex-shrink:0">🤖</div>
+        <div style="flex:1"><h4 style="font-family:'Clash Display',sans-serif;font-size:.86rem;font-weight:700;color:var(--td);margin-bottom:2px">AI Matching Active</h4><p style="font-size:.75rem;color:var(--ts)" id="aiText">Showing jobs matched to your skills.</p></div>
+        <div style="background:var(--gm);color:white;padding:4px 11px;border-radius:100px;font-size:.71rem;font-weight:700;white-space:nowrap;flex-shrink:0" id="aiBadge">0 Matches</div>
+      </div>
+      <div class="fb">
+        <button class="fbtn aif active" id="aiBtn" onclick="setFilter('ai',this)">✨ My Skills</button>
+        <button class="fbtn" onclick="setFilter('all',this)">All</button>
+        <button class="fbtn" onclick="setFilter('video',this)">🎬 Video</button>
+        <button class="fbtn" onclick="setFilter('design',this)">🎨 Design</button>
+        <button class="fbtn" onclick="setFilter('writing',this)">✍️ Writing</button>
+        <button class="fbtn" onclick="setFilter('web',this)">💻 Web Dev</button>
+      </div>
+      <div class="pg" id="projGrid"></div>
+    </div>
+
+    <!-- LONG-TERM ROLES -->
+    <div class="page" id="page-longterm">
+      <div class="ph"><h2>Available Long-Term Roles 💼</h2><p>Monthly brand roles start with a 7-day paid trial. Contact unlock happens only after paid trial confirmation.</p></div>
+      <div class="card" style="background:var(--gp);margin-bottom:14px">
+        <div class="st">How this works</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;font-size:.78rem;color:var(--tm)">
+          <div>01 Apply with portfolio and availability.</div>
+          <div>02 Admin shortlists suitable students.</div>
+          <div>03 Brand selects for paid trial.</div>
+          <div>04 If trial works, monthly hiring starts.</div>
+        </div>
+      </div>
+      <div class="pg" id="longTermRoleGrid"></div>
+      <div class="card" id="longTermApplyPanel" style="display:none;margin-top:14px">
+        <div class="st">Apply for <span id="ltApplyRoleTitle">Role</span></div>
+        <input type="hidden" id="ltApplyRoleId">
+        <div class="g2">
+          <div class="fg"><label>Name</label><input class="fi" id="ltName" placeholder="Your full name"></div>
+          <div class="fg"><label>Email</label><input class="fi" id="ltEmail" type="email" placeholder="you@email.com"></div>
+        </div>
+        <div class="g2">
+          <div class="fg"><label>WhatsApp</label><input class="fi" id="ltWhatsapp" inputmode="tel" placeholder="+91 98765 43210" onfocus="formatStudentPhoneInput(this)" oninput="formatStudentPhoneInput(this)"></div>
+          <div class="fg"><label>College</label><input class="fi" id="ltCollege" placeholder="Your college"></div>
+        </div>
+        <div class="fg"><label>Skills</label><input class="fi" id="ltSkills" placeholder="Canva, Reels, Editing, Web, SEO"></div>
+        <div class="fg"><label>Portfolio Link</label><input class="fi" id="ltPortfolio" placeholder="Drive, Behance, GitHub, LinkedIn, website"></div>
+        <div class="g2">
+          <div class="fg"><label>Available Hours per Week</label><input class="fi" id="ltHours" placeholder="5 / 10 / 20 hours"></div>
+          <div class="fg"><label>Expected Monthly Pay</label><input class="fi" id="ltExpectedPay" inputmode="numeric" placeholder="₹3,000 / ₹5,000 / ₹10,000" oninput="formatStudentMoneyInput(this)"></div>
+        </div>
+        <div class="fg"><label>Past Work Experience</label><textarea class="fi" id="ltExperience" rows="3" placeholder="Mention relevant work, internships, client work, or personal projects."></textarea></div>
+        <div class="fg"><label>Why should brand hire you?</label><textarea class="fi" id="ltPitch" rows="3" placeholder="Write a short practical pitch."></textarea></div>
+        <div class="inline-status" id="ltApplyFeedback"></div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn bpri" id="ltApplyBtn" onclick="submitLongTermApplication()">Apply for Role</button>
+          <button class="btn bout" onclick="closeLongTermApply()">Cancel</button>
+        </div>
+      </div>
+      <div class="card" id="longTermMyAppsCard" style="display:none;margin-top:14px">
+        <div class="st">My Long-Term Applications</div>
+        <div id="longTermMyApps"></div>
+      </div>
+    </div>
+
+    <!-- APPLICATIONS -->
+    <div class="page" id="page-applications">
+      <div class="ph"><h2>My Applications 📋</h2><p>Track all your project applications.</p></div>
+      <div class="card" id="approvedProjectsSection" style="display:none;margin-bottom:14px">
+        <div class="st">Approved Projects</div>
+        <div id="approvedProjectsList"></div>
+      </div>
+      <div class="card" id="workspaceSection" style="display:none;margin-bottom:14px">
+        <div class="st">Active Project Workspace</div>
+        <div id="workspaceList"></div>
+      </div>
+      <div class="atabs">
+        <button class="atab active" onclick="filterApps('all',this)">All</button>
+        <button class="atab" onclick="filterApps('review',this)">Under Review</button>
+        <button class="atab" onclick="filterApps('accepted',this)">Accepted</button>
+        <button class="atab" onclick="filterApps('rejected',this)">Rejected</button>
+      </div>
+      <div class="al" id="appList"></div>
+    </div>
+
+    <!-- PORTFOLIO -->
+    <div class="page" id="page-portfolio">
+      <div class="ph"><h2>My Portfolio 📂</h2><p>Your proof-of-work, samples, badge progress, and verification live here.</p></div>
+      <div class="portfolio-hero">
+        <div style="position:relative;z-index:1">
+          <div id="portfolioBadgeCurrent"></div>
+          <h3>Build proof before brands shortlist you.</h3>
+          <p>We do not have direct file upload yet. For now, keep your work on Drive, Behance, GitHub, YouTube, Instagram, Canva, Notion, or your website and paste clean links here.</p>
+          <div class="portfolio-meta">
+            <span class="portfolio-chip">🔗 External links supported</span>
+            <span class="portfolio-chip">🧾 Work samples saved to profile</span>
+            <span class="portfolio-chip">✅ Used for Verified review</span>
+          </div>
+          <div class="proof-grid">
+            <div class="proof-stat"><b id="portfolioSampleCount">0</b><span>Work samples</span></div>
+            <div class="proof-stat"><b id="portfolioLinkStatus">Missing</b><span>Main portfolio</span></div>
+            <div class="proof-stat"><b id="portfolioVerifiedStatus">Beginner</b><span>Current status</span></div>
+          </div>
+        </div>
+        <div class="portfolio-note">
+          <b>What to add here</b>
+          <span>One main portfolio link plus 1-3 strong samples. Add title, category, link, and a short note explaining what you created and why it is good.</span>
+        </div>
+      </div>
+
+      <div class="badge-guide">
+        <div class="badge-card">
+          <span class="badge-pill badge-beginner">🌱 Beginner</span>
+          <h4>Default starting level</h4>
+          <p>Every student starts here. Add college/ID, 3 skill tags, and a portfolio link to become project-ready.</p>
+        </div>
+        <div class="badge-card">
+          <span class="badge-pill badge-verified">✅ Verified</span>
+          <h4>Manual skill review</h4>
+          <p>Apply with one skill-specific task, one work sample link, and a short answer. Admin reviews before approval.</p>
+        </div>
+        <div class="badge-card">
+          <span class="badge-pill badge-top-rated">⭐ Top Rated</span>
+          <h4>Earned automatically</h4>
+          <p>Unlocked after 2+ completed projects, 4.5+ brand rating, and no serious complaints.</p>
+        </div>
+      </div>
+
+      <div class="portfolio-shell">
+        <div class="card">
+          <div class="st" style="margin-bottom:8px">Portfolio Proof Links</div>
+          <p class="portfolio-copy">Keep this sharp. Brands do not need 20 links; they need 2-4 strong proofs that match the kind of projects you want.</p>
+          <div class="fg"><label>Main Portfolio / Drive Link</label><input class="fi" type="url" id="pportfolio" placeholder="Drive folder, Behance, GitHub, website, YouTube playlist..."/></div>
+          <div class="fg">
+            <label>Curated Work Samples</label>
+            <div id="workSamplesList"></div>
+            <button class="btn bout bsm" onclick="addWorkSample()">+ Add Work Sample</button>
+          </div>
+          <button class="btn bpri" id="portfolioSaveBtn" onclick="savePortfolioProof()">💾 Save Portfolio Proof</button>
+        </div>
+
+        <div>
+          <div class="card" style="margin-bottom:14px">
+            <div class="st">Portfolio Readiness</div>
+            <div id="portfolioChecks"></div>
+          </div>
+          <div class="verify-box">
+            <div class="st" style="margin-bottom:8px">Verified Badge Review</div>
+            <div class="verify-status" id="verificationStatusText">Beginner students can apply after completing basic proof. Verified badge is manually reviewed.</div>
+            <div class="g2">
+              <div class="fg"><label>Skill Category</label><select class="fi" id="verifyCategory" onchange="updateVerificationTask()">
+                <option>Video Editing</option><option>Graphic Design</option><option>Web Development</option><option>Content Writing</option><option>Social Media</option><option>Photography</option><option>Audio</option><option>Data & Excel</option><option>AI Tools</option><option>Other</option>
+              </select></div>
+              <div class="fg"><label>Work Sample Link</label><input class="fi" id="verifySampleLink" placeholder="Drive, Behance, GitHub, live link..."></div>
+            </div>
+            <div class="kyc-note" id="verifyTaskText">Task will appear after selecting a category.</div>
+            <div class="fg" style="margin-top:10px"><label>Short Answer</label><textarea class="fi" id="verifyAnswer" rows="3" placeholder="What did you do in this sample and what result can brands expect from you?"></textarea></div>
+            <button class="btn bpri bsm" id="verifyBtn" onclick="submitVerificationRequest()">Request Verified Review</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- EARNINGS -->
+    <div class="page" id="page-earnings">
+      <div class="ph"><h2>My Earnings 💸</h2><p>Track income from completed projects.</p></div>
+      <div class="eh">
+        <div class="eh-l">
+          <div class="eh-lb">Total Lifetime Earnings</div>
+          <div class="eh-a" id="earnTotal">₹0</div>
+          <div class="eh-s" id="earnSub">Complete projects to start earning</div>
+          <div class="eh-stats">
+            <div class="es"><div class="es-n" id="earnProjects">0</div><div class="es-l">Projects Done</div></div>
+            <div class="es"><div class="es-n" id="earnPending">₹0</div><div class="es-l">Pending</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="kyc-box">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+          <div>
+            <div style="font-weight:700;color:var(--td);margin-bottom:3px">Payout KYC</div>
+            <p id="earnKycText">Add bank details before payouts are released.</p>
+          </div>
+          <button class="btn bout" onclick="goTo('kyc',null)">Open KYC →</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="st" style="margin-bottom:12px">Transaction History</div>
+        <div id="txList"><div class="empty-s" style="padding:22px 10px"><div class="ei">💸</div><h3>No transactions yet</h3><p>Complete your first project!</p><button class="btn bpri" style="font-size:.79rem" onclick="goTo('projects',null)">Find Projects →</button></div></div>
+      </div>
+    </div>
+
+    <!-- COURSES -->
+    <div class="page" id="page-courses">
+      <div class="ph"><h2>Skill Courses 🎓</h2><p>Learn, improve, and land better projects.</p></div>
+      <div class="ch"><div style="font-size:2rem;flex-shrink:0">🚀</div><div style="flex:1"><h3 style="font-family:'Clash Display',sans-serif;font-size:1rem;font-weight:700;margin-bottom:4px">EdTech Coming Soon!</h3><p style="font-size:.8rem;color:var(--ts);line-height:1.5;margin-bottom:10px">Courses in Video Editing, Graphic Design & more.</p><button class="btn bpri" style="font-size:.8rem" onclick="showToast('You are on early access list! 🎉','success')">Notify Me</button></div></div>
+      <div class="cg">
+        <div class="cc" onclick="showToast('Course in progress!','info')"><div class="cth" style="background:linear-gradient(135deg,#e8fdf2,#a7f3d0)">🎬<span class="cm">Free</span></div><div class="cb"><div class="ct">Video Editing with CapCut</div><div class="c-m"><span>4 lessons · 2hrs</span><span class="cf">Free</span></div><div class="cpb"><div class="cpf" style="width:60%"></div></div></div></div>
+        <div class="cc" onclick="showToast('Coming soon!','info')"><div class="cth" style="background:linear-gradient(135deg,#fef9c3,#fde68a)">🎨<span class="cm">Soon</span></div><div class="cb"><div class="ct">Graphic Design with Canva</div><div class="c-m"><span>8 lessons · 4hrs</span><span class="cp_">₹499</span></div></div></div>
+        <div class="cc" onclick="showToast('Coming soon!','info')"><div class="cth" style="background:linear-gradient(135deg,#eff6ff,#bfdbfe)">💻<span class="cm">Soon</span></div><div class="cb"><div class="ct">Websites with HTML & CSS</div><div class="c-m"><span>12 lessons · 6hrs</span><span class="cp_">₹799</span></div></div></div>
+        <div class="cc" onclick="showToast('Coming soon!','info')"><div class="cth" style="background:linear-gradient(135deg,#fff7ed,#fed7aa)">✍️<span class="cm">Soon</span></div><div class="cb"><div class="ct">Content Writing & SEO</div><div class="c-m"><span>5 lessons · 2.5hrs</span><span class="cp_">₹299</span></div></div></div>
+        <div class="cc" onclick="showToast('Coming soon!','info')"><div class="cth" style="background:linear-gradient(135deg,#fdf4ff,#e9d5ff)">📱<span class="cm">Soon</span></div><div class="cb"><div class="ct">Instagram Growth</div><div class="c-m"><span>6 lessons · 3hrs</span><span class="cp_">₹399</span></div></div></div>
+        <div class="cc" onclick="showToast('Coming soon!','info')"><div class="cth" style="background:linear-gradient(135deg,#fef2f2,#fecaca)">🤖<span class="cm">Soon</span></div><div class="cb"><div class="ct">AI Tools for Creators</div><div class="c-m"><span>6 lessons · 3hrs</span><span class="cp_">₹599</span></div></div></div>
+      </div>
+    </div>
+
+    <!-- MENTORS -->
+    <div class="page" id="page-mentors">
+      <div class="ph"><h2>Mentors 🧑‍🏫</h2><p>Learn from verified professionals and apply to mentor students when you are ready.</p></div>
+      <div class="mentor-hero">
+        <div>
+          <h3>Mentor network is moving to verified applications.</h3>
+          <p>Dummy mentor profiles have been removed. Only approved mentors will appear here so students can trust the guidance they book.</p>
+        </div>
+        <div class="mentor-points">
+          <div class="mentor-point">Verified expertise before public listing</div>
+          <div class="mentor-point">Mentors reviewed by NextGenGrowth admin</div>
+          <div class="mentor-point">Sessions will open after mentor approval</div>
+        </div>
+      </div>
+      <div class="mentor-layout">
+        <div class="mentor-list">
+          <div class="st">Available Mentors</div>
+          <div id="mentorList"><div class="mentor-empty">Loading approved mentors...</div></div>
+        </div>
+        <div class="mentor-form">
+          <div class="st">Join as a Mentor</div>
+          <p style="font-size:.8rem;color:var(--ts);line-height:1.5;margin-bottom:12px">Apply if you can guide students in editing, design, web development, content, AI tools, marketing, or startup growth.</p>
+          <div class="fg"><label>Your Name</label><input class="fi" id="mentorName" placeholder="Your full name"></div>
+          <div class="fg"><label>Expertise</label><input class="fi" id="mentorExpertise" placeholder="e.g. Video Editing, Web Development"></div>
+          <div class="fg"><label>Experience</label><input class="fi" id="mentorExperience" placeholder="e.g. 3 years, agency founder, freelancer"></div>
+          <div class="fg"><label>LinkedIn / Proof Link</label><input class="fi" id="mentorLinkedin" placeholder="https://linkedin.com/in/..."></div>
+          <div class="fg"><label>Portfolio Link</label><input class="fi" id="mentorPortfolio" placeholder="Website, Drive, Behance, GitHub"></div>
+          <div class="fg"><label>Why should we approve you?</label><textarea class="fi" id="mentorNote" rows="3" placeholder="Mention outcomes, work samples, or what students can learn from you."></textarea></div>
+          <button class="btn bpri" id="mentorApplyBtn" onclick="submitMentorApplication()">Submit Mentor Application</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="page" id="page-profile">
+      <div class="ph"><h2>My Profile 👤</h2><p>Keep your identity clean. Portfolio proof and badge review are managed separately.</p></div>
+      <div class="pl">
+        <div>
+          <div class="pcl" style="margin-bottom:12px">
+            <div class="pav" id="profAv">?</div>
+            <div>
+              <div class="pnm" id="profNm">Loading...</div>
+              <div class="pco" id="profCo">—</div>
+              <div style="margin-bottom:10px"><span class="badge-pill badge-beginner" id="profileBadge">Beginner</span></div>
+              <div class="psk" id="profSkills"><span style="color:var(--ts);font-size:.73rem">No skills yet</span></div>
+              <input class="photo-input" type="file" id="profilePhotoInput" accept="image/png,image/jpeg,image/webp" onchange="handleProfilePhoto(this.files[0])">
+              <button class="btn bout" style="width:100%;justify-content:center;font-size:.79rem;margin-top:8px" onclick="document.getElementById('profilePhotoInput').click()">📷 Upload Photo</button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="st">Stats</div>
+            <div style="display:flex;flex-direction:column;gap:9px">
+              <div style="display:flex;justify-content:space-between;font-size:.82rem"><span style="color:var(--ts)">Member Since</span><span style="font-weight:600" id="memberSince">—</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:.82rem"><span style="color:var(--ts)">Email</span><span style="font-weight:600;font-size:.75rem;overflow:hidden;text-overflow:ellipsis;max-width:150px" id="profileEmail">—</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:.82rem"><span style="color:var(--ts)">Projects Done</span><span style="font-weight:600;color:var(--gm)" id="pStatProj">0</span></div>
+              <div style="display:flex;justify-content:space-between;font-size:.82rem"><span style="color:var(--ts)">Total Earned</span><span style="font-weight:600;color:var(--gm)" id="pStatEarn">₹0</span></div>
+            </div>
+          </div>
+          <div class="card" style="margin-top:12px">
+            <div class="st">Basic Profile Readiness</div>
+            <div id="profileChecks"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="st" style="margin-bottom:14px">Edit Basic Profile</div>
+          <div class="g2">
+            <div class="fg"><label>First Name</label><input class="fi" type="text" id="pfn" placeholder="First name"/></div>
+            <div class="fg"><label>Last Name</label><input class="fi" type="text" id="pln" placeholder="Last name"/></div>
+          </div>
+          <div class="fg"><label>Headline</label><input class="fi" type="text" id="pheadline" placeholder="e.g. Video Editor | Reels Specialist | Web Developer"/></div>
+          <div class="fg"><label>Email (cannot change)</label><input class="fi" type="email" id="pem" readonly style="opacity:.6;cursor:not-allowed"/></div>
+          <div class="fg"><label>College / University</label><input class="fi" type="text" id="pcl" placeholder="e.g. Delhi University"/></div>
+          <div class="fg"><label>College Email / ID Proof</label><input class="fi" type="text" id="pcollegeId" placeholder="College email, roll no, or ID reference"/></div>
+          <div class="fg"><label>Year of Study</label><select class="fi" id="pyear" style="padding-left:13px"><option>1st Year</option><option>2nd Year</option><option>3rd Year</option><option>4th Year</option><option>Post Graduate</option></select></div>
+          <div class="fg">
+            <label>Your Skills</label>
+            <div class="sko">
+              <span class="sk-opt" data-skill="Video Editing" onclick="toggleSk(this)">🎬 Video Editing</span>
+              <span class="sk-opt" data-skill="Graphic Design" onclick="toggleSk(this)">🎨 Graphic Design</span>
+              <span class="sk-opt" data-skill="Web Development" onclick="toggleSk(this)">💻 Web Dev</span>
+              <span class="sk-opt" data-skill="Content Writing" onclick="toggleSk(this)">✍️ Content Writing</span>
+              <span class="sk-opt" data-skill="Social Media" onclick="toggleSk(this)">📱 Social Media</span>
+              <span class="sk-opt" data-skill="Photography" onclick="toggleSk(this)">📸 Photography</span>
+              <span class="sk-opt" data-skill="Audio" onclick="toggleSk(this)">🎵 Audio</span>
+              <span class="sk-opt" data-skill="Data & Excel" onclick="toggleSk(this)">📊 Data & Excel</span>
+              <span class="sk-opt" data-skill="AI Tools" onclick="toggleSk(this)">🤖 AI Tools</span>
+            </div>
+          </div>
+          <div class="fg"><label>Bio</label><textarea class="fi" id="pbio" rows="3" placeholder="Tell brands about yourself..."></textarea></div>
+          <div class="fg"><label>LinkedIn URL</label><input class="fi" type="url" id="plink" placeholder="https://linkedin.com/in/yourname"/></div>
+          <div class="profile-note"><strong>Portfolio moved:</strong> add your Drive links, work samples, and Verified badge request from <button class="btn bout bsm" style="margin-left:6px" onclick="goTo('portfolio',null)">My Portfolio →</button></div>
+          <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:10px;">
+            <button class="btn bpri" id="saveBtn" onclick="saveProfile()">💾 Save Changes</button>
+            <button class="btn bout" onclick="showToast('Discarded','info')">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAYOUT KYC -->
+    <div class="page" id="page-kyc">
+      <div class="ph"><h2>Payout KYC 🛡️</h2><p>Add your payout details so NextGenGrowth can release project earnings.</p></div>
+      <div class="g2">
+        <div class="card">
+          <div class="st">KYC Status <span class="kyc-status missing" id="kycStatusBadge">Not Submitted</span></div>
+          <div class="kyc-box">
+            <p id="kycStatusText">Submit your bank details once. Account number is stored securely and shown only as masked digits.</p>
+          </div>
+          <div class="kyc-note">This is payout detail collection for NextGenGrowth. Later, these details can be mapped to RazorpayX Contact/Fund Account for automated payouts.</div>
+        </div>
+        <div class="card">
+          <div class="st" style="margin-bottom:14px">Bank & UPI Details</div>
+          <div class="fg"><label>Legal Full Name</label><input class="fi" id="kycLegalName" placeholder="Name as per bank account"></div>
+          <div class="fg"><label>Preferred Payout</label><select class="fi" id="kycPreferred"><option value="bank">Bank Transfer</option><option value="upi">UPI</option></select></div>
+          <div class="fg"><label>UPI ID (optional)</label><input class="fi" id="kycUpi" placeholder="name@upi"></div>
+          <div class="g2">
+            <div class="fg"><label>Account Holder Name</label><input class="fi" id="kycHolder" placeholder="Name on bank account"></div>
+            <div class="fg"><label>Bank Name</label><input class="fi" id="kycBank" placeholder="e.g. HDFC Bank"></div>
+          </div>
+          <div class="g2">
+            <div class="fg"><label>Account Number</label><input class="fi" id="kycAccount" inputmode="numeric" placeholder="Enter to add or update"></div>
+            <div class="fg"><label>Confirm Account Number</label><input class="fi" id="kycAccountConfirm" inputmode="numeric" placeholder="Re-enter account number"></div>
+          </div>
+          <div class="fg"><label>IFSC Code</label><input class="fi" id="kycIfsc" placeholder="ABCD0123456" style="text-transform:uppercase"></div>
+          <div class="fg" id="kycMaskedRow" style="display:none"><label>Saved Account</label><input class="fi" id="kycMasked" readonly style="opacity:.72;cursor:not-allowed"></div>
+          <label class="check-row"><input type="checkbox" id="kycConsent"> I confirm these payout details are correct and belong to me. Wrong details can delay payouts.</label>
+          <div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:14px">
+            <button class="btn bpri" id="kycSaveBtn" onclick="saveKyc()">💾 Submit KYC</button>
+            <button class="btn bout" onclick="loadKyc()">Reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+
+  <!-- MOBILE BOTTOM NAV -->
+  <nav class="bottom-nav" id="bottomNav">
+    <button class="bn-item active" id="bn-home" onclick="goTo('home',null);setBottomNav('home')">
+      <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+      <span>Home</span>
+    </button>
+    <button class="bn-item" id="bn-projects" onclick="goTo('projects',null);setBottomNav('projects')">
+      <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+      <span>Projects</span>
+    </button>
+    <button class="bn-item" id="bn-applications" onclick="goTo('applications',null);setBottomNav('applications')">
+      <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+      <span>Applied</span>
+    </button>
+    <button class="bn-item" id="bn-earnings" onclick="goTo('earnings',null);setBottomNav('earnings')">
+      <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <span>Earnings</span>
+    </button>
+    <button class="bn-item" id="bn-profile" onclick="goTo('profile',null);setBottomNav('profile')">
+      <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+      <span>Profile</span>
+    </button>
+  </nav>
+</div>
+</div>
+<div class="overlay" id="welcomeOverlay" style="z-index:9999"></div>
+<div class="card" id="welcomePopup" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); z-index:10000; width:90%; max-width:400px; text-align:center; box-shadow:0 20px 40px rgba(0,0,0,0.2);">
+  <div style="font-size:3.5rem; margin-bottom:10px;">👋</div>
+  <h3 style="font-family:'Clash Display', sans-serif; font-size:1.5rem; color:var(--td); margin-bottom:10px;">Welcome to NextGenGrowth!</h3>
+  <p style="font-size:.95rem; color:var(--ts); margin-bottom:20px;">To get matched with the best brand projects, you need to set up your profile and add your skills.</p>
+  <button class="btn bpri" style="width:100%; justify-content:center; font-size:1rem; padding:12px;" onclick="closeWelcomePopup()">Complete My Profile →</button>
+</div>
+<div class="brand-profile-modal" id="brandProfileModal" aria-hidden="true">
+  <div class="brand-profile-card">
+    <button class="brand-profile-close" onclick="closeBrandProfile()" aria-label="Close brand profile">×</button>
+    <div id="brandProfileContent"><div class="empty-s"><div class="ei">🏢</div><h3>Loading brand profile...</h3></div></div>
+  </div>
+</div>
+<div class="brand-profile-modal" id="projectDetailModal" aria-hidden="true">
+  <div class="brand-profile-card project-detail-card">
+    <button class="brand-profile-close" onclick="closeProjectDetails()" aria-label="Close project details">×</button>
+    <div id="projectDetailContent"><div class="empty-s"><div class="ei">📋</div><h3>Loading project details...</h3></div></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+
+// AUTH GUARD
+const _tk=localStorage.getItem('ngg_token');
+const _u=JSON.parse(localStorage.getItem('ngg_user')||'null');
+if(!_tk||!_u){window.location.href='/login';}
+if(_u&&_u.role&&_u.role!=='student'){window.location.href='/login';}
+
+// JOBS DATA (Now fetches dynamically from Database)
+let ALL_JOBS = [];
+
+async function loadLiveJobs() {
+  try {
+    const res = await fetch('/api/jobs', { headers: { 'Authorization': 'Bearer ' + _tk } });
+    const data = await res.json();
+    if (data.success) {
+      ALL_JOBS = data.jobs || [];
+      syncAppliedState();
+      runAiMatching(); // Update the AI match algorithm with real jobs
+      // If user is currently on the projects page, re-render them
+      if(document.getElementById('page-projects').classList.contains('active')){
+        renderProjects();
+      }
+    }
+  } catch (err) {
+    console.error("Failed to load live jobs:", err);
+  }
+}
+let curFilter='ai',curCat='all',curSearch='';
+let aiJobs=[],realApps=[],studentWorkspaces=[],studentTransactions=[],longTermRoles=[],longTermApplications=[],userSkills=[],appliedJobIds=new Set(),studentKyc=null,profileAvatarData='',profileWorkSamples=[];
+
+function esc(value){return String(value??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function getJobId(value){return String(value?._id||value?.id||value||'');}
+function getProjectDescription(job){return String(job?.description||job?.brief||'').trim();}
+function shortenText(text,max=220){
+  const value=String(text||'').trim();
+  return value.length>max?value.slice(0,max).trim()+'...':value;
+}
+function safeHref(value){
+  let raw=String(value||'').trim();
+  if(!raw)return '';
+  if(!/^https?:\/\//i.test(raw))raw='https://'+raw;
+  try{
+    const url=new URL(raw);
+    return ['http:','https:'].includes(url.protocol)?url.href:'';
+  }catch{return '';}
+}
+const BADGE_TEXT={
+  beginner:{label:'Beginner',cls:'badge-beginner',icon:'🌱'},
+  verified:{label:'Verified',cls:'badge-verified',icon:'✅'},
+  'top-rated':{label:'Top Rated',cls:'badge-top-rated',icon:'⭐'}
+};
+const VERIFICATION_TASKS={
+  'Video Editing':'Create a 20-30 second reel edit from any raw clip and share the final Drive/portfolio link.',
+  'Graphic Design':'Create one social media carousel or brand poster and share the design link.',
+  'Web Development':'Build a simple responsive landing section and share a live/GitHub link.',
+  'Content Writing':'Write a 500-word SEO article or product copy sample and share the document link.',
+  'Social Media':'Create a 7-day content calendar for any brand and share the document link.',
+  'Photography':'Share a small edited photo set or product shoot sample link.',
+  'Audio':'Share one cleaned/edited audio or podcast sample link.',
+  'Data & Excel':'Create a sample spreadsheet dashboard and share the file link.',
+  'AI Tools':'Create one practical AI automation or prompt workflow and share proof/link.',
+  'Other':'Share one relevant proof-of-work sample for your strongest skill.'
+};
+function badgeHtml(level){
+  const b=BADGE_TEXT[level]||BADGE_TEXT.beginner;
+  return `<span class="badge-pill ${b.cls}">${b.icon} ${b.label}</span>`;
+}
+function getBadgeLevel(user=_u){
+  return user?.badge?.level||user?.studentBadge||'beginner';
+}
+function beginnerReady(user=_u){
+  return !!((user?.college||user?.collegeId)&&(user?.portfolioLink)&&(Array.isArray(user?.skills)&&user.skills.length>=3));
+}
+function getProfileChecks(user=_u){
+  return [
+    ['Name added',!!(user?.firstName||user?.name)],
+    ['Headline added',!!user?.headline],
+    ['College / ID added',!!(user?.college||user?.collegeId)],
+    ['At least 3 skill tags',Array.isArray(user?.skills)&&user.skills.length>=3],
+    ['Bio added',!!user?.bio],
+    ['Profile photo uploaded',!!user?.avatar],
+  ];
+}
+function getPortfolioChecks(user=_u){
+  return [
+    ['College / ID added for Beginner level',!!(user?.college||user?.collegeId)],
+    ['At least 3 skill tags selected',Array.isArray(user?.skills)&&user.skills.length>=3],
+    ['Main portfolio link added',!!user?.portfolioLink],
+    ['At least one curated work sample',Array.isArray(user?.workSamples)&&user.workSamples.length>0],
+    ['Verified review submitted or approved',['pending','verified'].includes(user?.verificationStatus)],
+  ];
+}
+function syncAppliedState(){
+  appliedJobIds=new Set((realApps||[]).map(a=>String(a.jobId||'')).filter(Boolean));
+  ALL_JOBS=ALL_JOBS.map(j=>({...j,hasApplied:appliedJobIds.has(getJobId(j))}));
+  aiJobs=aiJobs.map(j=>({...j,hasApplied:appliedJobIds.has(getJobId(j))}));
+}
+function markJobApplied(jobId){
+  const id=String(jobId);
+  appliedJobIds.add(id);
+  ALL_JOBS=ALL_JOBS.map(j=>getJobId(j)===id?{...j,hasApplied:true}:j);
+  aiJobs=aiJobs.map(j=>getJobId(j)===id?{...j,hasApplied:true}:j);
+}
+function addLocalApplication(job){
+  const jobId=getJobId(job);
+  if(!jobId||realApps.some(a=>String(a.jobId||'')===jobId))return;
+  realApps=[{
+    jobId,
+    jobTitle:job.title,
+    brandName:job.brand,
+    pay:job.pay,
+    status:'review',
+    createdAt:new Date().toISOString()
+  },...realApps];
+}
+function refreshApplicationViews(){
+  const reviewCount=(realApps||[]).filter(a=>a.status==='review').length;
+  const appsBadge=document.getElementById('appsBadge');
+  if(appsBadge)appsBadge.textContent=reviewCount||realApps.length||0;
+  renderProjects();
+  renderHomeRecentApps(realApps);
+  renderAppList(realApps,'all');
+  renderActivity(realApps,studentTransactions);
+  renderNotifications();
+}
+function workspaceStatusText(status){
+  return {
+    resources_pending:'Waiting for resources',
+    in_progress:'In progress',
+    submitted:'Submitted for review',
+    revision_requested:'Revision requested',
+    approved:'Approved',
+    completed:'Completed'
+  }[status]||'Workspace';
+}
+
+function renderUxFlow(steps){
+  return `<div class="ux-flow">${steps.map(step=>`<span class="ux-step ${step.done?'done':step.active?'active':''}">${step.done?'✓':step.active?'•':'○'} ${esc(step.label)}</span>`).join('')}</div>`;
+}
+
+function projectFlow(app,ws){
+  const status=app?.status||'review';
+  const paid=app?.paymentStatus==='paid'||Number(app?.paidAmount)>0;
+  const wsStatus=ws?.status||'';
+  if(status==='rejected'){
+    return {
+      steps:[{label:'Applied',done:true},{label:'Not selected',active:true}],
+      note:'This one was not selected. Keep improving your profile and apply to more matching projects.',
+    };
+  }
+  return {
+    steps:[
+      {label:'Applied',done:true},
+      {label:'Accepted',done:status==='accepted',active:status==='review'},
+      {label:'Payment',done:paid,active:status==='accepted'&&!paid},
+      {label:'Work',done:['submitted','approved','completed'].includes(wsStatus),active:paid&&(!wsStatus||['resources_pending','in_progress','revision_requested'].includes(wsStatus))},
+      {label:'Approved',done:['approved','completed'].includes(wsStatus),active:wsStatus==='submitted'},
+    ],
+    note:projectNextStep(app,ws),
+  };
+}
+
+function projectNextStep(app,ws){
+  if((app?.status||'review')==='review')return 'Brand is reviewing your application. Strong profiles with portfolio links get faster responses.';
+  if(app?.status==='accepted'&&!(app.paymentStatus==='paid'||Number(app.paidAmount)>0))return 'You are selected. Brand payment and project resources are pending.';
+  if(ws?.status==='resources_pending')return 'Brand will add the brief, resources, and deadline before work starts.';
+  if(ws?.status==='in_progress')return 'Work is active. Submit your final link from the workspace when ready.';
+  if(ws?.status==='revision_requested')return 'Brand requested revision. Update your work and resubmit from the workspace.';
+  if(ws?.status==='submitted')return 'Your work is submitted. Waiting for brand approval.';
+  if(['approved','completed'].includes(ws?.status))return 'Work approved. Earnings will be released through NextGenGrowth.';
+  return 'Next step will appear here after the brand updates this project.';
+}
+
+function longTermFlow(app){
+  const status=app?.status||'applied';
+  return {
+    steps:[
+      {label:'Applied',done:true},
+      {label:'Shortlisted',done:['shortlisted','trial','hired'].includes(status),active:status==='applied'},
+      {label:'Paid Trial',done:app?.paidTrialConfirmed||['trial','hired'].includes(status),active:status==='shortlisted'},
+      {label:'Contact Unlock',done:app?.contactUnlocked,active:app?.paidTrialConfirmed&&!app?.contactUnlocked},
+      {label:'Monthly Hire',done:status==='hired',active:status==='trial'},
+    ],
+    note:longTermNextStep(app),
+  };
+}
+
+function longTermNextStep(app){
+  if(app?.status==='rejected')return 'This role is closed for you. Apply to another monthly role that matches your skills.';
+  if(app?.status==='applied')return 'Admin will review your portfolio and shortlist suitable students for the brand.';
+  if(app?.status==='shortlisted'&&!app?.paidTrialConfirmed)return 'You are shortlisted. Brand can request intro after admin confirms paid trial.';
+  if(app?.paidTrialConfirmed&&!app?.contactUnlocked)return 'Paid trial is confirmed. Admin will unlock contact before the trial starts.';
+  if(app?.status==='trial')return '7-day paid trial is active. Share weekly progress and deliver the trial task on time.';
+  if(app?.status==='hired')return 'Monthly hiring started. Keep weekly updates clear and consistent.';
+  return 'NextGenGrowth will guide the next step manually.';
+}
+
+function kycLabel(status){
+  return {
+    not_submitted:'Not Submitted',
+    submitted:'Submitted',
+    verified:'Verified',
+    rejected:'Rejected'
+  }[status||'not_submitted']||'Not Submitted';
+}
+
+function updateKycStatus(kyc){
+  studentKyc=kyc||studentKyc||{};
+  const status=studentKyc.status||'not_submitted';
+  const badge=document.getElementById('kycStatusBadge');
+  const navBadge=document.getElementById('kycNavBadge');
+  const text=document.getElementById('kycStatusText');
+  const earnText=document.getElementById('earnKycText');
+  if(badge){
+    badge.textContent=kycLabel(status);
+    badge.className='kyc-status '+(status==='verified'?'':status==='submitted'?'pending':'missing');
+  }
+  if(navBadge){
+    navBadge.textContent=status==='verified'?'✓':status==='submitted'?'Pending':'New';
+  }
+  const message=status==='verified'
+    ? 'Your payout details are verified and ready for payouts.'
+    : status==='submitted'
+      ? 'Your payout details are submitted. Admin review is pending.'
+      : status==='rejected'
+        ? `KYC rejected. ${studentKyc.rejectionReason||'Please update details and submit again.'}`
+        : 'Submit your bank details once. Account number is stored securely and shown only as masked digits.';
+  if(text)text.textContent=message;
+  if(earnText)earnText.textContent=status==='verified'?'Payout details verified.':'Add bank details before payouts are released.';
+}
+
+function fillKycForm(kyc={}){
+  const map={
+    kycLegalName:kyc.legalName||'',
+    kycPreferred:kyc.preferredPayout||'bank',
+    kycUpi:kyc.upiId||'',
+    kycHolder:kyc.bankAccountHolder||'',
+    kycBank:kyc.bankName||'',
+    kycIfsc:kyc.ifsc||'',
+    kycMasked:kyc.bankAccountMasked||''
+  };
+  Object.entries(map).forEach(([id,val])=>{const el=document.getElementById(id);if(el)el.value=val;});
+  ['kycAccount','kycAccountConfirm'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  const consent=document.getElementById('kycConsent');if(consent)consent.checked=false;
+  const maskedRow=document.getElementById('kycMaskedRow');
+  if(maskedRow)maskedRow.style.display=kyc.bankAccountMasked?'block':'none';
+  updateKycStatus(kyc);
+}
+
+async function loadKyc(){
+  try{
+    const res=await fetch('/api/student/kyc',{headers:{'Authorization':'Bearer '+_tk}});
+    const data=await res.json();
+    if(data.success){
+      fillKycForm(data.kyc||{});
+    }
+  }catch(e){
+    console.log('KYC load failed:',e);
+  }
+}
+
+// AI MATCHING
+const SKILL_KW={'Video Editing':['video','editing','reel','reels','tiktok','youtube','shorts','capcut'],'Graphic Design':['design','graphic','logo','canva','brand','branding','visual','figma','banner'],'Web Development':['web','website','html','css','wordpress','landing','page','frontend'],'Content Writing':['content','writing','blog','article','seo','copy','copywriting','newsletter'],'Social Media':['social','instagram','twitter','linkedin','media','post'],'Photography':['photo','photography','lightroom','product'],'Audio':['audio','music','sound','podcast'],'Data & Excel':['data','excel','spreadsheet'],'AI Tools':['ai','chatgpt','automation']};
+
+function matchJobs(skills,jobs){
+  if(!skills||!skills.length)return jobs.map(j=>({...j,matchScore:0,isMatch:false,matchedTags:[]}));
+  const kws=new Set();skills.forEach(sk=>(SKILL_KW[sk]||[]).forEach(k=>kws.add(k)));
+  return jobs.map(j=>{
+    const txt=[j.title,j.brand,getProjectDescription(j),...(j.tags||[])].join(' ').toLowerCase();
+    let score=0;const mt=[];
+    kws.forEach(k=>{if(txt.includes(k))score+=10;});
+    (j.tags||[]).forEach(t=>{if(skills.some(s=>s.toLowerCase()===t.toLowerCase())){score+=25;mt.push(t);}else if([...kws].some(k=>t.toLowerCase().includes(k)))mt.push(t);});
+    return{...j,matchScore:score,isMatch:score>=10,matchedTags:mt};
+  }).sort((a,b)=>b.matchScore-a.matchScore);
+}
+
+// LOAD STATS FROM SERVER
+async function loadStats(){
+  try{
+    const res=await fetch('/api/student/stats',{headers:{'Authorization':'Bearer '+_tk}});
+    const data=await res.json();
+    if(!data.success)return;
+    const earned=data.stats.totalEarned||0;
+    const projects=data.stats.projectsDone||0;
+    const apps=data.stats.activeApps||0;
+    const pending=data.stats.pending||0;
+    document.getElementById('statEarned').textContent=earned>0?'₹'+earned.toLocaleString('en-IN'):'₹0';
+    document.getElementById('statProjects').textContent=projects;
+    document.getElementById('statApps').textContent=apps;
+    if(earned>0){document.getElementById('statEarnedSub').textContent='↑ Keep going!';document.getElementById('statEarnedSub').classList.remove('empty');}
+    if(projects>0){document.getElementById('statProjectsSub').textContent='↑ Great!';document.getElementById('statProjectsSub').classList.remove('empty');}
+    if(apps>0){document.getElementById('statAppsSub').textContent='→ '+apps+' under review';document.getElementById('statAppsSub').classList.remove('empty');document.getElementById('appsBadge').textContent=apps;}
+    document.getElementById('earnTotal').textContent='₹'+earned.toLocaleString('en-IN');
+    document.getElementById('earnProjects').textContent=projects;
+    document.getElementById('earnPending').textContent='₹'+pending.toLocaleString('en-IN');
+    document.getElementById('pStatProj').textContent=projects;
+    document.getElementById('pStatEarn').textContent='₹'+earned.toLocaleString('en-IN');
+    studentTransactions=data.transactions||[];
+    if(studentTransactions.length>0)renderTxs(studentTransactions);
+    realApps=data.applications||[];
+    syncAppliedState();
+    renderApprovedProjects(realApps);
+    if(realApps.length>0){renderHomeRecentApps(realApps);renderAppList(realApps,'all');}
+    if(document.getElementById('page-projects').classList.contains('active'))renderProjects();
+    if(realApps.length>0||studentTransactions.length>0)renderActivity(realApps,studentTransactions);
+    renderNotifications();
+    loadStudentWorkspaces();
+  }catch(e){console.log('Stats error:',e);}
+}
+
+async function loadStudentWorkspaces(){
+  try{
+    const res=await fetch('/api/student/workspaces',{headers:{'Authorization':'Bearer '+_tk}});
+    const data=await res.json();
+    if(data.success){
+      studentWorkspaces=data.workspaces||[];
+      renderStudentWorkspaces();
+      renderApprovedProjects(realApps);
+      renderNotifications();
+    }
+  }catch(e){console.log('Workspace error:',e);}
+}
+
+function renderStudentWorkspaces(){
+  const section=document.getElementById('workspaceSection');
+  const listEl=document.getElementById('workspaceList');
+  if(!section||!listEl)return;
+  if(!studentWorkspaces.length){section.style.display='none';return;}
+  section.style.display='block';
+  listEl.innerHTML=studentWorkspaces.map(ws=>{
+    const brand=ws.brandId?.companyName||`${ws.brandId?.firstName||''} ${ws.brandId?.lastName||''}`.trim()||'Brand';
+    const resources=(ws.resources||[]).map(r=>`<a class="ws-link" href="${esc(r.url)}" target="_blank">🔗 ${esc(r.title||'Resource')}</a>`).join('');
+    const canSubmit=['in_progress','revision_requested','submitted'].includes(ws.status);
+    return`
+      <div class="ws-card">
+        <div class="ws-head">
+          <div>
+            <div class="ws-title">${esc(ws.jobTitle||'Project')}</div>
+            <div class="ws-meta"><span>🏢 ${esc(brand)}</span>${ws.deadline?`<span>⏱ ${esc(ws.deadline)}</span>`:''}</div>
+          </div>
+          <span class="ws-status">${workspaceStatusText(ws.status)}</span>
+        </div>
+        ${ws.brief?`<div class="ws-panel"><strong>Brief</strong><p>${esc(ws.brief)}</p></div>`:''}
+        ${resources?`<div class="ws-panel"><strong>Resources</strong><div class="ws-links">${resources}</div></div>`:`<div class="ws-panel"><strong>Resources</strong><p>Waiting for the brand to add the project brief and links.</p></div>`}
+        ${ws.revisionNote?`<div class="ws-panel" style="background:#fff7ed;border-color:#fed7aa"><strong>Revision Note</strong><p>${esc(ws.revisionNote)}</p></div>`:''}
+        ${ws.submissionLink?`<div class="ws-panel"><strong>Your Submission</strong><a class="ws-link" href="${esc(ws.submissionLink)}" target="_blank">🔗 Open submitted work</a>${ws.submissionNote?`<p style="margin-top:7px">${esc(ws.submissionNote)}</p>`:''}</div>`:''}
+        ${canSubmit?`
+          <div class="ws-submit">
+            <input class="fi" id="sub-link-${ws.applicationId}" value="${esc(ws.submissionLink||'')}" placeholder="Final work link: Google Drive, Canva, Figma, Notion...">
+            <textarea class="fi" id="sub-note-${ws.applicationId}" rows="2" placeholder="Short note for the brand">${esc(ws.submissionNote||'')}</textarea>
+            <button class="btn bpri" style="justify-content:center" onclick="submitWorkspace('${ws.applicationId}',this)">Submit Work</button>
+          </div>
+        `:''}
+      </div>
+    `;
+  }).join('');
+}
+
+async function submitWorkspace(applicationId,btn){
+  const link=document.getElementById(`sub-link-${applicationId}`)?.value.trim()||'';
+  const note=document.getElementById(`sub-note-${applicationId}`)?.value.trim()||'';
+  if(!/^https?:\/\//i.test(link)){showToast('Add a valid work link first.','error');return;}
+  const orig=btn.innerHTML;
+  btn.innerHTML='<span class="spin"></span>Submitting...';
+  btn.disabled=true;
+  try{
+    const res=await fetch(`/api/student/workspace/${applicationId}/submit`,{
+      method:'POST',
+      headers:{'Authorization':'Bearer '+_tk,'Content-Type':'application/json'},
+      body:JSON.stringify({submissionLink:link,submissionNote:note})
+    });
+    const data=await res.json();
+    if(data.success){
+      showToast('Work submitted for brand review. ✅','success');
+      await loadStudentWorkspaces();
+    }else showToast(data.message||'Submission failed.','error');
+  }catch{
+    showToast('Could not submit work. Check connection.','error');
+  }
+  btn.innerHTML=orig;
+  btn.disabled=false;
+}
+
+function renderTxs(txs){
+  const el=document.getElementById('txList');
+  if(!txs.length)return;
+  el.innerHTML=txs.map(t=>`<div class="er"><div class="er-i ${t.status==='pending'?'ia':'ig'}">${t.status==='pending'?'⏳':'💸'}</div><div class="er-in"><div class="er-t">${t.description||'Payment'}</div><div class="er-d">${new Date(t.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})} · ${t.status==='pending'?'Pending approval':'Paid'}</div></div><div class="er-a" style="color:${t.status==='pending'?'#b45309':'var(--gm)'}">+₹${t.amount.toLocaleString('en-IN')}</div></div>`).join('');
+}
+
+function renderActivity(apps,txs){
+  const el=document.getElementById('activityFeed');
+  const items=[];
+  txs.forEach(t=>items.push({type:'earn',text:'Payment received',sub:t.description||'Project',date:t.createdAt,amt:'+₹'+t.amount.toLocaleString('en-IN')}));
+  apps.slice(0,3).forEach(a=>items.push({type:'app',text:`Applied for "${a.jobTitle}"`,sub:a.brandName,date:a.createdAt||a.appliedAt}));
+  items.sort((a,b)=>new Date(b.date)-new Date(a.date));
+  if(!items.length)return;
+  el.innerHTML=items.slice(0,4).map(i=>`<div class="ai_"><div class="a-ico ${i.type==='earn'?'ig':'ib2'}">${i.type==='earn'?'💸':'📋'}</div><div><div class="a-t">${i.text}</div><div class="a-s">${i.sub} · ${new Date(i.date).toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</div></div>${i.amt?`<div class="a-amt">${i.amt}</div>`:''}</div>`).join('');
+}
+
+function getNotifications(){
+  const items=[];
+  (realApps||[]).forEach(a=>{
+    const date=a.updatedAt||a.createdAt||a.appliedAt||new Date();
+    const statusText={review:'Application submitted',accepted:'Application accepted',rejected:'Application rejected'}[a.status]||'Application update';
+    const icon={review:'📋',accepted:'✅',rejected:'❌'}[a.status]||'📋';
+    items.push({type:'applications',icon,title:statusText,sub:`${a.jobTitle} · ${a.brandName}`,date});
+  });
+  (studentTransactions||[]).forEach(t=>{
+    items.push({type:'earnings',icon:t.status==='pending'?'⏳':'💰',title:t.status==='pending'?'Payment secured':'Payment released',sub:`${t.description||'Project payment'} · ₹${Number(t.amount||0).toLocaleString('en-IN')}`,date:t.updatedAt||t.createdAt||new Date()});
+  });
+  (studentWorkspaces||[]).forEach(w=>{
+    const title={
+      resources_pending:'Waiting for project resources',
+      in_progress:'Project resources added',
+      submitted:'Work submitted for review',
+      revision_requested:'Revision requested',
+      approved:'Work approved',
+      completed:'Project completed'
+    }[w.status]||'Workspace update';
+    items.push({type:'applications',icon:w.status==='revision_requested'?'🛠️':w.status==='approved'?'🎉':'📦',title,sub:w.jobTitle||'Project workspace',date:w.updatedAt||w.createdAt||new Date()});
+  });
+  return items.sort((a,b)=>new Date(b.date)-new Date(a.date)).slice(0,8);
+}
+
+function renderNotifications(){
+  const list=document.getElementById('notifList');
+  const count=document.getElementById('notifCount');
+  const dot=document.getElementById('notifDot');
+  if(!list||!count||!dot)return;
+  const items=getNotifications();
+  count.textContent=items.length?`${items.length} update${items.length>1?'s':''}`:'0 new';
+  dot.style.display=items.length?'block':'none';
+  if(!items.length){
+    list.innerHTML='<div class="notif-empty">No notifications yet. Apply to a project and updates will appear here.</div>';
+    return;
+  }
+  list.innerHTML=items.map(n=>`<div class="notif-item" onclick="goTo('${n.type}',null);closeNotifications()"><div class="notif-ico">${n.icon}</div><div><div class="notif-title">${esc(n.title)}</div><div class="notif-sub">${esc(n.sub)} · ${new Date(n.date).toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</div></div></div>`).join('');
+}
+
+function renderApprovedProjects(apps=realApps){
+  const approved=(apps||[]).filter(a=>a.status==='accepted');
+  const section=document.getElementById('approvedProjectsSection');
+  const list=document.getElementById('approvedProjectsList');
+  const homeCard=document.getElementById('homeApprovedProjectsCard');
+  const homeList=document.getElementById('homeApprovedProjects');
+  const workspaceByApp=new Map((studentWorkspaces||[]).map(ws=>[String(ws.applicationId?._id||ws.applicationId||''),ws]));
+
+  if(!approved.length){
+    if(section)section.style.display='none';
+    if(homeCard)homeCard.style.display='none';
+    return;
+  }
+
+  const renderItems=items=>items.map(a=>{
+    const appId=String(a._id||a.id||'');
+    const ws=workspaceByApp.get(appId);
+    const paid=a.paymentStatus==='paid'||Number(a.paidAmount)>0;
+    const status=ws?workspaceStatusText(ws.status):(paid?'Resources pending':'Awaiting brand payment');
+    const cta=ws?'<button class="btn bout bsm" onclick="goTo(\'applications\',null)">Open Workspace</button>':'<span class="tag trev">Next step pending</span>';
+    return`
+      <div class="ac">
+        <div class="a-ic">✅</div>
+        <div class="a-in">
+          <div class="a-ti">${esc(a.jobTitle||'Approved project')}</div>
+          <div class="a-mt"><span>🏢 ${esc(a.brandName||'Brand')}</span><span>${esc(status)}</span></div>
+        </div>
+        <div class="a-ri"><span class="a-py">${esc(a.pay||'Budget')}</span>${cta}</div>
+      </div>
+    `;
+  }).join('');
+
+  if(section&&list){
+    section.style.display='block';
+    list.innerHTML=renderItems(approved);
+  }
+  if(homeCard&&homeList){
+    homeCard.style.display='block';
+    homeList.innerHTML=renderItems(approved.slice(0,3));
+  }
+}
+
+function toggleNotifications(e){
+  if(e)e.stopPropagation();
+  document.getElementById('notifPanel')?.classList.toggle('show');
+}
+function closeNotifications(){
+  document.getElementById('notifPanel')?.classList.remove('show');
+}
+
+function renderHomeRecentApps(apps){
+  const card=document.getElementById('recentAppsCard');const el=document.getElementById('homeRecentApps');
+  if(!apps.length)return;card.style.display='block';
+  const stMap={review:'<span class="tag trev">Under Review</span>',accepted:'<span class="tag tacc">✓ Accepted</span>',rejected:'<span class="tag trej">✗ Rejected</span>'};
+  el.innerHTML=apps.slice(0,3).map(a=>`<div class="ac"><div class="a-ic">📋</div><div class="a-in"><div class="a-ti">${a.jobTitle}</div><div class="a-mt"><span>🏢 ${a.brandName}</span></div></div><div class="a-ri"><span class="a-py">${a.pay}</span>${stMap[a.status]||''}</div></div>`).join('');
+}
+
+function renderAppList(apps,filter){
+  const el=document.getElementById('appList');
+  let list=filter==='all'?apps:apps.filter(a=>a.status===filter);
+  if(!list.length){el.innerHTML=`<div class="empty-s"><div class="ei">📋</div><h3>No applications</h3><p>Apply to projects to track them here.</p><button class="btn bpri" style="font-size:.79rem" onclick="goTo('projects',null)">Browse Projects →</button></div>`;return;}
+  const stMap={review:'<span class="tag trev">🔍 Under Review</span>',accepted:'<span class="tag tacc">✓ Accepted</span>',rejected:'<span class="tag trej">✗ Rejected</span>'};
+  const workspaceByApp=new Map((studentWorkspaces||[]).map(ws=>[String(ws.applicationId?._id||ws.applicationId||''),ws]));
+  el.innerHTML=list.map(a=>{
+    const ws=workspaceByApp.get(String(a._id||a.id||''));
+    const flow=projectFlow(a,ws);
+    return`<div class="ac">
+      <div class="a-ic">📋</div>
+      <div class="a-in">
+        <div class="a-ti">${esc(a.jobTitle||'Project application')}</div>
+        <div class="a-mt"><span>🏢 ${esc(a.brandName||'Brand')}</span><span>📅 ${new Date(a.createdAt||a.appliedAt||Date.now()).toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</span></div>
+        ${renderUxFlow(flow.steps)}
+        <div class="ux-note">${esc(flow.note)}</div>
+      </div>
+      <div class="a-ri"><span class="a-py">${esc(a.pay||'Budget')}</span>${stMap[a.status]||''}</div>
+    </div>`;
+  }).join('');
+}
+
+function filterApps(f,btn){document.querySelectorAll('.atab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderAppList(realApps,f);}
+
+// LOAD USER DATA
+function loadUserData(userData){
+  const u=userData||_u;if(!u)return;
+  const name=u.name||`${u.firstName||''} ${u.lastName||''}`.trim()||'Student';
+  const email=u.email||'';const college=u.college||'';
+  const skills=Array.isArray(u.skills)?u.skills:[];
+  const bio=u.bio||'';const linkedin=u.linkedin||'';
+  profileAvatarData=u.avatar||'';
+  profileWorkSamples=Array.isArray(u.workSamples)?u.workSamples:[];
+  const joined=u.createdAt?new Date(u.createdAt).toLocaleDateString('en-IN',{month:'long',year:'numeric'}):'Recently';
+  userSkills=skills;
+  const parts=name.split(' ').filter(Boolean);
+  const initials=parts.length>=2?(parts[0][0]+parts[parts.length-1][0]).toUpperCase():(parts[0]?parts[0].slice(0,2).toUpperCase():'?');
+  const fn=u.firstName||parts[0]||'';
+
+  document.querySelectorAll('#sbAv,#tbAv').forEach(el=>{
+    if(profileAvatarData)el.innerHTML=`<img src="${esc(profileAvatarData)}" alt="">`;
+    else el.textContent=initials;
+  });
+  const profAv=document.getElementById('profAv');
+  if(profAv)profAv.innerHTML=profileAvatarData?`<img src="${esc(profileAvatarData)}" alt="">`:esc(initials);
+  document.getElementById('sbNm').textContent=name;
+  document.getElementById('profNm').textContent=name;
+  const badgeEl=document.getElementById('profileBadge');
+  if(badgeEl){
+    const b=BADGE_TEXT[getBadgeLevel(u)]||BADGE_TEXT.beginner;
+    badgeEl.className=`badge-pill ${b.cls}`;
+    badgeEl.textContent=`${b.icon} ${b.label}`;
+  }
+  document.getElementById('profCo').textContent=college||'College not set';
+  document.getElementById('memberSince').textContent=joined;
+  document.getElementById('profileEmail').textContent=email;
+  const h=new Date().getHours();
+  const greet=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+  document.getElementById('wbGreet').textContent=`${greet}, ${fn}! 👋`;
+
+  // ✅ Pre-fill ALL fields including bio and linkedin
+  const fields={pfn:fn,pln:u.lastName||parts.slice(1).join(' ')||'',pem:email,pcl:college,pyear:u.year||'1st Year',pheadline:u.headline||'',pcollegeId:u.collegeId||'',pbio:bio,plink:linkedin,pportfolio:u.portfolioLink||'',mentorName:name,mentorLinkedin:linkedin,mentorPortfolio:u.portfolioLink||'',verifyCategory:u.verificationCategory||'Video Editing',verifySampleLink:u.verificationSampleLink||'',verifyAnswer:u.verificationAnswer||''};
+  Object.entries(fields).forEach(([id,val])=>{const el=document.getElementById(id);if(el)el.value=val||'';});
+
+  const emojiMap={'Video Editing':'🎬','Graphic Design':'🎨','Web Development':'💻','Content Writing':'✍️','Social Media':'📱','Photography':'📸','Audio':'🎵','Data & Excel':'📊','AI Tools':'🤖'};
+  const homeSkills=document.getElementById('homeSkills');
+  if(skills.length>0){
+    homeSkills.innerHTML=skills.map(s=>`<span class="skchip">${emojiMap[s]||'•'} ${s}</span>`).join('');
+    document.getElementById('matchedJobsCard').style.display='block';
+    document.getElementById('gettingStarted').style.display='none';
+  }
+  const profSkills=document.getElementById('profSkills');
+  if(skills.length)profSkills.innerHTML=skills.map(s=>`<span>${emojiMap[s]||''} ${s}</span>`).join('');
+  document.querySelectorAll('.sk-opt').forEach(opt=>{opt.classList.toggle('sel',skills.includes(opt.dataset.skill));});
+
+  let pct=Number(u.profileCompletion)||20;
+  if(!u.profileCompletion){if(skills.length>=3)pct+=20;if(college||u.collegeId)pct+=15;if(u.headline)pct+=10;if(bio)pct+=15;if(u.portfolioLink)pct+=15;if(profileWorkSamples.length)pct+=15;if(u.avatar)pct+=10;pct=Math.min(pct,100);}
+  document.getElementById('profPct').textContent=pct+'%';
+  setTimeout(()=>{const f=document.getElementById('pcFill');if(f)f.style.width=pct+'%';},400);
+  if(skills.length>0){document.getElementById('pcSkillRow').innerHTML='<div class="pk pk-d">✓</div><span style="color:var(--ts);font-size:.76rem;text-decoration:line-through">Skills added ('+skills.length+')</span>';document.getElementById('gsSkillNum').textContent='✓';document.getElementById('gsSkillNum').classList.add('done');}
+  if(college)document.getElementById('pcCollegeRow').innerHTML='<div class="pk pk-d">✓</div><span style="color:var(--ts);font-size:.76rem;text-decoration:line-through">College added</span>';
+
+  const wbDesc=document.getElementById('wbDesc');
+  if(skills.length>0){const m=matchJobs(skills,ALL_JOBS).filter(j=>j.isMatch).length;wbDesc.textContent=`${m} projects match your skills! Apply and start earning 💰`;}
+  else wbDesc.textContent='Add your skills in Profile to get matched with brand projects!';
+  renderProfileChecks(u);
+  renderWorkSamples(profileWorkSamples);
+  renderPortfolioSummary(u);
+  updateVerificationTask();
+  updateVerificationStatus(u);
+  runAiMatching();
+  if(u.payoutKyc){
+    fillKycForm(u.payoutKyc);
+  }else{
+    updateKycStatus({status:'not_submitted'});
+  }
+}
+
+// ✅ FETCH FRESH DATA FROM SERVER — fixes bio/linkedin refresh issue
+async function fetchFreshProfile(){
+  try{
+    const res=await fetch('/api/profile',{headers:{'Authorization':'Bearer '+_tk}});
+    const data=await res.json();
+    if(data.success){
+      const updated={..._u,...data.user};
+      localStorage.setItem('ngg_user',JSON.stringify(updated));
+      Object.assign(_u,data.user);
+      loadUserData(updated);
+    }
+  }catch(e){}
+}
+
+function runAiMatching(){
+  aiJobs=matchJobs(userSkills,ALL_JOBS);
+  const matched=aiJobs.filter(j=>j.isMatch).length;
+  const banner=document.getElementById('aiBanner');
+  if(matched>0&&userSkills.length>0){
+    banner.style.display='flex';
+    document.getElementById('aiText').textContent=`${matched} jobs matched to: ${userSkills.join(', ')}`;
+    document.getElementById('aiBadge').textContent=`${matched} Matches`;
+  }
+  if(userSkills.length>0)renderHomeMatchedJobs(aiJobs.filter(j=>j.isMatch).slice(0,3));
+}
+
+function renderHomeMatchedJobs(jobs){
+  const el=document.getElementById('homeMatchedJobs');
+  if(!el||!jobs.length){if(el)el.innerHTML='<div style="color:var(--ts);font-size:.82rem;padding:6px 0">Add skills in Profile to see matched projects.</div>';return;}
+  const bdg={hot:'<span class="tag th">🔥 Hot</span>',new:'<span class="tag tn">✨ New</span>',apply:'<span class="tag trev">📝 Apply</span>'};
+  el.innerHTML=jobs.map(j=>`<div class="pc" onclick="goTo('projects',null)" style="flex-direction:row;gap:10px;padding:11px;margin-bottom:8px"><div style="font-size:1.1rem;flex-shrink:0">${j.ico}</div><div style="flex:1;min-width:0"><div class="pn" style="font-size:.83rem">${j.title}</div><div class="pm" style="margin-top:2px;font-size:.7rem;color:var(--ts)">🏢 ${j.brand} · ${j.days}</div></div><div style="text-align:right;flex-shrink:0"><div class="pp" style="font-size:.88rem">${j.pay}</div>${bdg[j.badge]}</div></div>`).join('');
+}
+
+/// PROJECTS
+function renderProjects(){
+  let jobs=curFilter==='ai'?aiJobs:ALL_JOBS;
+  if(curCat!=='all')jobs=jobs.filter(j=>j.cat===curCat);
+  if(curSearch)jobs=jobs.filter(j=>[j.title,j.brand,getProjectDescription(j),...(j.tags||[])].join(' ').toLowerCase().includes(curSearch));
+  const grid=document.getElementById('projGrid');
+  if(!jobs.length){grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--ts)"><div style="font-size:2rem;margin-bottom:8px">🔍</div><h3 style="font-family:'Clash Display',sans-serif;color:var(--td);margin-bottom:5px">No projects found</h3><p>Try different filter or add more skills</p></div>`;return;}
+  const bdg={hot:'<span class="tag th">🔥 Hot</span>',new:'<span class="tag tn">✨ New</span>',apply:'<span class="tag trev">📝 Apply</span>'};
+  grid.innerHTML=jobs.map(j=>{
+    const m=j.isMatch&&curFilter==='ai';const mt=j.matchedTags||[];
+    const jobId=getJobId(j);
+    const hasApplied=appliedJobIds.has(jobId)||j.hasApplied;
+    
+    const brandId=String(j.brandId||'');
+    const brandBtn=brandId?`<button class="pa" style="background:white" onclick="event.stopPropagation();openBrandProfile('${brandId}')">Brand Details</button>`:'';
+    // CHANGED: Determine button UI based on hasApplied state
+    const btnHtml = hasApplied
+      ? `<button class="pa" style="background:var(--gm);color:white;border-color:var(--gm);cursor:default" onclick="event.stopPropagation()">Applied ✓</button>`
+      : `<button class="pa" onclick="event.stopPropagation();applyJob('${jobId}')">Apply</button>`;
+
+    return`<div class="pc project-card ${m?'matched':''}">${m?'<div class="match-bd">🤖 Match</div>':''}<div class="pt_"><div class="pi">${j.ico}</div><div style="padding-right:${m?'70px':'0'}"><div class="pb_">${esc(j.brand)}</div><div class="pn">${esc(j.title)}</div></div></div><div class="ptgs">${(j.tags||[]).map(t=>`<span class="ptg ${mt.includes(t)?'mt':''}">${esc(t)}</span>`).join('')}</div><div class="pf_"><div><div class="pp">${esc(j.pay)}</div><div class="pm">⏱ ${esc(j.days)} · 📍 Remote</div></div><div class="project-actions">${bdg[j.badge]||''}<button class="pa" style="background:white" onclick="event.stopPropagation();openProjectDetails('${jobId}')">Full Details</button>${brandBtn}${btnHtml}</div></div></div>`;
+  }).join('');
+}
+
+function setFilter(f,btn){
+  if(f==='ai'){curFilter='ai';curCat='all';}else{curFilter='manual';curCat=f;}
+  document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');renderProjects();
+}
+
+function closeProjectDetails(){
+  const modal=document.getElementById('projectDetailModal');
+  modal.classList.remove('show');
+  modal.setAttribute('aria-hidden','true');
+}
+
+function openProjectDetails(id){
+  const jobId=String(id);
+  const j=[...ALL_JOBS,...aiJobs].find(x=>getJobId(x)===jobId);
+  if(!j){showToast('Project details are not available. Please refresh once.','error');return;}
+  const modal=document.getElementById('projectDetailModal');
+  const content=document.getElementById('projectDetailContent');
+  const desc=getProjectDescription(j)||'No detailed description was added by this brand yet.';
+  const questions=Array.isArray(j.applicationQuestions)?j.applicationQuestions:[];
+  const hasApplied=appliedJobIds.has(jobId)||j.hasApplied;
+  const brandId=String(j.brandId||'');
+  const brandAction=brandId?`<button class="pa" onclick="closeProjectDetails();openBrandProfile('${brandId}')">Brand Details</button>`:'';
+  const applyAction=hasApplied
+    ? `<button class="pa" style="background:var(--gm);color:white;border-color:var(--gm);cursor:default">Applied ✓</button>`
+    : `<button class="pa" onclick="closeProjectDetails();applyJob('${jobId}')">Apply Now</button>`;
+  content.innerHTML=`
+    <div class="project-detail-title">${esc(j.title||'Project')}</div>
+    <div class="project-detail-meta">
+      <span>🏢 ${esc(j.brand||'Brand')}</span>
+      <span>💰 ${esc(j.pay||'Budget not listed')}</span>
+      <span>⏱ ${esc(j.days||'Flexible')}</span>
+      <span>📍 Remote</span>
+    </div>
+    <div class="project-detail-desc">
+      <strong>Project Description</strong>
+      <p>${esc(desc)}</p>
+    </div>
+    <div class="ptgs" style="margin-bottom:14px">${(j.tags||[]).map(t=>`<span class="ptg">${esc(t)}</span>`).join('')}</div>
+    ${questions.length?`<div class="project-detail-desc"><strong>Questions to answer when applying</strong><ul style="margin:8px 0 0 18px;color:var(--tm);font-size:.86rem;line-height:1.55">${questions.map(q=>`<li>${esc(q)}</li>`).join('')}</ul></div>`:''}
+    <div class="project-detail-actions">${brandAction}${applyAction}</div>
+  `;
+  modal.classList.add('show');
+  modal.setAttribute('aria-hidden','false');
+}
+
+function closeBrandProfile(){
+  const modal=document.getElementById('brandProfileModal');
+  modal.classList.remove('show');
+  modal.setAttribute('aria-hidden','true');
+}
+
+async function openBrandProfile(brandId){
+  if(!brandId){showToast('Brand profile is not available for this project.','error');return;}
+  const modal=document.getElementById('brandProfileModal');
+  const content=document.getElementById('brandProfileContent');
+  content.innerHTML='<div class="empty-s"><div class="ei">🏢</div><h3>Loading brand profile...</h3></div>';
+  modal.classList.add('show');
+  modal.setAttribute('aria-hidden','false');
+  try{
+    const res=await fetch(`/api/student/brand/${brandId}`,{headers:{'Authorization':'Bearer '+_tk}});
+    const data=await res.json();
+    if(!data.success)throw new Error(data.message||'Could not load brand profile');
+    renderBrandProfile(data.brand);
+  }catch(err){
+    content.innerHTML=`<div class="empty-s"><div class="ei">⚠️</div><h3>Could not load brand profile</h3><p>${esc(err.message||'Please try again later.')}</p></div>`;
+  }
+}
+
+function renderBrandProfile(brand){
+  const content=document.getElementById('brandProfileContent');
+  const company=brand.companyName||brand.name||'Brand';
+  const contact=brand.name||'Brand contact';
+  const initials=(company||'B').split(/\s+/).map(p=>p[0]).slice(0,2).join('').toUpperCase();
+  const website=safeHref(brand.brandLink);
+  const linkedin=safeHref(brand.linkedin);
+  const portfolio=safeHref(brand.portfolioLink);
+  const projects=(brand.recentProjects||[]).map(p=>`<div class="brand-project"><strong>${esc(p.title||'Project')}</strong><span>${esc(p.category||'Category')} · ${esc(p.budget||'Budget not listed')} · ${esc(p.status||'status')}</span>${p.description?`<span>${esc(shortenText(p.description,180))}</span>`:''}${p.deadline?`<span>Deadline: ${esc(p.deadline)}</span>`:''}</div>`).join('')||'<div class="brand-project"><span>No public projects listed yet.</span></div>';
+  content.innerHTML=`
+    <div class="brand-hero">
+      <div class="brand-avatar">${brand.avatar?`<img src="${esc(brand.avatar)}" alt="">`:esc(initials)}</div>
+      <div>
+        <div class="brand-name">${esc(company)}</div>
+        <div class="brand-meta"><span>Active brand</span><span>Contact: ${esc(contact)}</span>${brand.joinedAt?`<span>Joined ${new Date(brand.joinedAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</span>`:''}</div>
+      </div>
+    </div>
+    <div class="brand-grid">
+      <div class="brand-stat"><strong>${Number(brand.stats?.projectCount||0).toLocaleString('en-IN')}</strong><span>Total projects</span></div>
+      <div class="brand-stat"><strong>${Number(brand.stats?.openProjects||0).toLocaleString('en-IN')}</strong><span>Open projects</span></div>
+      <div class="brand-stat"><strong>${Number(brand.stats?.completedWorkspaces||0).toLocaleString('en-IN')}</strong><span>Completed workspaces</span></div>
+    </div>
+    <div class="brand-about">${esc(brand.bio||brand.serviceNeeded||'No brand description has been added yet.')}</div>
+    <div class="brand-detail-grid">
+      <div class="brand-detail"><strong>Email</strong><span>${brand.email?`<a class="brand-link" href="mailto:${esc(brand.email)}">${esc(brand.email)}</a>`:'Not listed'}</span></div>
+      <div class="brand-detail"><strong>Website / Brand Link</strong><span>${website?`<a class="brand-link" href="${esc(website)}" target="_blank" rel="noopener">Open brand link</a>`:'Not listed'}</span></div>
+      <div class="brand-detail"><strong>LinkedIn</strong><span>${linkedin?`<a class="brand-link" href="${esc(linkedin)}" target="_blank" rel="noopener">Open LinkedIn</a>`:'Not listed'}</span></div>
+      <div class="brand-detail"><strong>Portfolio</strong><span>${portfolio?`<a class="brand-link" href="${esc(portfolio)}" target="_blank" rel="noopener">Open portfolio</a>`:'Not listed'}</span></div>
+      <div class="brand-detail"><strong>Service Needed</strong><span>${esc(brand.serviceNeeded||'Not listed')}</span></div>
+      <div class="brand-detail"><strong>Contact Person</strong><span>${esc(contact)}</span></div>
+    </div>
+    <div class="st">Recent Brand Projects</div>
+    <div class="brand-projects">${projects}</div>
+  `;
+}
+
+async function loadLongTermRoles(){
+  try{
+    const [rolesData,appsData]=await Promise.all([
+      fetch('/api/student/long-term-roles',{headers:{'Authorization':'Bearer '+_tk}}).then(r=>r.json()),
+      fetch('/api/student/long-term-applications',{headers:{'Authorization':'Bearer '+_tk}}).then(r=>r.json()).catch(()=>({success:false,applications:[]}))
+    ]);
+    if(rolesData.success)longTermRoles=rolesData.roles||[];
+    if(appsData.success)longTermApplications=appsData.applications||[];
+    const badge=document.getElementById('ltRolesBadge');
+    if(badge)badge.textContent=longTermRoles.length;
+    renderLongTermRoles();
+    renderLongTermApplications();
+  }catch(e){
+    const grid=document.getElementById('longTermRoleGrid');
+    if(grid)grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:36px;color:var(--ts)"><div style="font-size:2rem;margin-bottom:8px">⚠️</div><h3 style="font-family:\'Clash Display\',sans-serif;color:var(--td)">Could not load roles</h3><p>Please refresh and try again.</p></div>';
+  }
+}
+
+function longTermStatusTag(status){
+  const map={
+    applied:'<span class="tag trev">Applied</span>',
+    shortlisted:'<span class="tag tacc">Shortlisted</span>',
+    rejected:'<span class="tag trej">Rejected</span>',
+    trial:'<span class="tag th">Paid Trial</span>',
+    hired:'<span class="tag tacc">Hired</span>',
+  };
+  return map[status]||`<span class="tag trev">${esc(status||'applied')}</span>`;
+}
+
+function renderLongTermRoles(){
+  const grid=document.getElementById('longTermRoleGrid');
+  if(!grid)return;
+  if(!longTermRoles.length){
+    grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:36px;color:var(--ts)"><div style="font-size:2rem;margin-bottom:8px">💼</div><h3 style="font-family:\'Clash Display\',sans-serif;color:var(--td)">No long-term roles right now</h3><p>Check again soon. Brands will add monthly roles here.</p></div>';
+    return;
+  }
+  grid.innerHTML=longTermRoles.map(role=>{
+    const app=role.myApplication;
+    const alreadyApplied=!!app;
+    const skills=(role.skillsNeeded||[]).map(s=>`<span class="ptg">${esc(s)}</span>`).join('');
+    return`
+      <div class="pc">
+        <div class="pt_"><div class="pi">💼</div><div><div class="pb_">${esc(role.brandName||'Brand')}</div><div class="pn">${esc(role.roleTitle||'Long-term role')}</div></div></div>
+        <div class="ptgs">${skills||'<span class="ptg">Skills flexible</span>'}</div>
+        <div style="font-size:.78rem;color:var(--tm);line-height:1.55;margin:8px 0">
+          ${esc(role.duration||'1 month')} · ${esc(role.workType||'remote')} · ${esc(role.hoursPerWeek||'Flexible hours')}<br>
+          Weekly output: ${esc(role.expectedWeeklyOutput||'To be discussed')}<br>
+          Trial task: ${esc(shortenText(role.trialTask||'Admin will define a small paid trial task.',120))}
+        </div>
+        <div class="pf_">
+          <div><div class="pp">${esc(role.monthlyBudget||'Budget open')}</div><div class="pm">7-day paid trial ${role.trialPay?`· ${esc(role.trialPay)}`:''}</div></div>
+          <div class="project-actions">
+            ${alreadyApplied?longTermStatusTag(app.status):`<button class="pa" onclick="event.stopPropagation();openLongTermApply('${esc(role.id||role._id)}')">Apply</button>`}
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function renderLongTermApplications(){
+  const card=document.getElementById('longTermMyAppsCard');
+  const el=document.getElementById('longTermMyApps');
+  if(!card||!el)return;
+  if(!longTermApplications.length){card.style.display='none';return;}
+  card.style.display='block';
+  el.innerHTML=longTermApplications.map(a=>{
+    const role=a.role||{};
+    const contact=a.contactLocked?'Contact locked until paid trial confirmation':`${a.email||''}${a.whatsapp?` · ${a.whatsapp}`:''}`;
+    const flow=longTermFlow(a);
+    return`
+      <div class="a-card">
+        <div><div class="a-ti">${esc(role.roleTitle||'Long-term role')}</div><div class="a-br">${esc(role.brandName||'Brand')} · ${esc(role.monthlyBudget||'Budget')}</div></div>
+        <div>${longTermStatusTag(a.status)}</div>
+        ${renderUxFlow(flow.steps)}
+        <div class="ux-note">${esc(flow.note)}</div>
+        <div class="a-note">${esc(contact)}</div>
+      </div>`;
+  }).join('');
+}
+
+function openLongTermApply(roleId){
+  const role=longTermRoles.find(r=>String(r.id||r._id)===String(roleId));
+  if(!role)return showToast('Role not found. Refresh and try again.','error');
+  document.getElementById('ltApplyRoleId').value=roleId;
+  document.getElementById('ltApplyRoleTitle').textContent=role.roleTitle||'Role';
+  document.getElementById('ltName').value=_u.name||`${_u.firstName||''} ${_u.lastName||''}`.trim();
+  document.getElementById('ltEmail').value=_u.email||'';
+  document.getElementById('ltWhatsapp').value=normalizeStudentPhone(_u.whatsapp||_u.phone||'');
+  document.getElementById('ltCollege').value=_u.college||'';
+  document.getElementById('ltSkills').value=(_u.skills||[]).join(', ');
+  document.getElementById('ltPortfolio').value=_u.portfolioLink||'';
+  document.getElementById('ltHours').value=document.getElementById('ltHours').value||'10 hours/week';
+  document.getElementById('ltExpectedPay').value=document.getElementById('ltExpectedPay').value||role.monthlyBudget||'₹5,000';
+  setLongTermApplyMessage('', 'info');
+  document.getElementById('ltApplyPanel').style.display='block';
+  document.getElementById('ltApplyPanel').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function closeLongTermApply(){
+  const panel=document.getElementById('ltApplyPanel');
+  if(panel)panel.style.display='none';
+}
+
+function setLongTermApplyMessage(message,type='info'){
+  const box=document.getElementById('ltApplyFeedback');
+  if(!box)return;
+  box.textContent=message||'';
+  box.className=`inline-status ${type}${message?' show':''}`;
+}
+
+function normalizeStudentPhone(value){
+  let digits=String(value||'').replace(/\D/g,'');
+  if(digits.startsWith('0091'))digits=digits.slice(2);
+  if(digits.startsWith('91')&&digits.length>10)digits=digits.slice(2);
+  if(digits.startsWith('0')&&digits.length>10)digits=digits.replace(/^0+/,'');
+  if(!digits)return '+91 ';
+  const phone=digits.slice(-10);
+  return phone.length===10?`+91 ${phone.slice(0,5)} ${phone.slice(5)}`:`+91 ${phone}`;
+}
+
+function formatStudentPhoneInput(input){
+  input.value=normalizeStudentPhone(input.value);
+}
+
+function formatStudentMoneyInput(input){
+  const digits=String(input.value||'').replace(/\D/g,'');
+  input.value=digits?`₹${Number(digits).toLocaleString('en-IN')}`:'';
+}
+
+async function submitLongTermApplication(){
+  const roleId=document.getElementById('ltApplyRoleId').value;
+  const body={
+    name:document.getElementById('ltName').value.trim(),
+    email:document.getElementById('ltEmail').value.trim(),
+    whatsapp:document.getElementById('ltWhatsapp').value.trim(),
+    college:document.getElementById('ltCollege').value.trim(),
+    skills:document.getElementById('ltSkills').value.trim(),
+    portfolioLink:document.getElementById('ltPortfolio').value.trim(),
+    availableHoursPerWeek:document.getElementById('ltHours').value.trim(),
+    expectedMonthlyPay:document.getElementById('ltExpectedPay').value.trim(),
+    pastExperience:document.getElementById('ltExperience').value.trim(),
+    pitch:document.getElementById('ltPitch').value.trim(),
+  };
+  if(!roleId){
+    setLongTermApplyMessage('Select a long-term role first.', 'error');
+    showToast('Select a long-term role first.','error');
+    return;
+  }
+  if(!body.name||!body.email||!body.skills||!body.portfolioLink||!body.availableHoursPerWeek||!body.expectedMonthlyPay||!body.pitch){
+    setLongTermApplyMessage('Fill name, email, skills, portfolio, availability, pay and pitch.', 'error');
+    showToast('Fill required fields before applying.','error');
+    return;
+  }
+  const btn=document.getElementById('ltApplyBtn');
+  const orig=btn.innerHTML;
+  btn.innerHTML='<span class="spin"></span>Applying...';
+  btn.disabled=true;
+  setLongTermApplyMessage('Submitting your application...', 'info');
+  try{
+    const res=await fetch(`/api/student/long-term-role/${roleId}/apply`,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+_tk},body:JSON.stringify(body)});
+    const data=await res.json().catch(()=>({success:false,message:'Server returned an invalid response.'}));
+    if(data.success){
+      setLongTermApplyMessage(data.message||'Applied for long-term role. Admin will review and shortlist.', 'success');
+      showToast('Applied for long-term role.','success');
+      await loadLongTermRoles();
+      setTimeout(closeLongTermApply,900);
+    }else{
+      setLongTermApplyMessage(data.message||'Could not apply. Please try again.', 'error');
+      showToast(data.message||'Could not apply.','error');
+    }
+  }catch(err){
+    setLongTermApplyMessage('Could not apply. Check connection and try again.', 'error');
+    showToast('Could not apply. Check connection.','error');
+  }finally{
+    btn.innerHTML=orig;
+    btn.disabled=false;
+  }
+}
+
+async function applyJob(id){
+  const jobId=String(id);
+  const j=[...ALL_JOBS,...aiJobs].find(x=>getJobId(x)===jobId);
+  if(!j){showToast('Project not found. Please refresh once.','error');return;}
+  if(!beginnerReady(_u)){
+    showToast('Complete profile first: college/ID, portfolio link and 3 skill tags.','error');
+    goTo('profile',null);
+    return;
+  }
+  if(appliedJobIds.has(jobId)||j.hasApplied){
+    markJobApplied(jobId);
+    refreshApplicationViews();
+    showToast('You already applied for this project.','info');
+    return;
+  }
+
+  try{
+    const questions=Array.isArray(j.applicationQuestions)?j.applicationQuestions:[];
+    const applicationAnswers=[];
+    for(const question of questions){
+      const answer=prompt(question);
+      if(answer===null)return;
+      if(!answer.trim()){showToast('Please answer all project questions before applying.','error');return;}
+      applicationAnswers.push({question,answer:answer.trim()});
+    }
+    markJobApplied(jobId);
+    refreshApplicationViews();
+    const res=await fetch('/api/apply',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+_tk},body:JSON.stringify({jobId,jobTitle:j.title,brandName:j.brand||j.brandName,brandId:j.brandId||'',pay:j.pay||j.budget,applicationAnswers})});
+    const data=await res.json();
+    if(data.success){
+      addLocalApplication(j);
+      syncAppliedState();
+      refreshApplicationViews();
+      showToast(`Applied for "${j.title}"! 🎉`,'success');
+      await loadStats();
+    }
+    else if(res.status===409){
+      addLocalApplication(j);
+      markJobApplied(jobId);
+      refreshApplicationViews();
+      showToast(data.message||'Already applied for this project.','info');
+      await loadStats();
+    }
+    else{
+      appliedJobIds.delete(jobId);
+      ALL_JOBS=ALL_JOBS.map(x=>getJobId(x)===jobId?{...x,hasApplied:false}:x);
+      aiJobs=aiJobs.map(x=>getJobId(x)===jobId?{...x,hasApplied:false}:x);
+      refreshApplicationViews();
+      showToast(data.message||'Could not apply. Try again.','error');
+    }
+  }catch{
+    appliedJobIds.delete(jobId);
+    ALL_JOBS=ALL_JOBS.map(x=>getJobId(x)===jobId?{...x,hasApplied:false}:x);
+    aiJobs=aiJobs.map(x=>getJobId(x)===jobId?{...x,hasApplied:false}:x);
+    refreshApplicationViews();
+    showToast('Could not apply. Check connection.','error');
+  }
+}
+
+// PROFILE SAVE
+function toggleSk(el){el.classList.toggle('sel');gsap.fromTo(el,{scale:.92},{scale:1,duration:.25,ease:'back.out(2)'});}
+
+function renderProfileChecks(user=_u){
+  const el=document.getElementById('profileChecks');
+  if(!el)return;
+  el.innerHTML=getProfileChecks(user).map(([label,done])=>`<div class="profile-check ${done?'done':''}"><span>${done?'✓':'○'}</span><span>${label}</span></div>`).join('');
+}
+
+function renderPortfolioChecks(user=_u){
+  const el=document.getElementById('portfolioChecks');
+  if(!el)return;
+  el.innerHTML=getPortfolioChecks(user).map(([label,done])=>`<div class="profile-check ${done?'done':''}"><span>${done?'✓':'○'}</span><span>${label}</span></div>`).join('');
+}
+
+function renderPortfolioSummary(user=_u){
+  const badgeWrap=document.getElementById('portfolioBadgeCurrent');
+  if(badgeWrap)badgeWrap.innerHTML=badgeHtml(getBadgeLevel(user));
+  const sampleCount=Array.isArray(user?.workSamples)?user.workSamples.length:0;
+  const sampleEl=document.getElementById('portfolioSampleCount');
+  if(sampleEl)sampleEl.textContent=sampleCount;
+  const linkEl=document.getElementById('portfolioLinkStatus');
+  if(linkEl)linkEl.textContent=user?.portfolioLink?'Added':'Missing';
+  const statusEl=document.getElementById('portfolioVerifiedStatus');
+  if(statusEl){
+    const b=BADGE_TEXT[getBadgeLevel(user)]||BADGE_TEXT.beginner;
+    statusEl.textContent=b.label;
+  }
+  renderPortfolioChecks(user);
+}
+
+function renderWorkSamples(samples=profileWorkSamples){
+  const el=document.getElementById('workSamplesList');
+  if(!el)return;
+  profileWorkSamples=Array.isArray(samples)?samples:[];
+  if(!profileWorkSamples.length){
+    el.innerHTML='<div class="kyc-note" style="margin-bottom:10px">No upload system yet. Add 1-3 proof links from Drive, Behance, GitHub, YouTube, Instagram, Canva, or your website.</div>';
+    return;
+  }
+  el.innerHTML=profileWorkSamples.map((s,i)=>`
+    <div class="sample-row">
+      <div class="sample-top">
+        <input class="fi sample-title" value="${esc(s.title||'')}" placeholder="Sample title">
+        <input class="fi sample-category" value="${esc(s.category||'')}" placeholder="Category">
+        <button class="btn bout bsm" onclick="removeWorkSample(${i})">Remove</button>
+      </div>
+      <input class="fi sample-link" value="${esc(s.link||'')}" placeholder="https://drive.google.com/...">
+      <textarea class="fi sample-description" rows="2" style="margin-top:8px" placeholder="What did you create and what was the result?">${esc(s.description||'')}</textarea>
+    </div>`).join('');
+}
+
+function collectWorkSamples(){
+  return [...document.querySelectorAll('#workSamplesList .sample-row')].map(row=>({
+    title:row.querySelector('.sample-title')?.value.trim()||'',
+    category:row.querySelector('.sample-category')?.value.trim()||'',
+    link:row.querySelector('.sample-link')?.value.trim()||'',
+    description:row.querySelector('.sample-description')?.value.trim()||'',
+  })).filter(s=>s.title||s.link||s.description).slice(0,6);
+}
+
+function addWorkSample(){
+  profileWorkSamples=collectWorkSamples();
+  profileWorkSamples.push({title:'',category:'',link:'',description:''});
+  renderWorkSamples(profileWorkSamples);
+}
+
+function removeWorkSample(index){
+  profileWorkSamples=collectWorkSamples();
+  profileWorkSamples.splice(index,1);
+  renderWorkSamples(profileWorkSamples);
+}
+
+function showProfileAvatar(avatar){
+  document.querySelectorAll('#sbAv,#tbAv,#profAv').forEach(el=>{
+    if(el)el.innerHTML=`<img src="${esc(avatar)}" alt="">`;
+  });
+}
+
+function handleProfilePhoto(file){
+  if(!file)return;
+  if(!/^image\/(png|jpe?g|webp)$/i.test(file.type)){showToast('Upload PNG, JPG, or WebP photo.','error');return;}
+  const reader=new FileReader();
+  reader.onload=()=>{
+    const img=new Image();
+    img.onload=()=>{
+      const size=320;
+      const canvas=document.createElement('canvas');
+      canvas.width=size;canvas.height=size;
+      const ctx=canvas.getContext('2d');
+      const scale=Math.max(size/img.width,size/img.height);
+      const w=img.width*scale,h=img.height*scale;
+      ctx.drawImage(img,(size-w)/2,(size-h)/2,w,h);
+      profileAvatarData=canvas.toDataURL('image/jpeg',0.78);
+      showProfileAvatar(profileAvatarData);
+      uploadProfilePhoto(profileAvatarData);
+    };
+    img.src=reader.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+async function uploadProfilePhoto(avatar){
+  showToast('Saving profile photo...','info');
+  try{
+    const res=await fetch('/api/profile/avatar',{
+      method:'PUT',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+_tk},
+      body:JSON.stringify({avatar})
+    });
+    const data=await res.json();
+    if(data.success){
+      const updated={..._u,...data.user,avatar:data.avatar||avatar};
+      localStorage.setItem('ngg_user',JSON.stringify(updated));
+      Object.assign(_u,updated);
+      profileAvatarData=updated.avatar||avatar;
+      showProfileAvatar(profileAvatarData);
+      renderProfileChecks(updated);
+      showToast('Profile photo saved permanently.','success');
+    }else{
+      showToast(data.message||'Could not save profile photo.','error');
+    }
+  }catch{
+    showToast('Could not save profile photo. Check connection.','error');
+  }
+}
+
+function updateVerificationTask(){
+  const cat=document.getElementById('verifyCategory')?.value||'Other';
+  const task=document.getElementById('verifyTaskText');
+  if(task)task.textContent=VERIFICATION_TASKS[cat]||VERIFICATION_TASKS.Other;
+}
+
+function updateVerificationStatus(user=_u){
+  const status=user?.verificationStatus||'not_applied';
+  const el=document.getElementById('verificationStatusText');
+  const btn=document.getElementById('verifyBtn');
+  if(!el||!btn)return;
+  const map={
+    not_applied:'Beginner students can apply for Verified after adding one task sample and short answer.',
+    pending:'Your Verified request is under manual review. Usually takes 10-15 minutes when reviewed.',
+    verified:'You are Verified. Better projects can trust your reviewed skill proof.',
+    rejected:`Verification needs improvement.${user?.verificationReviewNote?' '+user.verificationReviewNote:''}`,
+  };
+  el.textContent=map[status]||map.not_applied;
+  btn.disabled=status==='pending'||status==='verified';
+  btn.textContent=status==='verified'?'Verified Approved':status==='pending'?'Review Pending':'Request Verified Review';
+}
+
+async function submitVerificationRequest(){
+  const btn=document.getElementById('verifyBtn');
+  const body={
+    category:document.getElementById('verifyCategory').value,
+    sampleLink:document.getElementById('verifySampleLink').value.trim(),
+    answer:document.getElementById('verifyAnswer').value.trim(),
+  };
+  if(!body.sampleLink){showToast('Add a work sample link for review.','error');return;}
+  if(!body.answer){showToast('Add a short answer for review.','error');return;}
+  const old=btn.textContent;
+  btn.innerHTML='<span class="spin"></span>Submitting...';btn.disabled=true;
+  try{
+    const res=await fetch('/api/student/verification',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+_tk},body:JSON.stringify(body)});
+    const data=await res.json();
+    if(data.success){
+      const updated={..._u,...data.user};
+      localStorage.setItem('ngg_user',JSON.stringify(updated));
+      Object.assign(_u,updated);
+      loadUserData(updated);
+      showToast('Verification request submitted.','success');
+    }else showToast(data.message||'Could not submit verification request.','error');
+  }catch{
+    showToast('Could not submit verification request. Check connection.','error');
+  }
+  btn.textContent=old;btn.disabled=false;
+  updateVerificationStatus(_u);
+}
+
+async function savePortfolioProof(){
+  const btn=document.getElementById('portfolioSaveBtn');
+  const old=btn?btn.innerHTML:'💾 Save Portfolio Proof';
+  if(btn){btn.innerHTML='<span class="spin"></span>Saving...';btn.disabled=true;}
+  const portfolioLink=document.getElementById('pportfolio')?.value.trim()||'';
+  const workSamples=collectWorkSamples();
+  try{
+    const res=await fetch('/api/profile',{
+      method:'PUT',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+_tk},
+      body:JSON.stringify({portfolioLink,workSamples})
+    });
+    const data=await res.json();
+    if(data.success){
+      const updated={..._u,...data.user};
+      localStorage.setItem('ngg_user',JSON.stringify(updated));
+      Object.assign(_u,updated);
+      profileWorkSamples=Array.isArray(updated.workSamples)?updated.workSamples:[];
+      renderWorkSamples(profileWorkSamples);
+      renderPortfolioSummary(updated);
+      renderProfileChecks(updated);
+      showToast('Portfolio proof saved! ✅','success');
+    }else showToast(data.message||'Could not save portfolio proof.','error');
+  }catch{
+    const updated={..._u,portfolioLink,workSamples};
+    localStorage.setItem('ngg_user',JSON.stringify(updated));
+    Object.assign(_u,updated);
+    profileWorkSamples=workSamples;
+    renderPortfolioSummary(updated);
+    showToast('Portfolio saved locally. Check internet for server sync.','info');
+  }
+  if(btn){btn.innerHTML=old;btn.disabled=false;}
+}
+
+async function saveProfile(){
+  const btn=document.getElementById('saveBtn');
+  btn.innerHTML='<span class="spin"></span>Saving...';btn.disabled=true;
+  const fn=document.getElementById('pfn').value.trim();
+  const ln=document.getElementById('pln').value.trim();
+  const headline=document.getElementById('pheadline').value.trim();
+  const college=document.getElementById('pcl').value.trim();
+  const collegeId=document.getElementById('pcollegeId').value.trim();
+  const year=document.getElementById('pyear').value; // ✅ Fixed Year
+  const skills=[...document.querySelectorAll('.sk-opt.sel')].map(e=>e.dataset.skill);
+  const bio=document.getElementById('pbio').value.trim();
+  const linkedin=document.getElementById('plink').value.trim();
+
+  if(!fn){showToast('Enter your first name','error');btn.innerHTML='💾 Save Changes';btn.disabled=false;return;}
+  try{
+    const res=await fetch('/api/profile',{
+      method:'PUT',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+_tk},
+      body:JSON.stringify({firstName:fn,lastName:ln,headline,college,collegeId,year,skills,bio,linkedin,avatar:profileAvatarData})
+    });
+    const data=await res.json();
+    if(data.success){
+      // ✅ Save everything to localStorage
+      const updated={..._u,...data.user,bio:bio,linkedin:linkedin};
+      localStorage.setItem('ngg_user',JSON.stringify(updated));
+      Object.assign(_u,updated);
+      userSkills=skills;
+      loadUserData(updated);
+      showToast('Profile saved! ✅','success');
+    }else showToast(data.message||'Save failed','error');
+  }catch{
+    const updated={..._u,firstName:fn,lastName:ln,name:`${fn} ${ln}`,headline,college,collegeId,skills,bio,linkedin,avatar:profileAvatarData};
+    localStorage.setItem('ngg_user',JSON.stringify(updated));
+    Object.assign(_u,updated);userSkills=skills;
+    loadUserData(updated);
+    showToast('Saved locally!','info');
+  }
+  btn.innerHTML='💾 Save Changes';btn.disabled=false;
+}
+
+async function saveKyc(){
+  const btn=document.getElementById('kycSaveBtn');
+  const orig=btn.innerHTML;
+  btn.innerHTML='<span class="spin"></span>Submitting...';
+  btn.disabled=true;
+  const body={
+    legalName:document.getElementById('kycLegalName').value.trim(),
+    preferredPayout:document.getElementById('kycPreferred').value,
+    upiId:document.getElementById('kycUpi').value.trim(),
+    bankAccountHolder:document.getElementById('kycHolder').value.trim(),
+    bankName:document.getElementById('kycBank').value.trim(),
+    bankAccountNumber:document.getElementById('kycAccount').value.trim(),
+    confirmAccountNumber:document.getElementById('kycAccountConfirm').value.trim(),
+    ifsc:document.getElementById('kycIfsc').value.trim(),
+    consent:document.getElementById('kycConsent').checked
+  };
+  try{
+    const res=await fetch('/api/student/kyc',{
+      method:'PUT',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+_tk},
+      body:JSON.stringify(body)
+    });
+    const data=await res.json();
+    if(data.success){
+      const updated={..._u,...data.user,payoutKyc:data.kyc};
+      localStorage.setItem('ngg_user',JSON.stringify(updated));
+      Object.assign(_u,updated);
+      fillKycForm(data.kyc||{});
+      showToast('Payout KYC submitted. ✅','success');
+    }else{
+      showToast(data.message||'Could not submit KYC.','error');
+    }
+  }catch{
+    showToast('Could not submit KYC. Check connection.','error');
+  }
+  btn.innerHTML=orig;
+  btn.disabled=false;
+}
+
+async function loadMentors(){
+  const el=document.getElementById('mentorList');
+  if(!el)return;
+  el.innerHTML='<div class="mentor-empty">Loading approved mentors...</div>';
+  try{
+    const res=await fetch('/api/mentors',{headers:{'Authorization':'Bearer '+_tk}});
+    const data=await res.json();
+    if(!data.success)throw new Error(data.message||'Could not load mentors');
+    const mentors=data.mentors||[];
+    if(!mentors.length){
+      el.innerHTML='<div class="mentor-empty">No mentors are live yet. Apply from the form, and approved mentors will appear here after admin review.</div>';
+      return;
+    }
+    el.innerHTML=`<div class="mg">${mentors.map(m=>`
+      <div class="mc mentor-card">
+        <div class="mav">${esc((m.name||'M').split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase())}</div>
+        <div class="mn">${esc(m.name||'Mentor')}</div>
+        <div class="mr_">${esc(m.expertise||'Mentor')}${m.experience?` · ${esc(m.experience)}`:''}</div>
+        <p style="font-size:.75rem;color:var(--ts);line-height:1.45;margin:8px 0 10px">${esc(m.note||'Approved NextGenGrowth mentor.')}</p>
+        <div style="display:flex;gap:7px;flex-wrap:wrap">${safeHref(m.linkedin)?`<a class="bb" style="text-decoration:none;text-align:center" href="${esc(safeHref(m.linkedin))}" target="_blank" rel="noopener">LinkedIn</a>`:''}${safeHref(m.portfolioLink)?`<a class="bb" style="text-decoration:none;text-align:center" href="${esc(safeHref(m.portfolioLink))}" target="_blank" rel="noopener">Portfolio</a>`:''}</div>
+      </div>
+    `).join('')}</div>`;
+  }catch(e){
+    el.innerHTML=`<div class="mentor-empty">Could not load mentors. ${esc(e.message||'Please try again later.')}</div>`;
+  }
+}
+
+async function submitMentorApplication(){
+  const btn=document.getElementById('mentorApplyBtn');
+  const orig=btn.innerHTML;
+  const body={
+    name:document.getElementById('mentorName').value.trim()||(_u?.name||`${_u?.firstName||''} ${_u?.lastName||''}`.trim()),
+    expertise:document.getElementById('mentorExpertise').value.trim(),
+    experience:document.getElementById('mentorExperience').value.trim(),
+    linkedin:document.getElementById('mentorLinkedin').value.trim(),
+    portfolioLink:document.getElementById('mentorPortfolio').value.trim(),
+    note:document.getElementById('mentorNote').value.trim(),
+  };
+  if(!body.name){showToast('Enter your name.','error');return;}
+  if(!body.expertise){showToast('Enter your expertise.','error');return;}
+  btn.innerHTML='<span class="spin"></span>Submitting...';
+  btn.disabled=true;
+  try{
+    const res=await fetch('/api/mentor/apply',{
+      method:'POST',
+      headers:{'Authorization':'Bearer '+_tk,'Content-Type':'application/json'},
+      body:JSON.stringify(body)
+    });
+    const data=await res.json();
+    if(data.success){
+      showToast('Mentor application submitted for review.','success');
+      ['mentorExpertise','mentorExperience','mentorNote'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+    }else showToast(data.message||'Could not submit mentor application.','error');
+  }catch{
+    showToast('Could not submit mentor application. Check connection.','error');
+  }
+  btn.innerHTML=orig;
+  btn.disabled=false;
+}
+
+// NAVIGATION
+const PT={home:'Dashboard',projects:'Browse Projects',longterm:'Long-Term Roles',applications:'My Applications',portfolio:'My Portfolio',earnings:'My Earnings',courses:'Skill Courses',mentors:'Mentors',profile:'My Profile',kyc:'Payout KYC'};
+function goTo(pg,navBtn){
+  closeNotifications();
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const el=document.getElementById('page-'+pg);if(el)el.classList.add('active');
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  if(navBtn)navBtn.classList.add('active');
+  else document.querySelectorAll('.ni').forEach(n=>{if((n.getAttribute('onclick')||'').includes("'"+pg+"'"))n.classList.add('active');});
+  document.getElementById('pgT').textContent=PT[pg]||'Dashboard';
+  if(pg==='projects')renderProjects();
+  if(pg==='longterm')loadLongTermRoles();
+  if(pg==='applications'){renderAppList(realApps,'all');renderApprovedProjects(realApps);loadStudentWorkspaces();}
+  if(pg==='mentors')loadMentors();
+  if(pg==='kyc')loadKyc();
+  window.scrollTo({top:0,behavior:'smooth'});
+  closeSidebar();
+  gsap.fromTo('#page-'+pg,{opacity:0,y:10},{opacity:1,y:0,duration:.28,ease:'power2.out'});
+}
+
+// ✅ MOBILE SIDEBAR
+function openSidebar(){
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('overlay').classList.add('show');
+  document.body.style.overflow='hidden';
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+  document.body.style.overflow='';
+}
+
+// BOTTOM NAV
+function setBottomNav(page){
+  document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('active'));
+  const el=document.getElementById('bn-'+page);if(el)el.classList.add('active');
+}
+
+function showToast(msg,type='info'){
+  const t=document.getElementById('toast');t.textContent=msg;
+  t.className='toast '+type+' show';
+  setTimeout(()=>t.className='toast',3500);
+}
+function logout(){
+  const ok=confirm('Are you sure you want to log out of NextGenGrowth?');
+  if(!ok)return;
+  const finish=()=>{
+    localStorage.removeItem('ngg_token');
+    localStorage.removeItem('ngg_user');
+    window.location.href='/login?logged_out=1';
+  };
+  const clearServerSession=()=>fetch('/api/logout',{method:'POST',keepalive:true}).catch(()=>{});
+  const run=()=>clearServerSession().finally(finish);
+  if(window.gsap)gsap.to('.app',{opacity:0,duration:.3,onComplete:run});
+  else run();
+}
+// INIT
+window.addEventListener('DOMContentLoaded',()=>{
+  const d=new Date();
+  document.getElementById('pgD').textContent=d.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  loadUserData();         
+  loadStats();            
+  loadKyc();
+  fetchFreshProfile();    
+  loadLongTermRoles();
+  
+  if (typeof loadLiveJobs === 'function') loadLiveJobs(); // Fetch real jobs
+
+  document.addEventListener('click',e=>{
+    const panel=document.getElementById('notifPanel');
+    const bell=document.getElementById('notifBell');
+    if(panel&&!panel.contains(e.target)&&bell&&!bell.contains(e.target))closeNotifications();
+  });
+
+  // ✅ CHECK FOR NEW USERS (Google Login or New Register)
+  if (_u && _u.role === 'student') {
+    if (!_u.college || !_u.skills || _u.skills.length === 0) {
+      document.getElementById('welcomeOverlay').classList.add('show');
+      document.getElementById('welcomePopup').style.display = 'block';
+    }
+  }
+
+  gsap.timeline({defaults:{ease:'power3.out'}})
+    .fromTo('.sidebar',{x:-20,opacity:0},{x:0,opacity:1,duration:.5})
+    .fromTo('.topbar',{y:-10,opacity:0},{y:0,opacity:1,duration:.4},'-=.3')
+    .fromTo('#page-home',{y:14,opacity:0},{y:0,opacity:1,duration:.4},'-=.2');
+});
+
+// ✅ Close Popup and redirect to Profile
+function closeWelcomePopup() {
+  document.getElementById('welcomeOverlay').classList.remove('show');
+  document.getElementById('welcomePopup').style.display = 'none';
+  goTo('profile', document.getElementById('bn-profile') || null);
+  showToast('Please fill out your details to continue!', 'info');
+}
+</script>
+<!-- ══ FLOATING AI CHAT WIDGET ══ -->
+<button class="ai-chat-btn" onclick="toggleAIChat()" aria-label="Open NextGen AI Assistant" title="Ask AI">AI</button>
+<div class="ai-chat-window" id="aiChatWindow">
+  <div class="ai-chat-header">
+    <strong id="aiChatTitle">NextGen AI Assistant</strong>
+    <button onclick="toggleAIChat()" style="background:none;border:none;color:white;cursor:pointer;font-size:1.2rem">✕</button>
+  </div>
+  <div class="ai-chat-body" id="aiChatBody">
+    <div class="ai-msg">Hi! I am your NextGen AI Guide. How can I help you today?</div>
+  </div>
+  <div class="ai-chat-input">
+    <input type="text" id="aiChatInput" placeholder="Ask something..." onkeypress="handleAIKeyPress(event)">
+    <button onclick="sendAIMessage()">Send</button>
+  </div>
+</div>
+
+<!-- ══ DEDICATED AI SCRIPT ══ -->
+<script>
+  function toggleAIChat() {
+    const win = document.getElementById('aiChatWindow');
+    win.style.display = win.style.display === 'flex' ? 'none' : 'flex';
+    if (typeof _u !== 'undefined' && _u && _u.role === 'brand') {
+      document.getElementById('aiChatTitle').textContent = "NextGen Brand Guide";
+    }
+  }
+
+  async function sendAIMessage() {
+    const input = document.getElementById('aiChatInput');
+    const msg = input.value.trim();
+    if(!msg) return;
+
+    const body = document.getElementById('aiChatBody');
+    body.innerHTML += `<div class="user-msg">${esc(msg)}</div>`;
+    input.value = '';
+    body.scrollTop = body.scrollHeight;
+
+    const loadingId = 'loading-' + Date.now();
+    body.innerHTML += `<div class="ai-msg" id="${loadingId}"><span class="spin"></span>Thinking...</div>`;
+    body.scrollTop = body.scrollHeight;
+
+    try {
+      const aiUserType = (typeof _u !== 'undefined' && _u && _u.role === 'brand') ? 'brand' : 'student';
+      const response = await fetch('/api/ask-ai', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userType: aiUserType, userMessage: msg })
+      });
+
+      const data = await response.json();
+      document.getElementById(loadingId).remove();
+
+      if (data.reply) {
+         // The marked.parse() command translates it to perfect HTML!
+         body.innerHTML += `<div class="ai-msg">${marked.parse(data.reply)}</div>`;
+      } else {
+         body.innerHTML += `<div class="ai-msg" style="color:red">Error: ${data.error || "Could not get response."}</div>`;
+      }
+    } catch(e) {
+      document.getElementById(loadingId).remove();
+      body.innerHTML += `<div class="ai-msg" style="color:red">Connection failed. Make sure the backend is running.</div>`;
+    }
+    body.scrollTop = body.scrollHeight;
+  }
+
+  function handleAIKeyPress(e) {
+    if(e.key === 'Enter') sendAIMessage();
+  }
+</script>
+</body>
+</html>
