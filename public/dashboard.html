@@ -714,14 +714,23 @@
       <div class="card" style="background:var(--gp);margin-bottom:14px">
         <div class="st">How this works</div>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;font-size:.78rem;color:var(--tm)">
-          <div>01 Apply with portfolio and availability.</div>
+          <div>01 Apply directly (requires Portfolio & Verified badge).</div>
           <div>02 Admin shortlists suitable students.</div>
           <div>03 Brand selects for paid trial.</div>
           <div>04 If trial works, monthly hiring starts.</div>
         </div>
       </div>
+      
+      <!-- Eligibility Notice Box -->
+      <div class="card" style="background:var(--gp);border-left:4px solid #0a7c44;margin-bottom:14px">
+        <div class="st" style="color:var(--td);display:flex;align-items:center;gap:6px;font-size:.84rem">🔒 Application Eligibility Criteria</div>
+        <p style="font-size:.76rem;color:var(--tm);margin:6px 0 0 0;line-height:1.45">
+          To apply for monthly long-term roles, you must have a <strong>Main Portfolio Link</strong> saved in your profile and hold a <strong>Verified (✅)</strong> or <strong>Top Rated (⭐)</strong> badge. You can update your portfolio and apply for badge review in the <a href="#" onclick="event.preventDefault(); goTo('portfolio')" style="color:#0a7c44;font-weight:600;text-decoration:none">My Portfolio</a> tab.
+        </p>
+      </div>
+
       <div class="pg" id="longTermRoleGrid"></div>
-      <div class="card" id="longTermApplyPanel" style="display:none;margin-top:14px">
+      <div class="card" id="ltApplyPanel" style="display:none;margin-top:14px">
         <div class="st">Apply for <span id="ltApplyRoleTitle">Role</span></div>
         <input type="hidden" id="ltApplyRoleId">
         <div class="g2">
@@ -1918,45 +1927,75 @@ function renderLongTermApplications(){
   }).join('');
 }
 
-function openLongTermApply(roleId){
+async function openLongTermApply(roleId){
   try {
     const role=longTermRoles.find(r=>String(r.id||r._id)===String(roleId));
     if(!role)return showToast('Role not found. Refresh and try again.','error');
     
-    const panel = document.getElementById('ltApplyPanel');
-    if (!panel) return showToast('Application form not found.','error');
-    
-    document.getElementById('ltApplyRoleId').value=roleId;
-    document.getElementById('ltApplyRoleTitle').textContent=role.roleTitle||'Role';
-    
     const u = _u || {};
-    document.getElementById('ltName').value=u.name||`${u.firstName||''} ${u.lastName||''}`.trim();
-    document.getElementById('ltEmail').value=u.email||'';
-    document.getElementById('ltWhatsapp').value=normalizeStudentPhone(u.whatsapp||u.phone||'');
-    document.getElementById('ltCollege').value=u.college||'';
+    const badgeLevel = getBadgeLevel(u);
+    const hasPortfolio = !!u.portfolioLink;
+    const isVerified = ['verified', 'top-rated'].includes(badgeLevel);
     
-    let skillsStr = '';
-    if (Array.isArray(u.skills)) {
-      skillsStr = u.skills.join(', ');
-    } else if (typeof u.skills === 'string') {
-      skillsStr = u.skills;
+    // Check eligibility
+    if (!isVerified || !hasPortfolio) {
+      let reason = '';
+      if (!hasPortfolio && !isVerified) {
+        reason = 'you need to add a Main Portfolio Link AND earn the Verified (✅) or Top Rated (⭐) badge';
+      } else if (!hasPortfolio) {
+        reason = 'you need to add a Main Portfolio Link in your profile';
+      } else {
+        reason = 'your profile must hold a Verified (✅) or Top Rated (⭐) badge';
+      }
+      
+      showToast(`To apply, ${reason}.`, 'error');
+      if (confirm(`Application Blocked:\nTo apply for this role, ${reason}.\n\nWould you like to go to "My Portfolio" to update details and request verification?`)) {
+        goTo('portfolio');
+      }
+      return;
     }
-    document.getElementById('ltSkills').value=skillsStr;
     
-    document.getElementById('ltPortfolio').value=u.portfolioLink||'';
+    // If eligible, confirm and direct apply!
+    if (!confirm(`Apply for "${role.roleTitle}"?\n\nYour profile details (Name, College, Skills, and Portfolio Link) will be submitted to "${role.brandName || 'Brand'}".`)) {
+      return;
+    }
     
-    const hoursInput = document.getElementById('ltHours');
-    if (hoursInput) hoursInput.value = hoursInput.value || '10 hours/week';
+    // Show toast for applying
+    showToast('Applying for role...', 'info');
     
-    const payInput = document.getElementById('ltExpectedPay');
-    if (payInput) payInput.value = payInput.value || role.monthlyBudget || '₹5,000';
+    // Perform Direct Apply!
+    const body = {
+      name: u.name || `${u.firstName||''} ${u.lastName||''}`.trim() || 'Student',
+      email: u.email || '',
+      whatsapp: u.whatsapp || u.phone || '',
+      college: u.college || '',
+      skills: Array.isArray(u.skills) ? u.skills.join(', ') : (u.skills || ''),
+      portfolioLink: u.portfolioLink,
+      availableHoursPerWeek: '20 hours/week', 
+      expectedMonthlyPay: role.monthlyBudget || '₹5,000',
+      pastExperience: u.bio || 'Verified student profile',
+      pitch: 'Applied directly as a Verified Student with portfolio.'
+    };
     
-    setLongTermApplyMessage('', 'info');
-    panel.style.display='block';
-    panel.scrollIntoView({behavior:'smooth',block:'start'});
+    const res = await fetch(`/api/student/long-term-role/${roleId}/apply`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + _tk
+      },
+      body: JSON.stringify(body)
+    });
+    
+    const data = await res.json().catch(() => ({ success: false, message: 'Server returned an invalid response.' }));
+    if (data.success) {
+      showToast('Applied successfully! Brand has been notified. 🎉', 'success');
+      await loadLongTermRoles();
+    } else {
+      showToast(data.message || 'Could not apply.', 'error');
+    }
   } catch(err) {
     console.error("openLongTermApply error:", err);
-    showToast("Error opening application panel: " + err.message, "error");
+    showToast("Error during application: " + err.message, "error");
   }
 }
 
