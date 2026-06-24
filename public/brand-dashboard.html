@@ -993,7 +993,11 @@ function loadBrandData(){
   const fn=_u.firstName||name.split(' ')[0]||'';
   const brandLink=_u.brandLink||_u.portfolioLink||_u.linkedin||'';
   ['sbAv','tbAv','bpAv'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=initials;});
-  document.getElementById('sbNm').textContent=company||name;
+  const sbNmEl = document.getElementById('sbNm');
+  if (sbNmEl) {
+    sbNmEl.textContent = company || name;
+    sbNmEl.classList.remove('skeleton');
+  }
   document.getElementById('bpNm').textContent=company||name;
   document.getElementById('bpEmail').textContent=email;
   document.getElementById('bpJoined').textContent=joined;
@@ -1930,7 +1934,11 @@ function logout(){
 
 window.addEventListener('DOMContentLoaded',()=>{
   const d=new Date();
-  document.getElementById('pgD').textContent=d.toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const pgDEl = document.getElementById('pgD');
+  if (pgDEl) {
+    pgDEl.textContent = d.toLocaleDateString('en-IN', {weekday:'long',day:'numeric',month:'long',year:'numeric'});
+    pgDEl.classList.remove('skeleton');
+  }
   loadBrandData();
   loadBrandStats();
   loadBrandApplications(); // ✅ Load real applications
