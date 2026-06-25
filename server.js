@@ -4107,6 +4107,55 @@ app.get("/api/admin/export",adminOnly,async(req,res)=>{
   }
 });
 
+app.get("/api/admin/student-emails",adminOnly,async(req,res)=>{
+  try{
+    const students=await User.find({role:"student"}).select("firstName lastName email createdAt").lean();
+    const emailRegex=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const uniqueEmails=new Set();
+    const validStudents=[];
+    
+    for(const student of students){
+      if(!student.email)continue;
+      const cleanEmail=student.email.trim().toLowerCase();
+      if(emailRegex.test(cleanEmail)){
+        if(!uniqueEmails.has(cleanEmail)){
+          uniqueEmails.add(cleanEmail);
+          validStudents.push({
+            firstName:student.firstName||"",
+            lastName:student.lastName||"",
+            email:cleanEmail,
+            joinedDate:student.createdAt?new Date(student.createdAt).toISOString().split('T')[0]:"",
+          });
+        }
+      }
+    }
+    
+    if(req.query.format==="csv"){
+      let csvContent="First Name,Last Name,Email,Joined Date\n";
+      for(const s of validStudents){
+        const fName=s.firstName.replace(/"/g,'""');
+        const lName=s.lastName.replace(/"/g,'""');
+        csvContent+=`"${fName}","${lName}","${s.email}","${s.joinedDate}"\n`;
+      }
+      res.setHeader("Content-Type","text/csv");
+      res.setHeader("Content-Disposition","attachment; filename=students_emails.csv");
+      return res.status(200).send(csvContent);
+    }
+    
+    res.json({
+      success:true,
+      totalRegisteredStudents:students.length,
+      totalValidUniqueStudents:validStudents.length,
+      emails:Array.from(uniqueEmails),
+      students:validStudents,
+    });
+  }catch(err){
+    console.error("Error exporting student emails:",err);
+    res.status(500).json({success:false,message:"Could not retrieve student emails."});
+  }
+});
+
+
 app.delete("/api/admin/test-data",adminOnly,async(req,res)=>{
   try{
     const deleted=await clearTestData();
@@ -4603,6 +4652,7 @@ app.get("/blog/:slug",async(req,res)=>{
 });
 
 app.get("/",(req,res)=>res.sendFile(path.join(__dirname,"public","landing.html"))); // ✅ Changed this to landing.html
+app.get("/for-brands",(req,res)=>res.sendFile(path.join(__dirname,"public","for-brands.html")));
 app.get("/login",(req,res)=>res.sendFile(path.join(__dirname,"public","login.html")));
 app.get("/register",(req,res)=>res.sendFile(path.join(__dirname,"public","register.html")));
 app.get("/skill-compass",(req,res)=>res.sendFile(path.join(__dirname,"public","skill-compass.html")));

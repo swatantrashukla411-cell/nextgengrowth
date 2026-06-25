@@ -1,0 +1,2500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NextGenGrowth for Brands – Hire Verified Student Creators & Deploy Campus Squads</title>
+<meta name="description" content="Hire top-tier, verified college students for creative projects (design, video editing, dev) or deploy managed campus ambassador squads. Start with a risk-free pilot." />
+<meta name="keywords" content="campus ambassadors, student creators, hire college students, video editing, graphic design, content writing, Gen-Z marketing, NextGenGrowth brands" />
+<link rel="canonical" href="https://www.nextgengrowth.in/for-brands" />
+
+<!-- Open Graph / Social Media -->
+<meta property="og:title" content="NextGenGrowth for Brands – Hire Verified Student Creators & Deploy Campus Squads" />
+<meta property="og:description" content="Hire vetted college designers, editors & developers, or run managed campus ambassador campaigns. Escrow-protected payouts & 7-day free trial." />
+<meta property="og:url" content="https://www.nextgengrowth.in/for-brands" />
+<meta property="og:type" content="website" />
+<meta property="og:image" content="https://www.nextgengrowth.in/android-chrome-512x512.png" />
+<meta name="twitter:card" content="summary_large_image" />
+
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --primary: #10b981;
+    --primary-hover: #34d399;
+    --primary-dark: #059669;
+    --primary-glow: rgba(16, 185, 129, 0.15);
+    
+    --bg-dark: #030806;
+    --bg-card: rgba(255, 255, 255, 0.02);
+    --bg-card-hover: rgba(255, 255, 255, 0.05);
+    --border-color: rgba(16, 185, 129, 0.08);
+    --border-hover: rgba(16, 185, 129, 0.25);
+    
+    --text-main: #f3f4f6;
+    --text-muted: #9ca3af;
+    --text-bright: #ffffff;
+    
+    --radius-lg: 24px;
+    --radius-md: 16px;
+    --radius-sm: 8px;
+    
+    --shadow-glow: 0 0 40px rgba(16, 185, 129, 0.15);
+    --shadow-premium: 0 20px 48px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(16, 185, 129, 0.08);
+  }
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Grid Background Overlay */
+  .grid-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image: 
+      linear-gradient(90deg, rgba(16, 185, 129, 0.03) 1px, transparent 1px),
+      linear-gradient(0deg, rgba(16, 185, 129, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    -webkit-mask-image: radial-gradient(circle at 50% 30%, black 40%, transparent 80%);
+    mask-image: radial-gradient(circle at 50% 30%, black 40%, transparent 80%);
+  }
+
+  /* Premium Noise Overlay */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.015;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #020504;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(16, 185, 129, 0.3);
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(16, 185, 129, 0.5);
+  }
+
+  /* Container */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Header / Navigation */
+  header {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(1180px, calc(100% - 40px));
+    z-index: 100;
+    background: rgba(3, 8, 6, 0.7);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.4s ease;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  header.scrolled {
+    background: rgba(3, 8, 6, 0.9);
+    padding: 10px 20px;
+    border-color: rgba(16, 185, 129, 0.2);
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: -0.02em;
+    color: var(--text-bright);
+    text-decoration: none;
+  }
+
+  .logo-mark {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+  }
+
+  .logo-mark img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .nav-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 13.5px;
+    font-weight: 500;
+    transition: color 0.3s ease;
+    position: relative;
+  }
+
+  .nav-links a:hover {
+    color: var(--primary-hover);
+  }
+
+  .nav-links a::after {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: var(--primary);
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+  }
+
+  .nav-links a:hover::after {
+    width: 100%;
+  }
+
+  .nav-ctas {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    border: none;
+    outline: none;
+    font-family: inherit;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.5);
+    background: linear-gradient(135deg, var(--primary-hover), var(--primary));
+  }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--text-main);
+    border: 1px solid var(--border-color);
+  }
+
+  .btn-outline:hover {
+    border-color: var(--primary);
+    color: var(--primary-hover);
+    background: rgba(16, 185, 129, 0.05);
+    transform: translateY(-2px);
+  }
+
+  /* Specialized glowing login button */
+  .btn-login {
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.1);
+    color: var(--primary-hover);
+    background: rgba(16, 185, 129, 0.03);
+  }
+
+  .btn-login:hover {
+    background: var(--primary);
+    color: white;
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+    border-color: var(--primary);
+  }
+
+  /* Eyebrow badge */
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(16, 185, 129, 0.06);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    color: var(--primary-hover);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .eyebrow .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--primary);
+    box-shadow: 0 0 10px var(--primary);
+    animation: glow-pulse 2s infinite alternate;
+  }
+
+  @keyframes glow-pulse {
+    0% { transform: scale(0.8); opacity: 0.5; }
+    100% { transform: scale(1.2); opacity: 1; }
+  }
+
+  /* Global Section Styles */
+  section {
+    padding: 100px 0;
+    position: relative;
+    z-index: 2;
+  }
+
+  .section-header {
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto 60px;
+  }
+
+  .section-header h2 {
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text-bright);
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+
+  .section-header p {
+    color: var(--text-muted);
+    font-size: 16px;
+  }
+
+  /* Hero Section */
+  .hero-sec {
+    padding: 180px 0 100px;
+    min-height: 90vh;
+    display: flex;
+    align-items: center;
+  }
+
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 60px;
+    align-items: center;
+  }
+
+  @media (max-width: 992px) {
+    .hero-grid {
+      grid-template-columns: 1fr;
+      gap: 50px;
+      text-align: center;
+    }
+    .hero-ctas {
+      justify-content: center;
+    }
+  }
+
+  .hero-text h1 {
+    font-size: clamp(36px, 5.5vw, 64px);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+    color: var(--text-bright);
+    margin-bottom: 20px;
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, #ffffff 30%, #34d399 70%, #10b981 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-text p.lead {
+    font-size: clamp(16px, 2vw, 19px);
+    color: var(--text-muted);
+    margin-bottom: 36px;
+    max-width: 650px;
+    line-height: 1.7;
+  }
+
+  @media (max-width: 992px) {
+    .hero-text p.lead {
+      margin-left: auto;
+      margin-right: auto;
+    }
+  }
+
+  .hero-ctas {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+  }
+
+  .hero-ctas .btn {
+    padding: 14px 28px;
+    font-size: 15px;
+  }
+
+  .stats-strip {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    border-top: 1px solid var(--border-color);
+    padding-top: 30px;
+  }
+
+  .stat-card {
+    text-align: left;
+  }
+
+  @media (max-width: 992px) {
+    .stat-card {
+      text-align: center;
+    }
+  }
+
+  .stat-card .num {
+    font-size: clamp(24px, 3.5vw, 36px);
+    font-weight: 800;
+    color: var(--primary-hover);
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .stat-card .lbl {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* Floating Dashboard Visual */
+  .hero-visual {
+    position: relative;
+    width: 100%;
+    height: 450px;
+  }
+
+  .mock-dashboard {
+    background: rgba(10, 25, 20, 0.4);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    width: 85%;
+    height: 320px;
+    position: absolute;
+    top: 50px;
+    left: 10%;
+    backdrop-filter: blur(12px);
+    box-shadow: var(--shadow-premium);
+    padding: 24px;
+    animation: float-main 6s ease-in-out infinite;
+  }
+
+  .mock-card-1 {
+    position: absolute;
+    width: 200px;
+    background: rgba(16, 185, 129, 0.1);
+    backdrop-filter: blur(18px);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    top: 0;
+    left: 0;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    animation: float-point-1 5s ease-in-out infinite alternate;
+  }
+
+  .mock-card-2 {
+    position: absolute;
+    width: 220px;
+    background: rgba(3, 8, 6, 0.85);
+    backdrop-filter: blur(18px);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    bottom: 20px;
+    right: 0;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+    animation: float-point-2 7s ease-in-out infinite alternate;
+  }
+
+  @keyframes float-main {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-12px) rotate(0.5deg); }
+  }
+
+  @keyframes float-point-1 {
+    0% { transform: translateY(0) translateX(0); }
+    100% { transform: translateY(-15px) translateX(-5px); }
+  }
+
+  @keyframes float-point-2 {
+    0% { transform: translateY(0) translateX(0); }
+    100% { transform: translateY(12px) translateX(8px); }
+  }
+
+  .mock-header {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 20px;
+  }
+
+  .mock-header span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  .mock-header span:nth-child(1) { background: #ef4444; }
+  .mock-header span:nth-child(2) { background: #f59e0b; }
+  .mock-header span:nth-child(3) { background: #10b981; }
+
+  .mock-line {
+    height: 10px;
+    border-radius: 99px;
+    background: rgba(255, 255, 255, 0.05);
+    margin-bottom: 12px;
+  }
+
+  .mock-line.w-70 { width: 70%; }
+  .mock-line.w-40 { width: 40%; }
+  .mock-line.w-90 { width: 90%; }
+  .mock-line.w-60 { width: 60%; }
+
+  .mock-chart {
+    height: 100px;
+    background: rgba(16, 185, 129, 0.05);
+    border-radius: var(--radius-md);
+    margin-top: 24px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    padding: 12px;
+  }
+
+  .mock-bar {
+    width: 14px;
+    background: linear-gradient(to top, var(--primary-dark), var(--primary));
+    border-radius: 4px 4px 0 0;
+    transition: height 1s ease;
+  }
+
+  /* Vetting & Trust Section */
+  .trust-sec {
+    background: linear-gradient(180deg, rgba(3, 8, 6, 0) 0%, rgba(16, 185, 129, 0.02) 100%);
+    border-top: 1px solid var(--border-color);
+  }
+
+  .trust-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  @media (max-width: 768px) {
+    .trust-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .trust-feature-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 30px;
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+  }
+
+  .trust-feature-card .icon-box {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--primary-hover);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .trust-feature-card h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 8px;
+  }
+
+  .trust-feature-card p {
+    font-size: 13.5px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  /* Service Pillars Section */
+  .pillars-sec {
+    position: relative;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .pillars-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+  }
+
+  @media (max-width: 992px) {
+    .pillars-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .pillars-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .pillar-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 40px 32px;
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .pillar-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(300px circle at var(--x, 50%) var(--y, 0%), rgba(16, 185, 129, 0.08), transparent 50%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    pointer-events: none;
+  }
+
+  .pillar-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--border-hover);
+    box-shadow: var(--shadow-premium);
+    background: var(--bg-card-hover);
+  }
+
+  .pillar-card:hover::before {
+    opacity: 1;
+  }
+
+  .pillar-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: rgba(16, 185, 129, 0.08);
+    color: var(--primary-hover);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    margin-bottom: 28px;
+    box-shadow: 0 0 0 1px rgba(16, 185, 129, 0.12);
+  }
+
+  .pillar-card h3 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 12px;
+  }
+
+  .pillar-card p {
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+
+  .pillar-points {
+    list-style: none;
+  }
+
+  .pillar-points li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-main);
+    margin-bottom: 8px;
+    font-weight: 550;
+  }
+
+  .pillar-points li svg {
+    color: var(--primary);
+    flex-shrink: 0;
+  }
+
+  /* Creative Services Catalog (Directory) */
+  .services-catalog-sec {
+    background: rgba(2, 5, 4, 0.4);
+    border-top: 1px solid var(--border-color);
+  }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+
+  @media (max-width: 768px) {
+    .services-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .service-item-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 30px;
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    transition: all 0.3s ease;
+  }
+
+  .service-item-card:hover {
+    border-color: rgba(16, 185, 129, 0.2);
+    background: rgba(16, 185, 129, 0.02);
+    transform: translateY(-3px);
+  }
+
+  .service-item-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: rgba(16, 185, 129, 0.08);
+    color: var(--primary-hover);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .service-item-content h3 {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 8px;
+  }
+
+  .service-item-content p {
+    font-size: 13.5px;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin-bottom: 12px;
+  }
+
+  .service-tags {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .service-tag {
+    font-size: 11px;
+    padding: 2px 8px;
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 4px;
+    color: var(--text-main);
+  }
+
+  /* Case Studies (Success Stories) */
+  .cases-sec {
+    border-top: 1px solid var(--border-color);
+    background: linear-gradient(180deg, rgba(3, 8, 6, 0) 0%, rgba(16, 185, 129, 0.01) 100%);
+  }
+
+  .cases-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+  }
+
+  @media (max-width: 868px) {
+    .cases-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .case-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-premium);
+  }
+
+  .case-card::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.08), transparent 70%);
+    pointer-events: none;
+  }
+
+  .case-tag {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 99px;
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--primary-hover);
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 20px;
+  }
+
+  .case-card h3 {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text-bright);
+    margin-bottom: 16px;
+  }
+
+  .case-card p {
+    color: var(--text-muted);
+    font-size: 14.5px;
+    line-height: 1.6;
+    margin-bottom: 24px;
+  }
+
+  .case-stats {
+    display: flex;
+    gap: 30px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 20px;
+  }
+
+  .case-stat-item .num {
+    font-size: 24px;
+    font-weight: 800;
+    color: var(--primary-hover);
+  }
+
+  .case-stat-item .lbl {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* Pain Points Section */
+  .pain-sec {
+    background: rgba(2, 5, 4, 0.5);
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .pain-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  @media (max-width: 868px) {
+    .pain-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .pain-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 36px;
+    transition: all 0.4s ease;
+  }
+
+  .pain-card:hover {
+    transform: translateY(-5px);
+    border-color: rgba(239, 68, 68, 0.25);
+    background: rgba(239, 68, 68, 0.02);
+    box-shadow: 0 10px 30px rgba(239, 68, 68, 0.05);
+  }
+
+  .pain-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: rgba(239, 68, 68, 0.1);
+    color: #f87171;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    margin-bottom: 24px;
+  }
+
+  .pain-card h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 12px;
+  }
+
+  .pain-card p {
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  /* Ambassador Deep Dive Section */
+  .ambassador-sec {
+    background: linear-gradient(180deg, rgba(3, 8, 6, 0) 0%, rgba(16, 185, 129, 0.02) 50%, rgba(3, 8, 6, 0) 100%);
+    border-top: 1px solid var(--border-color);
+  }
+
+  .deep-dive-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+  }
+
+  @media (max-width: 920px) {
+    .deep-dive-grid {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+  }
+
+  .feature-points {
+    display: grid;
+    gap: 20px;
+    margin-top: 30px;
+  }
+
+  .feat-point {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .feat-point-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--primary-hover);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .feat-point-text h4 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 4px;
+  }
+
+  .feat-point-text p {
+    font-size: 13.5px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  /* Interactive workflow card */
+  .workflow-mock {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 30px;
+    box-shadow: var(--shadow-premium);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .workflow-mock::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 150px;
+    height: 150px;
+    background: radial-gradient(circle, rgba(16, 185, 129, 0.15), transparent 70%);
+  }
+
+  .workflow-header {
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+  }
+
+  .workflow-header h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-bright);
+  }
+
+  .workflow-header span {
+    font-size: 12px;
+    color: var(--primary-hover);
+    font-weight: 600;
+  }
+
+  .flow-steps {
+    display: grid;
+    gap: 16px;
+  }
+
+  .flow-step {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255, 255, 255, 0.01);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    border-radius: var(--radius-md);
+    padding: 14px 20px;
+    transition: all 0.3s ease;
+  }
+
+  .flow-step:hover {
+    background: rgba(16, 185, 129, 0.03);
+    border-color: rgba(16, 185, 129, 0.15);
+    transform: translateX(5px);
+  }
+
+  .flow-step .left-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .flow-step .num {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(16, 185, 129, 0.15);
+    color: var(--primary-hover);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+  }
+
+  .flow-step .title {
+    font-size: 13.5px;
+    font-weight: 650;
+    color: var(--text-bright);
+  }
+
+  .flow-step .status {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 4px 10px;
+    border-radius: 99px;
+  }
+
+  .flow-step .status.pending {
+    background: rgba(245, 158, 11, 0.1);
+    color: #fbbf24;
+  }
+
+  .flow-step .status.active {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--primary-hover);
+  }
+
+  .flow-step .status.done {
+    background: rgba(59, 130, 246, 0.1);
+    color: #60a5fa;
+  }
+
+  /* Dashboard Features Pitch Section */
+  .dashboard-pitch-sec {
+    background: rgba(2, 5, 4, 0.6);
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .dash-showcase {
+    display: grid;
+    grid-template-columns: 0.95fr 1.05fr;
+    gap: 50px;
+    align-items: center;
+  }
+
+  @media (max-width: 920px) {
+    .dash-showcase {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+  }
+
+  .dash-tabs {
+    display: grid;
+    gap: 12px;
+  }
+
+  .dash-tab-btn {
+    text-align: left;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    padding: 20px 24px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .dash-tab-btn:hover {
+    background: rgba(255, 255, 255, 0.01);
+    border-color: rgba(255, 255, 255, 0.02);
+  }
+
+  .dash-tab-btn.active {
+    background: rgba(16, 185, 129, 0.04);
+    border-color: rgba(16, 185, 129, 0.15);
+    box-shadow: inset 0 0 10px rgba(16, 185, 129, 0.05);
+  }
+
+  .dash-tab-btn h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    transition: color 0.3s ease;
+  }
+
+  .dash-tab-btn.active h3 {
+    color: var(--primary-hover);
+  }
+
+  .dash-tab-btn p {
+    font-size: 13.5px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  /* Interactive Code/UI Display Area */
+  .dash-preview-box {
+    background: rgba(10, 25, 20, 0.5);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    height: 380px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-premium);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .preview-content {
+    flex-grow: 1;
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .preview-content.active {
+    display: flex;
+    animation: fade-in 0.5s ease forwards;
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Comparison Section */
+  .comparison-sec {
+    position: relative;
+  }
+
+  .table-wrapper {
+    overflow-x: auto;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    background: var(--bg-card);
+    box-shadow: var(--shadow-premium);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 14px;
+    min-width: 700px;
+  }
+
+  th, td {
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  th {
+    font-weight: 700;
+    color: var(--text-bright);
+    background: rgba(16, 185, 129, 0.03);
+  }
+
+  tr:last-child td {
+    border-bottom: none;
+  }
+
+  td strong {
+    color: var(--text-bright);
+  }
+
+  td .pill {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 99px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  td .pill.good {
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--primary-hover);
+  }
+
+  td .pill.bad {
+    background: rgba(239, 68, 68, 0.1);
+    color: #f87171;
+  }
+
+  td .pill.mid {
+    background: rgba(245, 158, 11, 0.1);
+    color: #fbbf24;
+  }
+
+  /* FAQ Section */
+  .faq-sec {
+    background: rgba(2, 5, 4, 0.4);
+    border-top: 1px solid var(--border-color);
+  }
+
+  .faq-grid {
+    max-width: 800px;
+    margin: 0 auto;
+    display: grid;
+    gap: 16px;
+  }
+
+  .faq-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .faq-card:hover {
+    border-color: rgba(16, 185, 129, 0.2);
+  }
+
+  .faq-question {
+    padding: 20px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    font-weight: 700;
+    color: var(--text-bright);
+    font-size: 15px;
+    user-select: none;
+  }
+
+  .faq-question span.icon {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(16, 185, 129, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-hover);
+    font-size: 14px;
+    font-weight: 800;
+    transition: transform 0.3s ease;
+  }
+
+  .faq-card.open .faq-question span.icon {
+    transform: rotate(45deg);
+  }
+
+  .faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .faq-answer-inner {
+    padding: 0 24px 20px;
+  }
+
+  /* Contact Section */
+  .contact-sec {
+    position: relative;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 0.95fr 1.05fr;
+    gap: 60px;
+  }
+
+  @media (max-width: 920px) {
+    .contact-grid {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+  }
+
+  .contact-info-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .contact-info-panel h2 {
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight: 800;
+    color: var(--text-bright);
+    line-height: 1.2;
+    margin-bottom: 20px;
+  }
+
+  .contact-info-panel p.lead {
+    color: var(--text-muted);
+    font-size: 16px;
+    margin-bottom: 32px;
+  }
+
+  .direct-contacts {
+    display: grid;
+    gap: 20px;
+  }
+
+  .direct-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .direct-card:hover {
+    border-color: var(--primary);
+    transform: translateY(-2px);
+    background: rgba(16, 185, 129, 0.03);
+  }
+
+  .direct-card .icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(16, 185, 129, 0.1);
+    color: var(--primary-hover);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .direct-card h4 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 2px;
+  }
+
+  .direct-card p {
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  /* Contact Form */
+  .contact-form-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 40px;
+    box-shadow: var(--shadow-premium);
+  }
+
+  @media (max-width: 640px) {
+    .contact-form-box {
+      padding: 24px;
+    }
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    background: rgba(3, 8, 6, 0.5);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    color: var(--text-bright);
+    font-family: inherit;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    outline: none;
+  }
+
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.2);
+  }
+
+  .form-group textarea {
+    height: 120px;
+    resize: none;
+  }
+
+  .contact-form-box button[type="submit"] {
+    width: 100%;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 700;
+    margin-top: 10px;
+  }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--border-color);
+    background: #020504;
+    padding: 60px 0;
+    color: var(--text-muted);
+  }
+
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr 1fr;
+    gap: 40px;
+    margin-bottom: 40px;
+  }
+
+  @media (max-width: 768px) {
+    .footer-grid {
+      grid-template-columns: 1fr;
+      gap: 30px;
+    }
+  }
+
+  .footer-brand p {
+    font-size: 13.5px;
+    margin-top: 16px;
+    max-width: 320px;
+  }
+
+  .footer-col h4 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-bright);
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .footer-col ul {
+    list-style: none;
+  }
+
+  .footer-col ul li {
+    margin-bottom: 12px;
+  }
+
+  .footer-col ul li a {
+    font-size: 13.5px;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .footer-col ul li a:hover {
+    color: var(--primary-hover);
+  }
+
+  .footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    font-size: 13px;
+  }
+
+  .footer-bottom-links {
+    display: flex;
+    gap: 20px;
+  }
+
+  .footer-bottom-links a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .footer-bottom-links a:hover {
+    color: var(--primary-hover);
+  }
+
+  /* Reveal animations trigger rules */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  .reveal.in {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Mobile menu styles */
+  .nav-toggle {
+    display: none;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    background: transparent;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 4px;
+    cursor: pointer;
+    color: var(--text-bright);
+  }
+
+  .nav-toggle span {
+    width: 18px;
+    height: 2px;
+    border-radius: 99px;
+    background: currentColor;
+    transition: 0.25s ease;
+  }
+
+  .nav-toggle.open span:first-child { transform: translateY(6px) rotate(45deg); }
+  .nav-toggle.open span:nth-child(2) { opacity: 0; }
+  .nav-toggle.open span:last-child { transform: translateY(-6px) rotate(-45deg); }
+
+  .mobile-menu {
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    background: rgba(3, 8, 6, 0.95);
+    backdrop-filter: blur(16px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: 0.3s ease;
+  }
+
+  .mobile-menu.show {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .mobile-menu-links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+    margin-bottom: 40px;
+  }
+
+  .mobile-menu-links a {
+    color: var(--text-bright);
+    font-size: 20px;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  @media (max-width: 768px) {
+    .nav-links, .nav-ctas .btn-outline {
+      display: none;
+    }
+    .nav-toggle {
+      display: flex;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<!-- Navigation Header -->
+<header id="nav">
+  <a href="/" class="logo">
+    <div class="logo-mark">
+      <img src="android-chrome-192x192.png" alt="NextGenGrowth Logo">
+    </div>
+    <span>NextGenGrowth</span>
+  </a>
+  <nav class="nav-links">
+    <a href="#creative-services">Creative Services</a>
+    <a href="#services">Our Pillars</a>
+    <a href="#ambassador">Campus Network</a>
+    <a href="#cases">Success Stories</a>
+    <a href="#dashboard">Platform</a>
+    <a href="#faq">FAQ</a>
+  </nav>
+  <div class="nav-ctas">
+    <a href="/login" class="btn btn-outline btn-login">Client Login</a>
+    <a href="/login?tab=register&role=brand" class="btn btn-primary">Post a Project</a>
+    <button class="nav-toggle" id="navToggle" aria-label="Open menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+  </div>
+</header>
+
+<!-- Mobile Navigation Menu -->
+<div class="mobile-menu" id="mobileMenu">
+  <div class="mobile-menu-links">
+    <a href="#creative-services" onclick="closeMenu()">Creative Services</a>
+    <a href="#services" onclick="closeMenu()">Our Pillars</a>
+    <a href="#ambassador" onclick="closeMenu()">Campus Network</a>
+    <a href="#cases" onclick="closeMenu()">Success Stories</a>
+    <a href="#dashboard" onclick="closeMenu()">Platform</a>
+    <a href="/login" class="btn btn-outline btn-login" style="display: inline-flex;">Client Login</a>
+    <a href="/login?tab=register&role=brand" class="btn btn-primary" style="display: inline-flex; margin-top: 10px;">Post a Project</a>
+  </div>
+</div>
+
+<!-- Hero Section -->
+<section class="hero-sec container">
+  <div class="hero-grid">
+    <div class="hero-text reveal">
+      <div class="eyebrow">
+        <span class="dot"></span>
+        Vetted Student Creators & Campus Campaigns
+      </div>
+      <h1>
+        Hire Verified College Talent <br>
+        <span class="gradient-text">& Scale Your Campus Reach</span>
+      </h1>
+      <p class="lead">
+        Post creative projects (video editing, graphic design, writing) on our secure marketplace, or deploy managed Campus Ambassador squads. Get high-quality Gen-Z execution, backed by a 7-day risk-free pilot.
+      </p>
+      <div class="hero-ctas">
+        <a href="/login?tab=register&role=brand" class="btn btn-primary">Post a Project (Free Trial)</a>
+        <a href="#contact" class="btn btn-outline">Deploy Campus Network</a>
+      </div>
+      <div class="stats-strip">
+        <div class="stat-card">
+          <div class="num"><span class="counter" data-target="100">0</span>+</div>
+          <div class="lbl">Colleges Reached</div>
+        </div>
+        <div class="stat-card">
+          <div class="num"><span class="counter" data-target="5000">0</span>+</div>
+          <div class="lbl">Verified Students</div>
+        </div>
+        <div class="stat-card">
+          <div class="num">40%</div>
+          <div class="lbl">Cost Savings</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-visual reveal" style="transition-delay: 0.15s;">
+      <div class="mock-dashboard">
+        <div class="mock-header">
+          <span></span><span></span><span></span>
+        </div>
+        <div class="mock-line w-70"></div>
+        <div class="mock-line w-40"></div>
+        <div class="mock-chart">
+          <div class="mock-bar" style="height: 35%;"></div>
+          <div class="mock-bar" style="height: 55%;"></div>
+          <div class="mock-bar" style="height: 45%;"></div>
+          <div class="mock-bar" style="height: 80%;"></div>
+          <div class="mock-bar" style="height: 60%;"></div>
+          <div class="mock-bar" style="height: 95%;"></div>
+        </div>
+      </div>
+      <div class="mock-card-1">
+        <h4 style="font-size: 13px; color: var(--text-bright); margin-bottom: 6px;">Campus Ambassadors</h4>
+        <p style="font-size: 11px; color: var(--text-muted);">25 active reps deployed in Delhi NCR colleges</p>
+        <div style="display: flex; gap: 4px; margin-top: 10px;">
+          <div style="width: 12px; height: 12px; border-radius: 50%; background: #34d399;"></div>
+          <div style="width: 12px; height: 12px; border-radius: 50%; background: #60a5fa;"></div>
+          <div style="width: 12px; height: 12px; border-radius: 50%; background: #fbbf24;"></div>
+        </div>
+      </div>
+      <div class="mock-card-2">
+        <h4 style="font-size: 13px; color: var(--text-bright); margin-bottom: 4px;">Latest UGC Campaign</h4>
+        <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 8px;">15 creator submissions received</p>
+        <span style="font-size: 10px; padding: 2px 6px; border-radius: 4px; background: rgba(52,211,153,0.1); color: #34d399; font-weight: 700;">APPROVED</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Trust Banner: Vetting System -->
+<section class="trust-sec">
+  <div class="container">
+    <div class="section-header reveal">
+      <h2>Vetted for Quality. Built for Startups.</h2>
+      <p>How we ensure you only work with the top 15% of college talent.</p>
+    </div>
+    <div class="trust-grid">
+      <div class="trust-feature-card reveal">
+        <div class="icon-box">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        </div>
+        <div>
+          <h3>Rigorous Portfolio Screening</h3>
+          <p>Every student applicant must submit past work proofs. We manually verify and screen their portfolios before they can apply to your campaigns.</p>
+        </div>
+      </div>
+      <div class="trust-feature-card reveal" style="transition-delay: 0.1s;">
+        <div class="icon-box">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        </div>
+        <div>
+          <h3>Milestone Escrow Protection</h3>
+          <p>Your budget is held safely in escrow. Payouts are released only after you review and approve the final completed creative deliverables.</p>
+        </div>
+      </div>
+      <div class="trust-feature-card reveal" style="transition-delay: 0.2s;">
+        <div class="icon-box">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+        </div>
+        <div>
+          <h3>Full KYC & Verification</h3>
+          <p>We check student credentials and official college IDs. Rest easy knowing that the students working on your projects are legitimate and accountable.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Creative Services Catalog Section -->
+<section id="creative-services" class="services-catalog-sec">
+  <div class="container">
+    <div class="section-header reveal">
+      <h2>Hire for Creative Projects</h2>
+      <p>Directly hire skilled student talent on our marketplace for a fraction of the agency cost.</p>
+    </div>
+    <div class="services-grid">
+      <!-- Service 1 -->
+      <div class="service-item-card reveal">
+        <div class="service-item-icon">🎬</div>
+        <div class="service-item-content">
+          <h3>Video Editing & Reels</h3>
+          <p>Gen-Z editors who know CapCut, Premiere Pro, and typography. Turn raw clips into high-retention reels, TikToks, and YouTube thumbnails.</p>
+          <div class="service-tags">
+            <span class="service-tag">Shorts & Reels</span>
+            <span class="service-tag">CapCut Subtitles</span>
+            <span class="service-tag">Color Grading</span>
+          </div>
+        </div>
+      </div>
+      <!-- Service 2 -->
+      <div class="service-item-card reveal" style="transition-delay: 0.08s;">
+        <div class="service-item-icon">🎨</div>
+        <div class="service-item-content">
+          <h3>Graphic Design & UI/UX</h3>
+          <p>Figma-fluent student designers creating modern social media banners, pitch decks, landing pages, and vector brand illustrations.</p>
+          <div class="service-tags">
+            <span class="service-tag">Figma UI</span>
+            <span class="service-tag">Social Creatives</span>
+            <span class="service-tag">Pitch Decks</span>
+          </div>
+        </div>
+      </div>
+      <!-- Service 3 -->
+      <div class="service-item-card reveal" style="transition-delay: 0.16s;">
+        <div class="service-item-icon">💻</div>
+        <div class="service-item-content">
+          <h3>Web & App Development</h3>
+          <p>Student developers creating lightning-fast landing pages, Next.js React templates, Shopify stores, and fixing frontend bugs.</p>
+          <div class="service-tags">
+            <span class="service-tag">React / Next.js</span>
+            <span class="service-tag">Tailwind CSS</span>
+            <span class="service-tag">Shopify Setup</span>
+          </div>
+        </div>
+      </div>
+      <!-- Service 4 -->
+      <div class="service-item-card reveal" style="transition-delay: 0.24s;">
+        <div class="service-item-icon">✍️</div>
+        <div class="service-item-content">
+          <h3>Content & Script Writing</h3>
+          <p>Copywriters who understand Gen-Z hooks. Get high-ranking SEO blogs, email newsletters, reel scripts, and ad copywriting.</p>
+          <div class="service-tags">
+            <span class="service-tag">SEO Blogs</span>
+            <span class="service-tag">Reel Scripts</span>
+            <span class="service-tag">Ad Copy</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="text-align: center; margin-top: 40px;" class="reveal">
+      <a href="/login?tab=register&role=brand" class="btn btn-primary">Hire Creative Students Now</a>
+    </div>
+  </div>
+</section>
+
+<!-- Success Stories (Case Studies) -->
+<section id="cases" class="cases-sec">
+  <div class="container">
+    <div class="section-header reveal">
+      <h2>Success Stories & Case Studies</h2>
+      <p>How top brands leverage our combined marketplace talent and campus ambassador network.</p>
+    </div>
+    <div class="cases-grid">
+      <!-- Case Study 1 -->
+      <div class="case-card reveal">
+        <span class="case-tag">ChakDeBharat</span>
+        <h3>Organized On-Ground Campaigns & Creative Support</h3>
+        <p>
+          Humne Delhi NCR ke 15+ major college campuses mein ChakDeBharat ke liye targeted events organize kiye. NextGenGrowth ke campus ambassadors ne physical registration booths lagaye aur coordinate kiya, jabki hamare creative student developers aur designers ne high-converting promotional banners aur reels assets design kiye.
+        </p>
+        <div class="case-stats">
+          <div class="case-stat-item">
+            <div class="num">15+</div>
+            <div class="lbl">Campuses Covered</div>
+          </div>
+          <div class="case-stat-item">
+            <div class="num">20,000+</div>
+            <div class="lbl">Student Impressions</div>
+          </div>
+        </div>
+      </div>
+      <!-- Case Study 2 -->
+      <div class="case-card reveal" style="transition-delay: 0.1s;">
+        <span class="case-tag">IndiaSportHub</span>
+        <h3>Tournament Hype & On-Campus Signups</h3>
+        <p>
+          IndiaSportHub ke regional tournaments ke liye humne 30+ official campus ambassadors deploy kiye. Ambassadors ne offline sports matches promote kiye aur college clubs ke sath collaborations set kiye. Usi dauran, NextGenGrowth marketplace se hired editors ne event coverage videos aur reels generate kiye, jisse user base dramatically grow hua.
+        </p>
+        <div class="case-stats">
+          <div class="case-stat-item">
+            <div class="num">30+</div>
+            <div class="lbl">Ambassadors Deployed</div>
+          </div>
+          <div class="case-stat-item">
+            <div class="num">5,000+</div>
+            <div class="lbl">App Signups</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 Service Pillars Section -->
+<section id="services" class="pillars-sec">
+  <div class="container">
+    <div class="section-header reveal">
+      <h2>The Student-Powered Growth Engine</h2>
+      <p>5 key pillars designed to drive authentic college reach, high-converting content, and digital execution.</p>
+    </div>
+    <div class="pillars-grid">
+      <!-- Pillar 1 -->
+      <div class="pillar-card reveal">
+        <div class="pillar-icon">
+          <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+        </div>
+        <h3>Campus Ambassadors</h3>
+        <p>Verified campus representatives promoting your brand on-ground through community events, posters, and campus group outreach.</p>
+        <ul class="pillar-points">
+          <li>
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+            On-ground college presence
+          </li>
+          <li>
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+            Event organization & promos
+          </li>
+          <li>
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+            Lead generation drives
+          </li>
+        </ul>
+      </div>
+
+      <!-- Pillar 2 -->
+      <div class="pillar-card reveal" style="transition-delay: 0.08s;">
+        <div class="pillar-icon">
+          <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z"/></svg>
+        </div>
+        <h3>Content Creators (UGC)</h3>
+        <p>Ambitious college creators building high-converting reels, TikToks, UGC videos, and graphic assets curated specifically for your brand.</p>
+        <ul class="pillar-points">
+          <li>
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+            Slick social video content
+          </li>
+          <li>
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+            Premium editing & design
+          </li>
+          <li>
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+            High engagement metrics
+          </li>
+        </ul>
+      </div>
+
+      <!-- Pillar 3 -->
+      <div class="pillar-card reveal" style="transition-delay: 0.16s;">
+        <div class="pillar-icon">
+          <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.003 9.003 0 1020.945 13H11V3.055z"/><path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg>
+        </div>
+        <h3>Marketing & Campaigns</h3>
+        <p>Dynamic micro-campaigns designed to spark brand recognition. Launch influencer seeding, community challenges, and campus sign-up marathons.</p>
+        <ul class="pillar-points">
+          <li>
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+            Influencer product seeding
+          </li>
+          <li>
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+            App download campaigns
+          </li>
+          <li>
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+            Social buzz trigger drives
+          </li>
+        </ul>
+      </div>
+
+      <!-- Pillar 4 -->
+      <div class="pillar-card reveal" style="transition-delay: 0.24s;">
+        <div class="pillar-icon">
+          <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 025.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+        </div>
+        <h3>Sales & Outreach Force</h3>
+        <p>A specialized student sales team executing lead generation, campus trials, partnership setups, and referral campaigns.</p>
+        <ul class="pillar-points">
+          <li>
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+            Campus referral sales
+          </li>
+          <li>
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+            Direct sales drives
+          </li>
+          <li>
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+            Product testing feedback
+          </li>
+        </ul>
+      </div>
+
+      <!-- Pillar 5 -->
+      <div class="pillar-card reveal" style="transition-delay: 0.32s;">
+        <div class="pillar-icon">
+          <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+        </div>
+        <h3>Community Building</h3>
+        <p>Establish and grow a dedicated club or Discord server for your brand. Create organic brand ambassadors who promote your products for the long haul.</p>
+        <ul class="pillar-points">
+          <li>
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+            Brand-themed student clubs
+          </li>
+          <li>
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+            Online college communities
+          </li>
+          <li>
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+            Peer-to-peer discussions
+          </li>
+        </ul>
+      </div>
+
+      <!-- Free pilot info -->
+      <div class="pillar-card reveal" style="transition-delay: 0.4s; background: rgba(16,185,129,0.03); border-color: rgba(16,185,129,0.25);">
+        <div class="pillar-icon" style="background: rgba(16,185,129,0.15); color: var(--primary-hover);">
+          <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+        </div>
+        <h3>Start With A Free Pilot</h3>
+        <p>No commitment needed. Request a simple project or small pilot task first, see student applications within 24 hours, and pay only if you confirm.</p>
+        <a href="/login?tab=register&role=brand" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 10px;">Post a Project (Free)</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Campus Ambassador Program Deep Vetting -->
+<section id="ambassador" class="ambassador-sec">
+  <div class="container">
+    <div class="deep-dive-grid">
+      <div class="reveal">
+        <div class="eyebrow">
+          <span class="dot"></span>
+          Fully Managed Program
+        </div>
+        <h2>Official Campus Ambassador Campaigns</h2>
+        <p style="color: var(--text-muted); margin-bottom: 24px;">
+          This isn't a spammy referral program. We build a structured, vetted ambassador squad that represents your brand officially on-ground, coordinates events, distributes merchandise, and gains authentic signups.
+        </p>
+        <div class="feature-points">
+          <div class="feat-point">
+            <div class="feat-point-icon">
+              <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            </div>
+            <div class="feat-point-text">
+              <h4>Strict Selection (Top 2%)</h4>
+              <p>We filter out inactive students and recruit only highly active, connected student leaders, college union heads, and community organizers.</p>
+            </div>
+          </div>
+          <div class="feat-point">
+            <div class="feat-point-icon">
+              <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            </div>
+            <div class="feat-point-text">
+              <h4>Manual Setup, Full Support</h4>
+              <p>We work closely with you to define KPIs, write clear campaign briefs, design incentives, and handle student queries directly.</p>
+            </div>
+          </div>
+          <div class="feat-point">
+            <div class="feat-point-icon">
+              <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+            </div>
+            <div class="feat-point-text">
+              <h4>Performance Rewards</h4>
+              <p>Ambassadors stay motivated with structured certificates, performance bonuses, premium merchandise, and letter of recommendations.</p>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top: 36px;">
+          <a href="https://wa.me/919532792303?text=Hi!%20I%20want%20to%20know%20more%20about%20deploying%20a%20Campus%20Ambassador%20program%20for%20my%20brand." target="_blank" class="btn btn-primary" style="gap: 10px;">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.819 9.819 0 0012.04 2zm5.8 13.78c-.24.68-1.22 1.24-1.68 1.29-.46.05-.9-.12-2.92-.93-2.58-1.04-4.22-3.66-4.35-3.83-.13-.17-1.03-1.37-1.03-2.62 0-1.25.65-1.86.88-2.11.23-.25.51-.31.68-.31h.48c.15 0 .36-.06.55.4.2.48.68 1.66.74 1.78.06.12.1.27.02.43-.08.16-.18.27-.3.41-.12.14-.26.31-.37.42-.12.12-.25.26-.11.5.14.24.63 1.04 1.35 1.68.93.82 1.71 1.08 1.95 1.2.24.12.38.1.52-.06.14-.16.6-0.7.76-.94.16-.24.32-.2.55-.12.23.08 1.48.7 1.73.83.25.12.42.18.48.28.07.1.07.58-.17 1.26z"/></svg>
+            Discuss Ambassador Program
+          </a>
+        </div>
+      </div>
+      <div class="reveal" style="transition-delay: 0.15s;">
+        <div class="workflow-mock">
+          <div class="workflow-header">
+            <h3>Campaign Pipeline</h3>
+            <span>Active (Delhi NCR)</span>
+          </div>
+          <div class="flow-steps">
+            <div class="flow-step">
+              <div class="left-info">
+                <div class="num">1</div>
+                <div class="title">Recruitment & Vetting</div>
+              </div>
+              <div class="status done">Done</div>
+            </div>
+            <div class="flow-step">
+              <div class="left-info">
+                <div class="num">2</div>
+                <div class="title">Briefing & Collateral</div>
+              </div>
+              <div class="status done">Done</div>
+            </div>
+            <div class="flow-step">
+              <div class="left-info">
+                <div class="num">3</div>
+                <div class="title">Campus Merch Distribution</div>
+              </div>
+              <div class="status active">Active</div>
+            </div>
+            <div class="flow-step">
+              <div class="left-info">
+                <div class="num">4</div>
+                <div class="title">Lead Generation Drive</div>
+              </div>
+              <div class="status pending">Pending</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Dashboard Features Pitch Section -->
+<section id="dashboard" class="dashboard-pitch-sec">
+  <div class="container">
+    <div class="section-header reveal">
+      <h2>Self-Serve Brand Dashboard</h2>
+      <p>Post projects, review student profiles, communicate in secure workspaces, and unlock contact details only after confirming delivery.</p>
+    </div>
+    <div class="dash-showcase">
+      <div class="dash-tabs reveal">
+        <div class="dash-tab-btn active" data-target="brief">
+          <h3>1. AI-Powered Brief Builder</h3>
+          <p>Describe your design, video editing, or marketing project in seconds. Our builder formats the requirements and creates application questions automatically.</p>
+        </div>
+        <div class="dash-tab-btn" data-target="applicants">
+          <h3>2. Filtered Applications</h3>
+          <p>Review student portfolios, social profile links, and answers to your application questions. Unlocking contacts is protected until you choose the candidate.</p>
+        </div>
+        <div class="dash-tab-btn" data-target="escrow">
+          <h3>3. Protected Workspace Escrow</h3>
+          <p>Keep your project payments secure. Milestones are released only when students upload files and you approve the delivery quality.</p>
+        </div>
+      </div>
+      <div class="dash-preview-box reveal" style="transition-delay: 0.15s;">
+        <!-- Brief Box -->
+        <div class="preview-content active" id="tab-brief">
+          <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px; font-family: monospace; font-size: 13px;">
+            <span style="color: #34d399;"># AI Brief Assistant</span><br><br>
+            <span style="color: var(--text-muted);">"I need a student video editor to turn 5 raw videos into reels with sleek captions."</span><br><br>
+            <span style="color: #60a5fa;">&gt;&gt; Project Category:</span> Video Editing & Reels<br>
+            <span style="color: #60a5fa;">&gt;&gt; Recommended Budget:</span> ₹3,500 - ₹5,000<br>
+            <span style="color: #60a5fa;">&gt;&gt; Screening Questions Created:</span><br>
+            1. Share links to your top 3 edited short videos.<br>
+            2. What software do you use for overlays & captions?
+          </div>
+        </div>
+        <!-- Applicants Box -->
+        <div class="preview-content" id="tab-applicants">
+          <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px;">
+            <h4 style="font-size: 14px; color: var(--text-bright); margin-bottom: 12px;">Candidate: Swati Sharma</h4>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">College: Shaheed Sukhdev College of Business Studies</p>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">Skills: Video Editing, Reels Scripting, CapCut, Premiere Pro</p>
+            <div style="display: flex; gap: 8px;">
+              <span style="font-size: 11px; padding: 4px 8px; border-radius: 4px; background: rgba(16,185,129,0.1); color: #34d399; font-weight: 700;">8 Projects Completed</span>
+              <span style="font-size: 11px; padding: 4px 8px; border-radius: 4px; background: rgba(96,165,250,0.1); color: #60a5fa; font-weight: 700;">4.9 ★ Rating</span>
+            </div>
+          </div>
+        </div>
+        <!-- Escrow Box -->
+        <div class="preview-content" id="tab-escrow">
+          <div style="background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+              <span style="font-size: 13px; color: var(--text-bright); font-weight: 700;">Escrow Balance:</span>
+              <span style="font-size: 13px; color: var(--primary-hover); font-weight: 800;">₹4,500 (SECURED)</span>
+            </div>
+            <div style="height: 6px; border-radius: 99px; background: rgba(255,255,255,0.05); margin-bottom: 20px; overflow: hidden;">
+              <div style="width: 75%; height: 100%; background: var(--primary);"></div>
+            </div>
+            <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">Milestone: Deliver first 3 reels for approval</p>
+            <button class="btn btn-primary" style="padding: 8px 16px; font-size: 12px; pointer-events: none;">Approve & Release Funds</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ Section -->
+<section id="faq" class="faq-sec">
+  <div class="container">
+    <div class="section-header reveal">
+      <h2>Frequently Asked Questions</h2>
+      <p>Have questions about how we vet students, handle payments, or structure ambassador campaigns? Find answers here.</p>
+    </div>
+    <div class="faq-grid">
+      <div class="faq-card reveal">
+        <div class="faq-question">
+          How does the 7-day risk-free pilot work?
+          <span class="icon">+</span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            When you post a project, you describe the requirements and select a student. If the student fails to start or deliver the pilot task within 7 days, you can request a replacement or cancel the contract with 100% of your escrow balance refunded.
+          </div>
+        </div>
+      </div>
+      <div class="faq-card reveal" style="transition-delay: 0.05s;">
+        <div class="faq-question">
+          How do you verify student skills?
+          <span class="icon">+</span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            Every student registering on NextGenGrowth must upload past project links, work proofs, or active social media links. Our team manually reviews their portfolio before enabling them to apply for premium brand projects.
+          </div>
+        </div>
+      </div>
+      <div class="faq-card reveal" style="transition-delay: 0.1s;">
+        <div class="faq-question">
+          Can you run campus campaigns in specific cities/colleges?
+          <span class="icon">+</span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            Yes! Because our campus ambassador network is managed manually, we can target specific geographical hubs (like Delhi NCR, Mumbai, Bangalore) or specific colleges (IITs, DU, engineering, design schools) based on your target audience.
+          </div>
+        </div>
+      </div>
+      <div class="faq-card reveal" style="transition-delay: 0.15s;">
+        <div class="faq-question">
+          How are payouts and incentives managed?
+          <span class="icon">+</span>
+        </div>
+        <div class="faq-answer">
+          <div class="faq-answer-inner">
+            Brands deposit the campaign budget into our secure escrow. Once the ambassador tasks or content submissions are approved by you, we handle the payouts, taxes, certificates, and incentives directly with the students.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact Section -->
+<section id="contact" class="contact-sec container">
+  <div class="contact-grid">
+    <div class="contact-info-panel reveal">
+      <h2>Let's Plan Your <br><span class="gradient-text">Campus Takeover</span></h2>
+      <p class="lead">
+        Ready to deploy a college marketing campaign or hire a student team? Get in touch directly and let's map out a strategy for your brand.
+      </p>
+      <div class="direct-contacts">
+        <a href="mailto:hello@nextgengrowth.in" class="direct-card">
+          <div class="icon">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          </div>
+          <div>
+            <h4>Email Support</h4>
+            <p>hello@nextgengrowth.in</p>
+          </div>
+        </a>
+        <a href="https://wa.me/919532792303?text=Hi!%20I%20want%20to%20know%20more%20about%20deploying%20a%20Campus%20Ambassador%20program%20for%20my%20brand." target="_blank" class="direct-card">
+          <div class="icon">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.819 9.819 0 0012.04 2zm5.8 13.78c-.24.68-1.22 1.24-1.68 1.29-.46.05-.9-.12-2.92-.93-2.58-1.04-4.22-3.66-4.35-3.83-.13-.17-1.03-1.37-1.03-2.62 0-1.25.65-1.86.88-2.11.23-.25.51-.31.68-.31h.48c.15 0 .36-.06.55.4.2.48.68 1.66.74 1.78.06.12.1.27.02.43-.08.16-.18.27-.3.41-.12.14-.26.31-.37.42-.12.12-.25.26-.11.5.14.24.63 1.04 1.35 1.68.93.82 1.71 1.08 1.95 1.2.24.12.38.1.52-.06.14-.16.6-0.7.76-.94.16-.24.32-.2.55-.12.23.08 1.48.7 1.73.83.25.12.42.18.48.28.07.1.07.58-.17 1.26z"/></svg>
+          </div>
+          <div>
+            <h4>WhatsApp Founder</h4>
+            <p>+91 9532792303 (Quick Response)</p>
+          </div>
+        </a>
+      </div>
+    </div>
+    <div class="contact-form-box reveal" style="transition-delay: 0.15s;">
+      <form id="brandContactForm">
+        <div class="form-group">
+          <label for="companyName">Brand / Company Name</label>
+          <input type="text" id="companyName" required placeholder="e.g. NextGen Corp">
+        </div>
+        <div class="form-group">
+          <label for="contactEmail">Business Email</label>
+          <input type="email" id="contactEmail" required placeholder="e.g. founder@company.com">
+        </div>
+        <div class="form-group">
+          <label for="campaignType">Campaign Type</label>
+          <select id="campaignType">
+            <option>Campus Ambassador Squad</option>
+            <option>UGC & Reels Creators</option>
+            <option>On-Ground Event Marketing</option>
+            <option>Social Media Marketing / Lead Gen</option>
+            <option>Direct Hire (Long-Term Interns)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="requirements">Brief details about your brand & goal</label>
+          <textarea id="requirements" required placeholder="Describe your goal (e.g. We want to deploy 10 ambassadors in DU colleges to get app downloads)"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Send Inquiry</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="/" class="logo">
+          <div class="logo-mark">
+            <img src="android-chrome-192x192.png" alt="NextGenGrowth Logo">
+          </div>
+          <span>NextGenGrowth</span>
+        </a>
+        <p>India's premier student-powered marketing network and talent dashboard connecting companies with verified builders.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Solutions</h4>
+        <ul>
+          <li><a href="#services">Campus Marketing</a></li>
+          <li><a href="#creative-services">Creative Work</a></li>
+          <li><a href="#ambassador">Ambassador Squads</a></li>
+          <li><a href="/login?tab=register&role=brand">Project Posting</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Platform</h4>
+        <ul>
+          <li><a href="/login">Client Login</a></li>
+          <li><a href="/login?tab=register">Student Signup</a></li>
+          <li><a href="/skill-compass">Skill Compass</a></li>
+          <li><a href="/contact">Support Center</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>© 2026 NextGenGrowth. Handcrafted with care in India.</div>
+      <div class="footer-bottom-links">
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/terms">Terms & Conditions</a>
+        <a href="/refund-policy">Refund Policy</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Mobile menu control
+  const navToggle = document.getElementById('navToggle');
+  const mobileMenu = document.getElementById('mobileMenu');
+  
+  navToggle.addEventListener('click', () => {
+    const open = mobileMenu.classList.toggle('show');
+    navToggle.classList.toggle('open', open);
+  });
+
+  function closeMenu() {
+    mobileMenu.classList.remove('show');
+    navToggle.classList.remove('open');
+  }
+
+  // Scroll Header Effect
+  const header = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 40) {
+      header.classList.add('scrolled');
+    } else {
+      header.classList.remove('scrolled');
+    }
+  }, { passive: true });
+
+  // Scroll reveal Intersection Observer
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('in');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  // Dashboard showcase interactive tabs
+  const tabBtns = document.querySelectorAll('.dash-tab-btn');
+  const previews = document.querySelectorAll('.preview-content');
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tabBtns.forEach(b => b.classList.remove('active'));
+      previews.forEach(p => p.classList.remove('active'));
+
+      btn.classList.add('active');
+      const target = btn.dataset.target;
+      document.getElementById('tab-' + target).classList.add('active');
+    });
+  });
+
+  // Animated counters
+  const counters = document.querySelectorAll('.counter');
+  const counterObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const el = entry.target;
+      const target = +el.dataset.target;
+      const duration = 2000;
+      const start = performance.now();
+
+      function tick(t) {
+        const progress = Math.min(1, (t - start) / duration);
+        // Easing curve
+        const eased = progress < 0.5 ? 4 * progress * progress * progress : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+        el.textContent = Math.floor(target * eased).toLocaleString();
+        
+        if (progress < 1) {
+          requestAnimationFrame(tick);
+        } else {
+          el.textContent = target.toLocaleString() + (el.parentElement.textContent.includes('+') ? '+' : '');
+        }
+      }
+      requestAnimationFrame(tick);
+      counterObserver.unobserve(el);
+    });
+  }, { threshold: 0.2 });
+
+  counters.forEach(c => counterObserver.observe(c));
+
+  // Contact form submission setup
+  document.getElementById('brandContactForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const compName = document.getElementById('companyName').value.trim();
+    const email = document.getElementById('contactEmail').value.trim();
+    const type = document.getElementById('campaignType').value;
+    const reqs = document.getElementById('requirements').value.trim();
+    
+    const subject = encodeURIComponent('Brand Inquiry: ' + type + ' - ' + compName);
+    const body = encodeURIComponent(
+      'Brand / Company Name: ' + compName + '\n' +
+      'Business Email: ' + email + '\n' +
+      'Campaign Type: ' + type + '\n\n' +
+      'Goal / Requirements Details:\n' + reqs
+    );
+    
+    // Redirect to mailto
+    window.location.href = 'mailto:hello@nextgengrowth.in?subject=' + subject + '&body=' + body;
+  });
+
+  // GSAP animations for spotlight cursor effects on cards
+  if (window.matchMedia('(hover: hover)').matches) {
+    document.querySelectorAll('.pillar-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        card.style.setProperty('--x', `${x}px`);
+        card.style.setProperty('--y', `${y}px`);
+      });
+    });
+  }
+
+  // FAQ accordion
+  document.querySelectorAll('.faq-question').forEach(q => {
+    q.addEventListener('click', () => {
+      const card = q.parentElement;
+      const answer = card.querySelector('.faq-answer');
+      const isOpen = card.classList.contains('open');
+      
+      // Close all first
+      document.querySelectorAll('.faq-card').forEach(c => {
+        c.classList.remove('open');
+        c.querySelector('.faq-answer').style.maxHeight = null;
+      });
+      
+      if (!isOpen) {
+        card.classList.add('open');
+        answer.style.maxHeight = answer.scrollHeight + 'px';
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
