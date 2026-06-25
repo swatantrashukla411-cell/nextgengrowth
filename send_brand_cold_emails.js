@@ -20,60 +20,87 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-// High-converting cold outreach email template
-function generateBrandEmailTemplate(name, company) {
+// A highly personalized, high-converting psychological email template tailored to specific startup segments
+function generatePsychologicalEmailTemplate(name, company) {
   const cleanName = name ? name.trim() : 'Founder';
-  const cleanCompany = company ? company.trim() : 'your company';
+  const cleanCompany = company ? company.trim() : 'your startup';
+  const companyKey = cleanCompany.toLowerCase();
+
+  let personalizedIntro = '';
+  let personalizedAngle = '';
+
+  // Tailor template based on company profile segments to maximize response rate
+  if (companyKey.includes('shoegr') || companyKey.includes('svish') || companyKey.includes('koparo') || companyKey.includes('clensta')) {
+    // D2C / Personal Care / Cleanliness Segment
+    personalizedIntro = `I'm reaching out because I've been following how <strong>${cleanCompany}</strong> has been scaling in the direct-to-consumer space. For D2C brands, maintaining a constant stream of high-impact Gen-Z social media content (like edited product reels, aesthetic unboxings, and TikTok ads) is critical to keeping Customer Acquisition Costs (CAC) down.`;
+    
+    personalizedAngle = `We connect brands like yours with top-vetted college video editors, designers, and social content writers who understand Gen-Z hooks because they *are* Gen-Z. Instead of paying agency retainers, you can hire them directly for specific tasks (like turning raw product clips into high-retention video reels) starting at just ₹2,000 - ₹3,000 per project.`;
+  } else if (companyKey.includes('sleepycat') || companyKey.includes('the sleep company') || companyKey.includes('sleepyhead') || companyKey.includes('wakefit')) {
+    // Home / Sleep Solutions Segment
+    personalizedIntro = `I wanted to connect because I've been studying <strong>${cleanCompany}</strong>'s positioning in the premium home comfort and mattress segment. Visual design, high-quality video walkthroughs, and organic peer recommendations are crucial to driving online trust in this high-ticket space.`;
+    
+    personalizedAngle = `We can connect you with vetted graphic designers for social creatives, and student marketing teams to drive localized college campaigns. The best part? Payouts are protected via our secure escrow dashboard—the student is only paid after you review and approve their work, meaning zero risk to your marketing budget.`;
+  } else if (companyKey.includes('healthcred') || companyKey.includes('apnibus') || companyKey.includes('kenko') || companyKey.includes('ikin') || companyKey.includes('superliving')) {
+    // FinTech / SaaS / Tech Platform Segment
+    personalizedIntro = `I'm writing to you because I noticed <strong>${cleanCompany}</strong>'s growth in the tech ecosystem. For SaaS, fintech, and digital logistics platforms, getting developer support for quick frontend bug fixes, landing page design, and app download drives is always a bottleneck.`;
+    
+    personalizedAngle = `We have a verified database of engineering and design students from colleges like IITs and DU who can develop next-gen UI/UX wireframes or build speed-optimized landing pages. You can delegate frontend tasks directly through our marketplace, saving your core team valuable time.`;
+  } else {
+    // General Startup Segment
+    personalizedIntro = `I'm reaching out because I noticed your recent growth milestone at <strong>${cleanCompany}</strong>. As founders, we're constantly trying to execute high-quality design, video editing, and marketing campaigns while keeping overheads low and team sizes lean.`;
+    
+    personalizedAngle = `NextGenGrowth lets you hire vetted, talented college students for short-term projects (like reel editing, banner design, or web fixes) at a fraction of standard agency costs. All payments are secured in escrow, so you only release funds once you approve the output.`;
+  }
 
   return `
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; color: #333333; line-height: 1.6;">
-      <p style="font-size: 15px;">Hi ${cleanName},</p>
-
-      <p style="font-size: 15px;">Hope you are doing well.</p>
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 580px; margin: 0 auto; padding: 24px; color: #1e293b; line-height: 1.6; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+      <p style="font-size: 15px; margin-top: 0;">Hi ${cleanName},</p>
 
       <p style="font-size: 15px;">
-        My name is Swatantra Shukla, and I am the founder of <strong>NextGenGrowth</strong>. I am reaching out because I noticed your work at <strong>${cleanCompany}</strong>, and I believe we can help you scale your creative operations while significantly reducing overhead costs.
+        My name is Swatantra Shukla, and I'm the founder of <strong>NextGenGrowth</strong>. 
       </p>
 
       <p style="font-size: 15px;">
-        We are a student-powered marketplace and campus growth platform that connects startups and brands with the top 15% vetted college creators, editors, designers, and developers in India.
+        ${personalizedIntro}
       </p>
 
-      <h3 style="color: #10b981; font-size: 17px; margin-top: 24px; border-bottom: 1px solid #eeeeee; padding-bottom: 8px;">Why Startups & Brands use NextGenGrowth:</h3>
-      <ol style="padding-left: 20px; font-size: 14.5px;">
-        <li style="margin-bottom: 10px;">
-          <strong>Direct Marketplace Hiring (40% Cost Savings):</strong> Post creative tasks like video editing (reels/shorts), social media graphic design, content writing, or frontend web development. Hire skilled students on our dashboard at a fraction of agency rates.
-        </li>
-        <li style="margin-bottom: 10px;">
-          <strong>Escrow Protection (Risk-Free):</strong> Your project budget is locked securely in escrow and only released to the student after you review and approve the final files. If they don't deliver, you get a 100% refund.
-        </li>
-        <li style="margin-bottom: 10px;">
-          <strong>Managed Campus Ambassador Campaigns:</strong> Deploy dedicated squads of student ambassadors across campuses to promote your product, organize on-ground events, and drive signups (Case studies like <strong>ChakDeBharat</strong> and <strong>IndiaSportHub</strong> are live on our page).
-        </li>
-      </ol>
+      <p style="font-size: 15px;">
+        ${personalizedAngle}
+      </p>
 
-      <p style="font-size: 15px; margin-top: 24px;">
-        It takes less than 2 minutes to get started. You can register, build an AI brief, and post a project directly on our platform:
+      <p style="font-size: 15px; font-weight: 600; color: #0f172a; margin-top: 24px; margin-bottom: 8px;">
+        Here's how we protect your money and guarantee results:
+      </p>
+      <ul style="padding-left: 20px; font-size: 14.5px; margin-top: 0; margin-bottom: 24px; color: #334155;">
+        <li style="margin-bottom: 8px;"><strong>Vetted Talent Only:</strong> We screen student portfolios manually. You see verified work proofs before selecting an applicant.</li>
+        <li style="margin-bottom: 8px;"><strong>100% Escrow Protection:</strong> You deposit the project budget to NGG. The funds are held safely and only released when you approve the final files. No delivery = 100% refund.</li>
+        <li style="margin-bottom: 8px;"><strong>Managed Campus Ambassadors:</strong> If you need on-ground college signups or offline activations, we deploy dedicated student squads (like we did for <strong>ChakDeBharat</strong> and <strong>IndiaSportHub</strong>).</li>
+      </ul>
+
+      <p style="font-size: 15px;">
+        We have optimized our platform for quick setups. You can post a pilot project on our brand dashboard in under 2 minutes:
       </p>
 
       <div style="text-align: center; margin: 32px 0;">
-        <a href="https://www.nextgengrowth.in/for-brands" style="display: inline-block; background-color: #10b981; color: white; padding: 14px 28px; font-weight: bold; border-radius: 8px; text-decoration: none; font-size: 16px; box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3);">
-          Post a Project (Free Trial) →
+        <a href="https://www.nextgengrowth.in/for-brands" style="display: inline-block; background-color: #10b981; color: white; padding: 14px 28px; font-weight: 700; border-radius: 9999px; text-decoration: none; font-size: 15px; box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3); transition: background-color 0.2s;">
+          Post a Pilot Project on Dashboard →
         </a>
       </div>
 
-      <p style="font-size: 14px; color: #666666;">
-        Check out more details about our vetting system, services, and ambassador programs here: <a href="https://www.nextgengrowth.in/for-brands" style="color: #10b981; text-decoration: none;">nextgengrowth.in/for-brands</a>.
+      <p style="font-size: 13.5px; color: #64748b; text-align: center; margin-bottom: 24px;">
+        Or check out our design systems & services: <a href="https://www.nextgengrowth.in/for-brands" style="color: #10b981; text-decoration: none; font-weight: 600;">nextgengrowth.in/for-brands</a>
       </p>
 
-      <p style="font-size: 15px; margin-top: 24px;">Would love to see ${cleanCompany} on the platform!</p>
+      <p style="font-size: 15px;">
+        Would love to know if you'd be open to a quick pilot task this week to test out the talent quality.
+      </p>
 
-      <p style="font-size: 14px; margin-top: 30px; border-top: 1px solid #eeeeee; padding-top: 16px; color: #777777;">
+      <p style="font-size: 14px; margin-top: 32px; border-top: 1px solid #e2e8f0; padding-top: 20px; color: #475569; font-style: normal;">
         Warm regards,<br>
         <strong>Swatantra Shukla</strong><br>
         Founder, NextGenGrowth<br>
         Phone: +91 9532792303<br>
-        LinkedIn: <a href="https://www.linkedin.com/in/swatantra-shukla-aaa2a82bb/" style="color: #10b981; text-decoration: none;">Swatantra Shukla</a>
+        LinkedIn: <a href="https://www.linkedin.com/in/swatantra-shukla-aaa2a82bb/" style="color: #10b981; text-decoration: none; font-weight: 500;">Swatantra Shukla</a>
       </p>
     </div>
   `;
@@ -90,11 +117,8 @@ async function main() {
   const csvPath = path.resolve(__dirname, 'brand_contacts.csv');
 
   if (!fs.existsSync(csvPath)) {
-    // Generate a template file if it doesn't exist
-    const templateContent = 'Name,Company,Email\nRajesh Kumar,D2C Style,rajesh@example.com\nAnjali Sharma,Fintech Solutions,anjali@example.com\n';
-    fs.writeFileSync(csvPath, templateContent, 'utf8');
-    console.log(`📝 Generated a template CSV file at: ${csvPath}\nPlease fill this file with your brand leads before running the script!`);
-    process.exit(0);
+    console.error(`❌ CSV File not found at: ${csvPath}`);
+    process.exit(1);
   }
 
   try {
@@ -102,7 +126,7 @@ async function main() {
     const lines = csvContent.split('\n').filter(line => line.trim().length > 0);
 
     if (lines.length <= 1) {
-      console.log('⚠️ No contacts found in CSV file. Please add your leads to brand_contacts.csv.');
+      console.log('⚠️ No contacts found in CSV file.');
       return;
     }
 
@@ -163,12 +187,15 @@ async function main() {
       console.log(`[${i + 1}/${brandLeads.length}] Sending to ${name} <${email}> (${company})...`);
 
       try {
-        const html = generateBrandEmailTemplate(name, company);
+        const html = generatePsychologicalEmailTemplate(name, company);
+        
+        // High-converting psychological subject line
+        const subject = `Vetted Gen-Z creators for ${company} (Protected Escrow Pilot)`;
         
         const mailOptions = {
           from: `"Swatantra Shukla" <${gmailUser}>`,
           to: email,
-          subject: `Get your video editing & design done by vetted Gen-Z talent (40% less cost)`,
+          subject: subject,
           html: html
         };
 
