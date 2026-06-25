@@ -26,6 +26,7 @@
     "resend": "^6.9.4"
   },
   "devDependencies": {
+    "@playwright/test": "^1.61.1",
     "nodemon": "^3.0.2"
   }
 }

@@ -63,6 +63,8 @@
     scroll-behavior: smooth;
     max-width: 100%;
     overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
 
   body {
@@ -72,6 +74,11 @@
     line-height: 1.6;
     overflow-x: hidden;
     -webkit-font-smoothing: antialiased;
+  }
+
+  body.scroll-locked {
+    overflow: hidden;
+    height: 100%;
   }
 
   /* Grid Background Overlay */
@@ -451,6 +458,7 @@
     position: absolute;
     top: 50px;
     left: 10%;
+    -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
     box-shadow: var(--shadow-premium);
     padding: 24px;
@@ -461,6 +469,7 @@
     position: absolute;
     width: 200px;
     background: rgba(16, 185, 129, 0.1);
+    -webkit-backdrop-filter: blur(18px);
     backdrop-filter: blur(18px);
     border: 1px solid rgba(16, 185, 129, 0.2);
     border-radius: var(--radius-md);
@@ -475,6 +484,7 @@
     position: absolute;
     width: 220px;
     background: rgba(3, 8, 6, 0.85);
+    -webkit-backdrop-filter: blur(18px);
     backdrop-filter: blur(18px);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
@@ -1292,6 +1302,9 @@
     font-weight: 700;
     color: var(--text-bright);
     font-size: 15px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
     user-select: none;
   }
 
@@ -1574,8 +1587,8 @@
   /* Mobile menu styles */
   .nav-toggle {
     display: none;
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     border: 1px solid var(--border-color);
     border-radius: 10px;
     background: transparent;
@@ -1604,11 +1617,15 @@
     inset: 0;
     z-index: 90;
     background: rgba(3, 8, 6, 0.95);
+    -webkit-backdrop-filter: blur(16px);
     backdrop-filter: blur(16px);
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
+    padding: 100px 24px 40px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     opacity: 0;
     pointer-events: none;
     transition: 0.3s ease;
@@ -1632,15 +1649,113 @@
     font-size: 20px;
     font-weight: 700;
     text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 6px 20px;
+  }
+
+  .mobile-menu-links .btn {
+    padding: 12px 24px;
+    min-height: 44px;
+  }
+
+  @supports not (gap: 30px) {
+    .mobile-menu-links > * + * {
+      margin-top: 30px;
+    }
   }
 
   @media (max-width: 768px) {
-    .nav-links, .nav-ctas .btn-outline {
+    .nav-links, .nav-ctas .btn-outline, .nav-ctas .btn-primary {
       display: none;
     }
     .nav-toggle {
       display: flex;
     }
+    
+    /* Section Padding Reduction on Mobile */
+    section {
+      padding: 60px 0;
+    }
+    .hero-sec {
+      padding: 130px 0 60px;
+    }
+
+    /* Hero Visual Mobile Scaling & Overflow Fix */
+    .hero-visual {
+      height: 280px;
+      margin-top: 20px;
+    }
+    .mock-dashboard {
+      width: 100%;
+      height: 260px;
+      left: 0;
+      top: 0;
+    }
+    .mock-card-1, .mock-card-2 {
+      display: none;
+    }
+  }
+
+  @media (max-width: 640px) {
+    /* Stats Strip Stack Layout */
+    .stats-strip {
+      grid-template-columns: 1fr;
+      text-align: center;
+      gap: 30px;
+      padding-top: 20px;
+    }
+    .stat-card {
+      text-align: center;
+    }
+  }
+
+  @media (max-width: 576px) {
+    /* Case Studies Stats Wrap */
+    .case-card {
+      padding: 24px 20px;
+    }
+    .case-stats {
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    /* Logo text hiding on tiny screens */
+    .logo span {
+      display: none;
+    }
+    
+    /* Ambassador workflow step wrapping */
+    .workflow-mock {
+      padding: 20px 16px;
+    }
+    .flow-step {
+      padding: 10px 12px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .flow-step .left-info {
+      width: 100%;
+    }
+    
+    /* Preview Content Box Flex-wrap */
+    .dash-preview-box {
+      height: auto;
+      min-height: 380px;
+      padding: 16px;
+    }
+    .preview-content div {
+      padding: 16px !important;
+    }
+  }
+
+  /* Word-break for direct email/phone contact cards */
+  .direct-card p {
+    word-break: break-all;
   }
 </style>
 </head>
@@ -2369,11 +2484,17 @@
   navToggle.addEventListener('click', () => {
     const open = mobileMenu.classList.toggle('show');
     navToggle.classList.toggle('open', open);
+    document.body.classList.toggle('scroll-locked', open);
+    navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    navToggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
   });
 
   function closeMenu() {
     mobileMenu.classList.remove('show');
     navToggle.classList.remove('open');
+    document.body.classList.remove('scroll-locked');
+    navToggle.setAttribute('aria-expanded', 'false');
+    navToggle.setAttribute('aria-label', 'Open menu');
   }
 
   // Scroll Header Effect
