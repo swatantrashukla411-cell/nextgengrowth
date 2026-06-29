@@ -2741,6 +2741,7 @@ const DEMO_JOBS=[
   postedAt:new Date().toISOString(),
   isLive:true,
   isDemo:false,
+  applicantCount:0,
 }));
 
 // ✅ LIVE JOBS — fetches from DB (brand posted jobs)
@@ -2748,6 +2749,15 @@ app.get("/api/jobs",verifyToken,async(req,res)=>{
   try{
     await closeJobsWithAcceptedApplications();
     const jobs=await Job.find({status:"open"}).populate("brandId","firstName lastName companyName").sort({createdAt:-1});
+    const jobIds=jobs.map(j=>String(j._id));
+    const appCounts=await Application.aggregate([
+      {$match:{jobId:{$in:jobIds}}},
+      {$group:{_id:"$jobId",count:{$sum:1}}}
+    ]);
+    const countMap={};
+    appCounts.forEach(c=>{
+      countMap[c._id]=c.count;
+    });
     const result=jobs.map(j=>({
       id:j._id,
       brandId:j.brandId?._id||j.brandId,
@@ -2763,6 +2773,7 @@ app.get("/api/jobs",verifyToken,async(req,res)=>{
       applicationQuestions:j.applicationQuestions||[],
       postedAt:j.createdAt,
       isLive:true,
+      applicantCount:countMap[String(j._id)]||0,
     }));
     res.json({success:true,jobs:result.length?result:DEMO_JOBS,isDemoFallback:!result.length});
   }catch(err){

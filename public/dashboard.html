@@ -1756,7 +1756,7 @@ function renderProjects(){
       ? `<button class="pa" style="background:var(--gm);color:white;border-color:var(--gm);cursor:default" onclick="event.stopPropagation()">Applied ✓</button>`
       : `<button class="pa" onclick="event.stopPropagation();applyJob('${jobId}')">Apply</button>`;
 
-    return`<div class="pc project-card ${m?'matched':''}">${m?'<div class="match-bd">🤖 Match</div>':''}<div class="pt_"><div class="pi">${j.ico}</div><div style="padding-right:${m?'70px':'0'}"><div class="pb_">${esc(j.brand)}</div><div class="pn">${esc(j.title)}</div></div></div><div class="ptgs">${(j.tags||[]).map(t=>`<span class="ptg ${mt.includes(t)?'mt':''}">${esc(t)}</span>`).join('')}</div><div class="pf_"><div><div class="pp">${esc(j.pay)}</div><div class="pm">⏱ ${esc(j.days)} · 📍 Remote</div></div><div class="project-actions">${bdg[j.badge]||''}<button class="pa" style="background:white" onclick="event.stopPropagation();openProjectDetails('${jobId}')">Full Details</button>${brandBtn}${btnHtml}</div></div></div>`;
+    return`<div class="pc project-card ${m?'matched':''}">${m?'<div class="match-bd">🤖 Match</div>':''}<div class="pt_"><div class="pi">${j.ico}</div><div style="padding-right:${m?'70px':'0'}"><div class="pb_">${esc(j.brand)}</div><div class="pn">${esc(j.title)}</div></div></div><div class="ptgs">${(j.tags||[]).map(t=>`<span class="ptg ${mt.includes(t)?'mt':''}">${esc(t)}</span>`).join('')}</div><div class="pf_"><div><div class="pp">${esc(j.pay)}</div><div class="pm">⏱ ${esc(j.days)} · 📍 Remote · 👥 ${j.applicantCount || 0} applied</div></div><div class="project-actions">${bdg[j.badge]||''}<button class="pa" style="background:white" onclick="event.stopPropagation();openProjectDetails('${jobId}')">Full Details</button>${brandBtn}${btnHtml}</div></div></div>`;
   }).join('');
 }
 
@@ -1795,6 +1795,7 @@ function openProjectDetails(id){
       <span>🏢 ${esc(j.brand||'Brand')}</span>
       <span>💰 ${esc(j.pay||'Budget not listed')}</span>
       <span>⏱ ${esc(j.days||'Flexible')}</span>
+      <span>👥 ${j.applicantCount || 0} applied</span>
       <span>📍 Remote</span>
     </div>
     <div class="project-detail-desc">
