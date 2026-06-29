@@ -104,8 +104,24 @@
     .skeleton { color: transparent !important; background: #e5e5ea !important; border-radius: 8px; animation: pulse 1.5s infinite; }
     
     /* Project Cards */
-    .pc { background: white; border-radius: 20px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.02); transition: 0.3s; border: 1px solid var(--border); }
+    .pc { background: white; border-radius: 20px; padding: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.02); transition: 0.3s; border: 1px solid var(--border); display: flex; flex-direction: column; gap: 9px; position: relative; }
     .pc:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(0,0,0,0.05); }
+    .pc.matched{border-color:#10b981}
+    .match-bd{position:absolute;top:10px;right:10px;background:var(--accent);color:white;font-size:.6rem;font-weight:700;padding:3px 8px;border-radius:100px}
+    .pt_{display:flex;align-items:flex-start;gap:10px}
+    .pi{width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:1rem;background:#f5f5f7;border:1px solid var(--border);flex-shrink:0}
+    .pb_{font-size:.68rem;color:var(--subtext);margin-bottom:2px}
+    .pn{font-weight:600;font-size:.85rem;color:var(--text);line-height:1.3}
+    .ptgs{display:flex;gap:5px;flex-wrap:wrap}
+    .ptg{padding:2px 8px;background:#f5f5f7;border:1px solid var(--border);border-radius:100px;font-size:.65rem;font-weight:500;color:var(--subtext)}
+    .ptg.mt{background:rgba(16,185,129,0.1);color:var(--accent);border-color:var(--accent);font-weight:700}
+    .pf_{display:flex;flex-direction:column;gap:7px;padding-top:9px;border-top:1px solid var(--border);margin-top:auto}
+    .pf-top{display:flex;align-items:center;justify-content:space-between;width:100%}
+    .project-actions{display:flex;flex-direction:row;align-items:center;gap:6px;width:100%;margin-top:2px}
+    .pp{font-family:'Clash Display',sans-serif;font-size:1.05rem;font-weight:700;color:var(--accent)}
+    .pm{font-size:.68rem;color:var(--subtext);display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+    .pa{flex:1;display:inline-flex;align-items:center;justify-content:center;padding:7px 10px;background:#f5f5f7;border:1.5px solid var(--border);border-radius:7px;color:var(--accent);font-size:.77rem;font-weight:600;cursor:pointer;transition:all .2s;white-space:nowrap;text-align:center}
+    .pa:hover{background:var(--accent);color:white}
     .pc-t { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.01em; margin-bottom: 8px; }
     .pc-c { color: var(--accent); font-weight: 600; margin-bottom: 16px; }
     
@@ -1304,13 +1320,13 @@ function renderProjects(){
     const hasApplied=appliedJobIds.has(jobId)||j.hasApplied;
     
     const brandId=String(j.brandId||'');
-    const brandBtn=brandId?`<button class="pa" style="background:white" onclick="event.stopPropagation();openBrandProfile('${brandId}')">Brand Details</button>`:'';
+    const brandBtn=brandId?`<button class="pa" style="background:white" onclick="event.stopPropagation();openBrandProfile('${brandId}')">Brand</button>`:'';
     // CHANGED: Determine button UI based on hasApplied state
     const btnHtml = hasApplied
       ? `<button class="pa" style="background:var(--gm);color:white;border-color:var(--gm);cursor:default" onclick="event.stopPropagation()">Applied ✓</button>`
       : `<button class="pa" onclick="event.stopPropagation();applyJob('${jobId}')">Apply</button>`;
 
-    return`<div class="pc project-card ${m?'matched':''}">${m?'<div class="match-bd">🤖 Match</div>':''}<div class="pt_"><div class="pi">${j.ico}</div><div style="padding-right:${m?'70px':'0'}"><div class="pb_">${esc(j.brand)}</div><div class="pn">${esc(j.title)}</div></div></div><div class="ptgs">${(j.tags||[]).map(t=>`<span class="ptg ${mt.includes(t)?'mt':''}">${esc(t)}</span>`).join('')}</div><div class="pf_"><div><div class="pp">${esc(j.pay)}</div><div class="pm">⏱ ${esc(j.days)} · 📍 Remote · 👥 ${j.applicantCount || 0} applied</div></div><div class="project-actions">${bdg[j.badge]||''}<button class="pa" style="background:white" onclick="event.stopPropagation();openProjectDetails('${jobId}')">Full Details</button>${brandBtn}${btnHtml}</div></div></div>`;
+    return`<div class="pc project-card ${m?'matched':''}">${m?'<div class="match-bd">🤖 Match</div>':''}<div class="pt_"><div class="pi">${j.ico}</div><div style="padding-right:${m?'70px':'0'}"><div class="pb_">${esc(j.brand)}</div><div class="pn">${esc(j.title)}</div></div></div><div class="ptgs">${(j.tags||[]).map(t=>`<span class="ptg ${mt.includes(t)?'mt':''}">${esc(t)}</span>`).join('')}</div><div class="pf_"><div class="pf-top"><div class="pp">${esc(j.pay)}</div>${bdg[j.badge]||''}</div><div class="pm">⏱ ${esc(j.days)} &nbsp;·&nbsp; 📍 Remote &nbsp;·&nbsp; 👥 ${j.applicantCount || 0} applied</div><div class="project-actions"><button class="pa" style="background:white" onclick="event.stopPropagation();openProjectDetails('${jobId}')">Details</button>${brandBtn}${btnHtml}</div></div></div>`;
   }).join('');
 }
 
