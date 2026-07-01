@@ -2505,26 +2505,6 @@ app.put("/api/profile/avatar",verifyToken,async(req,res)=>{
 });
 
 // ═══════════════════════════════════════════
-// PUBLIC CREATORS / STUDENT DIRECTORY
-// ═══════════════════════════════════════════
-app.get("/api/public/creators",async(req,res)=>{
-  try{
-    // Fetch students who have either verification or have completed key profile parts (e.g. skills or work samples)
-    const creators=await User.find({
-      role:"student",
-      $or: [
-        { verificationStatus: "verified" },
-        { studentBadge: { $in: ["verified", "top-rated"] } },
-        { skills: { $exists: true, $not: { $size: 0 } } }
-      ]
-    }).select("_id firstName lastName college year skills headline bio avatar workSamples studentBadge portfolioLink");
-    res.json({success:true,creators});
-  }catch(err){
-    res.status(500).json({success:false,message:"Server error."});
-  }
-});
-
-// ═══════════════════════════════════════════
 // STUDENT REFERRAL DETAILS
 // ═══════════════════════════════════════════
 app.get("/api/student/referrals",verifyToken,async(req,res)=>{
