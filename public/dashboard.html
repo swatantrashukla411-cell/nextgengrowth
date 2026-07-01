@@ -567,6 +567,7 @@
     <button class="ni" onclick="goTo('mentors',this)"><span class="nicon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg></span>Mentors</button>
     <div class="nl">Account</div>
     <button class="ni" onclick="goTo('profile',this)"><span class="nicon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg></span>My Profile</button>
+    <button class="ni" onclick="goTo('referrals',this)"><span class="nicon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg></span>Refer & Earn<span class="nb" style="background:#10b981">Free Verified</span></button>
     <button class="ni" onclick="goTo('kyc',this)"><span class="nicon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 14l2 2 4-4M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7l8-4z"/></svg></span>Payout KYC<span class="nb" id="kycNavBadge">New</span></button>
     <button class="ni" onclick="logout()"><span class="nicon"><svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg></span>Logout</button>
   </nav>
@@ -1037,6 +1038,73 @@
       </div>
     </div>
 
+    <!-- REFERRAL PROGRAM -->
+    <div class="page" id="page-referrals">
+      <div class="ph">
+        <h2>Refer & Earn Verified Status 🚀</h2>
+        <p>Invite your college friends to NextGenGrowth. When 3 friends sign up, you automatically unlock the <strong>Verified Student Badge</strong> for priority client matching!</p>
+      </div>
+      
+      <div class="g2">
+        <!-- Referral Stats Card -->
+        <div class="card">
+          <div class="st">Referral Status</div>
+          <div style="text-align: center; padding: 20px 0;">
+            <div style="font-size: 3rem; font-weight: 800; color: var(--gm);" id="refCount">0</div>
+            <div style="font-size: 0.9rem; color: var(--ts); font-weight: 600; margin-bottom: 12px;">Successful Referrals</div>
+            <div style="background: var(--gl); border: 1px dashed var(--br); border-radius: 12px; padding: 14px;">
+              <div id="refMilestoneText" style="font-size: 0.8rem; color: var(--td); line-height: 1.5;">
+                Refer 3 friends to unlock <strong>Verified Creator Badge</strong>. (Progress: 0/3)
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Share Card -->
+        <div class="card">
+          <div class="st">Your Referral Link</div>
+          <p style="font-size: 0.8rem; color: var(--ts); margin-bottom: 16px; line-height: 1.45;">Copy and share this link. Anyone registering via this link will count towards your badge milestones.</p>
+          
+          <div class="fg" style="margin-bottom: 16px;">
+            <div style="display: flex; gap: 8px;">
+              <input class="fi" id="refLinkInput" readonly style="flex: 1; font-family: monospace; font-size: 0.76rem; background: var(--gl);" value="Loading...">
+              <button class="btn bpri" style="padding: 10px 16px; font-weight: 700;" onclick="copyReferralLink()">📋 Copy</button>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 10px;">
+            <button class="btn bsm" style="background: #25d366; color: #fff; font-weight: 700; flex: 1; border: none; padding: 10px 0; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;" onclick="shareWhatsApp()">
+              <i class="fab fa-whatsapp" style="font-size: 1.1rem;"></i> WhatsApp Share
+            </button>
+            <button class="btn bsm" style="background: #1da1f2; color: #fff; font-weight: 700; flex: 1; border: none; padding: 10px 0; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;" onclick="shareTwitter()">
+              <i class="fab fa-twitter" style="font-size: 1.1rem;"></i> Twitter Share
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top: 16px;">
+        <div class="st">Friends Joined</div>
+        <div style="margin-top: 10px; overflow-x: auto;">
+          <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 0.8rem;" id="referralTable">
+            <thead>
+              <tr style="border-bottom: 1px solid var(--br); color: var(--ts);">
+                <th style="padding: 10px 8px;">Name</th>
+                <th style="padding: 10px 8px;">College</th>
+                <th style="padding: 10px 8px;">Joined Date</th>
+                <th style="padding: 10px 8px; text-align: right;">Status</th>
+              </tr>
+            </thead>
+            <tbody id="referralList">
+              <tr>
+                <td colspan="4" style="text-align: center; padding: 24px; color: var(--ts);">No referrals yet. Invite your friends to get started!</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
   </div><!-- /content -->
 
   <!-- MOBILE BOTTOM NAV -->
@@ -1350,6 +1418,66 @@ async function loadKyc(){
   }catch(e){
     console.log('KYC load failed:',e);
   }
+}
+
+async function loadReferrals(){
+  try{
+    const res=await fetch('/api/student/referrals',{headers:{'Authorization':'Bearer '+_tk}});
+    const data=await res.json();
+    if(data.success){
+      document.getElementById('refCount').textContent=data.referredCount;
+      const progress = Math.min(data.referredCount, 3);
+      const text = document.getElementById('refMilestoneText');
+      if (data.referredCount >= 3) {
+        text.innerHTML = `🎉 Congratulations! You have unlocked the <strong>Verified Student Badge</strong>! NextGenGrowth clients will see a verified mark on your profile.`;
+      } else {
+        text.innerHTML = `Refer 3 friends to unlock <strong>Verified Creator Badge</strong>. (Progress: <strong>${data.referredCount}/3</strong>)`;
+      }
+      
+      const refLink = `${window.location.origin}/register?ref=${data.referralCode}`;
+      document.getElementById('refLinkInput').value = refLink;
+
+      const list = document.getElementById('referralList');
+      if (data.referrals && data.referrals.length > 0) {
+        list.innerHTML = data.referrals.map(ref => `
+          <tr style="border-bottom: 1px solid var(--br);">
+            <td style="padding: 12px 8px; font-weight:600; color:var(--td);">${esc(ref.firstName)} ${esc(ref.lastName)}</td>
+            <td style="padding: 12px 8px; color:var(--ts);">${esc(ref.college || 'College student')}</td>
+            <td style="padding: 12px 8px; color:var(--ts);">${new Date(ref.createdAt).toLocaleDateString()}</td>
+            <td style="padding: 12px 8px; text-align: right;"><span class="kyc-status ${ref.studentBadge === 'verified' || ref.studentBadge === 'top-rated' ? '' : 'pending'}">${ref.studentBadge === 'verified' || ref.studentBadge === 'top-rated' ? 'Verified' : 'Joined'}</span></td>
+          </tr>
+        `).join('');
+      } else {
+        list.innerHTML = `
+          <tr>
+            <td colspan="4" style="text-align: center; padding: 24px; color: var(--ts);">No referrals yet. Invite your friends to get started!</td>
+          </tr>
+        `;
+      }
+    }
+  }catch(e){
+    console.log('Referrals load failed:',e);
+  }
+}
+
+function copyReferralLink(){
+  const linkInput = document.getElementById('refLinkInput');
+  linkInput.select();
+  linkInput.setSelectionRange(0, 99999);
+  navigator.clipboard.writeText(linkInput.value);
+  showToast('Referral link copied! 📋','success');
+}
+
+function shareWhatsApp(){
+  const link = document.getElementById('refLinkInput').value;
+  const msg = encodeURIComponent(`Hey! Join NextGenGrowth to get paid video editing, graphic design, and brand ambassador campaigns from D2C startups. Register here using my link: ${link}`);
+  window.open(`https://api.whatsapp.com/send?text=${msg}`, '_blank');
+}
+
+function shareTwitter(){
+  const link = document.getElementById('refLinkInput').value;
+  const msg = encodeURIComponent(`Join NextGenGrowth to get verified student campaigns, D2C creative gigs, and campus roles. Register with my link: ${link}`);
+  window.open(`https://twitter.com/intent/tweet?text=${msg}`, '_blank');
 }
 
 // AI MATCHING
@@ -2550,7 +2678,7 @@ async function submitMentorApplication(){
 }
 
 // NAVIGATION
-const PT={home:'Dashboard',projects:'Browse Projects',longterm:'Long-Term Roles',applications:'My Applications',portfolio:'My Portfolio',earnings:'My Earnings',courses:'Skill Courses',mentors:'Mentors',profile:'My Profile',kyc:'Payout KYC'};
+const PT={home:'Dashboard',projects:'Browse Projects',longterm:'Long-Term Roles',applications:'My Applications',portfolio:'My Portfolio',earnings:'My Earnings',courses:'Skill Courses',mentors:'Mentors',profile:'My Profile',kyc:'Payout KYC',referrals:'Referral Program'};
 function goTo(pg,navBtn){
   closeNotifications();
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -2564,6 +2692,7 @@ function goTo(pg,navBtn){
   if(pg==='applications'){renderAppList(realApps,'all');renderApprovedProjects(realApps);loadStudentWorkspaces();}
   if(pg==='mentors')loadMentors();
   if(pg==='kyc')loadKyc();
+  if(pg==='referrals')loadReferrals();
   window.scrollTo({top:0,behavior:'smooth'});
   closeSidebar();
   gsap.fromTo('#page-'+pg,{opacity:0,y:10},{opacity:1,y:0,duration:.28,ease:'power2.out'});

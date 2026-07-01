@@ -110,6 +110,7 @@ const userSchema = new mongoose.Schema({
   avatar:{type:String,default:""},
   brandLink: { type: String, default: "" }, // LinkedIn/Website link store karne ke liye
   isApproved: { type: Boolean, default: true },
+  referredBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
   payoutKyc:{
     legalName:{type:String,default:""},
     preferredPayout:{type:String,enum:["bank","upi"],default:"bank"},
@@ -2137,7 +2138,9 @@ if(GOOGLE_CLIENT_ID && GOOGLE_CLIENT_SECRET){
   // Google auth routes
   app.get("/auth/google",(req,res,next)=>{
     const role=normalizeRole(req.query.role);
+    const ref=req.query.ref; // Capture referral
     req.session.googleRole=role;
+    if(ref) req.session.googleRef=ref;
     req.session.save((err)=>{
       if(err)return next(err);
       passport.authenticate("google",{
@@ -2167,6 +2170,16 @@ if(GOOGLE_CLIENT_ID && GOOGLE_CLIENT_SECRET){
           const fName = profile.name?.givenName || profile.displayName?.split(" ")[0] || "User";
           const lName = profile.name?.familyName || profile.displayName?.split(" ").slice(1).join(" ") || "";
 
+          // Resolve referral
+          let refId = null;
+          const refRaw = req.session.googleRef;
+          if(refRaw && mongoose.Types.ObjectId.isValid(refRaw)){
+            const referrer = await User.findById(refRaw);
+            if(referrer && referrer.role === "student"){
+              refId = referrer._id;
+            }
+          }
+
           const newUser=await User.create({
             firstName: fName,
             lastName: lName,
@@ -2176,7 +2189,22 @@ if(GOOGLE_CLIENT_ID && GOOGLE_CLIENT_SECRET){
             avatar:profile.photos?.[0]?.value||"",
             isVerified:true,
             isApproved:true,
+            referredBy:refId,
           });
+
+          // Check Referral Milestone
+          if(refId){
+            const referralCount = await User.countDocuments({ referredBy: refId });
+            if(referralCount >= 3){
+              const referrerUser = await User.findById(refId);
+              if(referrerUser && referrerUser.studentBadge === "beginner"){
+                referrerUser.studentBadge = "verified";
+                await referrerUser.save();
+                console.log(`🎉 Referrer ${referrerUser.email} has reached 3 referrals via Google Auth! Unlocked 'verified' badge.`);
+              }
+            }
+          }
+
           const token=generateToken(newUser);
           
           sendConfiguredEmail("welcome",newUser.email, `Welcome to NextGenGrowth! 🎉`, welcomeEmail(newUser.firstName, role))
@@ -2331,7 +2359,7 @@ app.post("/api/forgot-password/reset",authLimiter,async(req,res)=>{
 // ═══════════════════════════════════════════
 app.post("/api/register",authLimiter,async(req,res)=>{
   try{
-    const{firstName,lastName,email,password,role,college,year,skills,companyName,serviceNeeded,brandLink}=req.body;
+    const{firstName,lastName,email,password,role,college,year,skills,companyName,serviceNeeded,brandLink,referredBy}=req.body;
     if(!firstName||!lastName||!email||!password||!role)
       return res.status(400).json({success:false,message:"All fields required."});
     const settings=await getPlatformSettings();
@@ -2348,6 +2376,16 @@ app.post("/api/register",authLimiter,async(req,res)=>{
       return res.status(400).json({success:false,message:"Email not verified. Please verify OTP first."});
     const existing=await User.findOne({email:email.toLowerCase()});
     if(existing)return res.status(409).json({success:false,message:"Email already registered."});
+    
+    // Resolve referral
+    let refId = null;
+    if(referredBy && mongoose.Types.ObjectId.isValid(referredBy)){
+      const referrer = await User.findById(referredBy);
+      if(referrer && referrer.role === "student"){
+        refId = referrer._id;
+      }
+    }
+
     const hashedPwd=await bcrypt.hash(password,12);
     const newUser=await User.create({
       firstName,lastName,email:email.toLowerCase(),password:hashedPwd,
@@ -2355,7 +2393,22 @@ app.post("/api/register",authLimiter,async(req,res)=>{
       skills:skills||[],companyName:companyName||"",brandLink:brandLink||"",serviceNeeded:serviceNeeded||"",
       isVerified:true,
       isApproved:true,
+      referredBy:refId,
     });
+    
+    // Check Referral Milestone
+    if(refId){
+      const referralCount = await User.countDocuments({ referredBy: refId });
+      if(referralCount >= 3){
+        const referrerUser = await User.findById(refId);
+        if(referrerUser && referrerUser.studentBadge === "beginner"){
+          referrerUser.studentBadge = "verified";
+          await referrerUser.save();
+          console.log(`🎉 Referrer ${referrerUser.email} has reached 3 referrals! Unlocked 'verified' badge.`);
+        }
+      }
+    }
+
     // Clean up OTP
     await OTP.deleteMany({email:email.toLowerCase()});
     const token=generateToken(newUser);
@@ -2448,6 +2501,53 @@ app.put("/api/profile/avatar",verifyToken,async(req,res)=>{
     res.json({success:true,message:"Profile photo saved.",avatar:updated.avatar,user:userObj});
   }catch(err){
     res.status(500).json({success:false,message:"Could not save profile photo."});
+  }
+});
+
+// ═══════════════════════════════════════════
+// PUBLIC CREATORS / STUDENT DIRECTORY
+// ═══════════════════════════════════════════
+app.get("/api/public/creators",async(req,res)=>{
+  try{
+    // Fetch students who have either verification or have completed key profile parts (e.g. skills or work samples)
+    const creators=await User.find({
+      role:"student",
+      $or: [
+        { verificationStatus: "verified" },
+        { studentBadge: { $in: ["verified", "top-rated"] } },
+        { skills: { $exists: true, $not: { $size: 0 } } }
+      ]
+    }).select("_id firstName lastName college year skills headline bio avatar workSamples studentBadge portfolioLink");
+    res.json({success:true,creators});
+  }catch(err){
+    res.status(500).json({success:false,message:"Server error."});
+  }
+});
+
+// ═══════════════════════════════════════════
+// STUDENT REFERRAL DETAILS
+// ═══════════════════════════════════════════
+app.get("/api/student/referrals",verifyToken,async(req,res)=>{
+  try{
+    if(req.user.role!=="student")return res.status(403).json({success:false,message:"Student only."});
+    const referredCount=await User.countDocuments({referredBy:req.user.id});
+    const referrals=await User.find({referredBy:req.user.id}).select("firstName lastName college createdAt studentBadge");
+    
+    // Obfuscate last name for privacy
+    const mappedReferrals = referrals.map(r => {
+      const obj = r.toObject();
+      obj.lastName = obj.lastName ? obj.lastName[0] + "..." : "";
+      return obj;
+    });
+
+    res.json({
+      success:true,
+      referralCode:req.user.id, // User ID is the referral code
+      referredCount,
+      referrals: mappedReferrals
+    });
+  }catch(err){
+    res.status(500).json({success:false,message:"Server error."});
   }
 });
 
