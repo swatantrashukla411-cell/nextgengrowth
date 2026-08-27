@@ -50,7 +50,7 @@ function getSalutation(name, email, company) {
 
 // A highly personalized, high-converting psychological email template tailored to specific startup segments
 // ABSOLUTELY ZERO MENTION of money, cost, budget, escrow, pricing, or currency symbols.
-function generatePsychologicalEmailTemplate(salutation, company, companyKey) {
+function generatePsychologicalTextTemplate(salutation, company, companyKey) {
   const cleanCompany = company ? company.trim() : 'your startup';
 
   let personalizedIntro = '';
@@ -59,78 +59,50 @@ function generatePsychologicalEmailTemplate(salutation, company, companyKey) {
   // Tailor template based on company profile segments to maximize response rate
   if (companyKey.includes('shoegr') || companyKey.includes('svish') || companyKey.includes('koparo') || companyKey.includes('clensta') || companyKey.includes('boat') || companyKey.includes('sugar') || companyKey.includes('mamaearth') || companyKey.includes('minimalist') || companyKey.includes('plum') || companyKey.includes('pilgrim')) {
     // D2C / Personal Care / Cleanliness / Fashion Segment
-    personalizedIntro = `I'm reaching out because I've been following how <strong>${cleanCompany}</strong> has been scaling in the direct-to-consumer space. For D2C brands, maintaining a constant stream of high-impact Gen-Z social media content (like edited product reels, aesthetic unboxings, and TikTok ads) is critical to keeping Customer Acquisition Costs (CAC) down.`;
+    personalizedIntro = `I'm reaching out because I've been following how ${cleanCompany} has been scaling in the direct-to-consumer space. For D2C brands, maintaining a constant stream of high-impact Gen-Z social media content (like edited product reels, aesthetic unboxings, and TikTok ads) is critical to keeping Customer Acquisition Costs (CAC) down.`;
     
     personalizedAngle = `We connect brands like yours with top-vetted college video editors, designers, and social content writers who understand Gen-Z hooks because they *are* Gen-Z. Instead of paying agency retainers, you can hire them directly for specific tasks (like turning raw product clips into high-retention video reels) to build your content pipeline.`;
   } else if (companyKey.includes('sleepycat') || companyKey.includes('the sleep company') || companyKey.includes('sleepyhead') || companyKey.includes('wakefit') || companyKey.includes('duroflex')) {
     // Home / Sleep Solutions Segment
-    personalizedIntro = `I wanted to connect because I've been studying <strong>${cleanCompany}</strong>'s positioning in the premium home comfort and mattress segment. Visual design, high-quality video walkthroughs, and organic peer recommendations are crucial to driving online trust in this high-ticket space.`;
+    personalizedIntro = `I wanted to connect because I've been studying ${cleanCompany}'s positioning in the premium home comfort and mattress segment. Visual design, high-quality video walkthroughs, and organic peer recommendations are crucial to driving online trust in this high-ticket space.`;
     
     personalizedAngle = `We can connect you with vetted graphic designers for social creatives, and student marketing teams to drive localized college campaigns. The best part? You can post a task and collaborate directly with students on our dashboard—only approving the output once it meets your guidelines, ensuring zero risk.`;
   } else if (companyKey.includes('healthcred') || companyKey.includes('apnibus') || companyKey.includes('kenko') || companyKey.includes('ikin') || companyKey.includes('superliving')) {
     // FinTech / SaaS / Tech Platform Segment
-    personalizedIntro = `I'm writing to you because I noticed <strong>${cleanCompany}</strong>'s growth in the tech ecosystem. For SaaS, fintech, and digital logistics platforms, getting developer support for quick frontend bug fixes, landing page design, and app download drives is always a bottleneck.`;
+    personalizedIntro = `I'm writing to you because I noticed ${cleanCompany}'s growth in the tech ecosystem. For SaaS, fintech, and digital logistics platforms, getting developer support for quick frontend bug fixes, landing page design, and app download drives is always a bottleneck.`;
     
     personalizedAngle = `We have a verified database of engineering and design students from colleges like IITs and DU who can develop next-gen UI/UX wireframes or build speed-optimized landing pages. You can delegate frontend tasks directly through our marketplace, saving your core team valuable time.`;
   } else {
     // General Startup Segment
-    personalizedIntro = `I'm reaching out because I noticed your recent growth milestone at <strong>${cleanCompany}</strong>. As founders, we're constantly trying to execute high-quality design, video editing, and marketing campaigns while keeping overheads low and team sizes lean.`;
+    personalizedIntro = `I'm reaching out because I noticed your recent growth milestone at ${cleanCompany}. As founders, we're constantly trying to execute high-quality design, video editing, and marketing campaigns while keeping overheads low and team sizes lean.`;
     
     personalizedAngle = `NextGenGrowth lets you hire vetted, talented college students for short-term projects (like reel editing, banner design, or web fixes) at a fraction of standard agency overheads. All work is managed on our platform, so you only approve once you are satisfied with the output.`;
   }
 
-  return `
-    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 580px; margin: 0 auto; padding: 24px; color: #1e293b; line-height: 1.6; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
-      <p style="font-size: 15px; margin-top: 0;">Hi ${salutation},</p>
+  return `Hi ${salutation},
 
-      <p style="font-size: 15px;">
-        My name is Swatantra Shukla, and I'm the founder of <strong>NextGenGrowth</strong>. 
-      </p>
+My name is Swatantra Shukla, and I'm the founder of NextGenGrowth.
 
-      <p style="font-size: 15px;">
-        ${personalizedIntro}
-      </p>
+${personalizedIntro}
 
-      <p style="font-size: 15px;">
-        ${personalizedAngle}
-      </p>
+${personalizedAngle}
 
-      <p style="font-size: 15px; font-weight: 600; color: #0f172a; margin-top: 24px; margin-bottom: 8px;">
-        Here is how we verify quality and guarantee results:
-      </p>
-      <ul style="padding-left: 20px; font-size: 14.5px; margin-top: 0; margin-bottom: 24px; color: #334155;">
-        <li style="margin-bottom: 8px;"><strong>Vetted Talent Only:</strong> We screen student portfolios manually. You review verified work samples before selecting an applicant.</li>
-        <li style="margin-bottom: 8px;"><strong>Quality Approval:</strong> You assign the project guidelines and only accept the final files once they meet your standards.</li>
-        <li style="margin-bottom: 8px;"><strong>Managed Campus Ambassadors:</strong> If you need on-ground college signups or offline activations, we deploy dedicated student squads (like we did for <strong>ChakDeBharat</strong> and <strong>IndiaSportHub</strong>).</li>
-      </ul>
+Here is how we verify quality and guarantee results:
+- Vetted Talent Only: We screen student portfolios manually. You review verified work samples before selecting an applicant.
+- Quality Approval: You assign the project guidelines and only accept the final files once they meet your standards.
+- Managed Campus Ambassadors: If you need on-ground college signups or offline activations, we deploy dedicated student squads (like we did for ChakDeBharat and IndiaSportHub).
 
-      <p style="font-size: 15px;">
-        We have optimized our platform for quick setups. You can post a pilot project on our brand dashboard in under 2 minutes:
-      </p>
+We have optimized our platform for quick setups. You can post a pilot project on our brand dashboard in under 2 minutes:
+https://www.nextgengrowth.in/for-brands
 
-      <div style="text-align: center; margin: 32px 0;">
-        <a href="https://www.nextgengrowth.in/for-brands" style="display: inline-block; background-color: #10b981; color: white; padding: 14px 28px; font-weight: 700; border-radius: 9999px; text-decoration: none; font-size: 15px; box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.3); transition: background-color 0.2s;">
-          Post a Pilot Project on Dashboard →
-        </a>
-      </div>
+Would love to know if you'd be open to a quick pilot task this week to test out the talent quality.
 
-      <p style="font-size: 13.5px; color: #64748b; text-align: center; margin-bottom: 24px;">
-        Or check out our brand page: <a href="https://www.nextgengrowth.in/for-brands" style="color: #10b981; text-decoration: none; font-weight: 600;">nextgengrowth.in/for-brands</a>
-      </p>
+Warm regards,
 
-      <p style="font-size: 15px;">
-        Would love to know if you'd be open to a quick pilot task this week to test out the talent quality.
-      </p>
-
-      <p style="font-size: 14px; margin-top: 32px; border-top: 1px solid #e2e8f0; padding-top: 20px; color: #475569; font-style: normal;">
-        Warm regards,<br>
-        <strong>Swatantra Shukla</strong><br>
-        Founder, NextGenGrowth<br>
-        Phone: +91 9532792303<br>
-        LinkedIn: <a href="https://www.linkedin.com/in/swatantra-shukla-aaa2a82bb/" style="color: #10b981; text-decoration: none; font-weight: 500;">Swatantra Shukla</a>
-      </p>
-    </div>
-  `;
+Swatantra Shukla
+Founder, NextGenGrowth
+Phone: +91 9532792303
+LinkedIn: https://www.linkedin.com/in/swatantra-shukla-aaa2a82bb/`;
 }
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -235,7 +207,17 @@ async function main() {
       return;
     }
 
-    console.log(`🚀 Starting Cold Email Campaign to ${unsentLeads.length} new brands via: ${gmailUser}...`);
+    // Parse --limit argument (e.g. node send_brand_cold_emails.js --limit 100)
+    const limitArgIndex = process.argv.indexOf('--limit');
+    let limit = unsentLeads.length;
+    if (limitArgIndex !== -1 && process.argv[limitArgIndex + 1]) {
+      const val = parseInt(process.argv[limitArgIndex + 1], 10);
+      if (!isNaN(val)) {
+        limit = Math.min(val, unsentLeads.length);
+      }
+    }
+
+    console.log(`🚀 Starting Cold Email Campaign to ${limit} brands via: ${gmailUser}...`);
     console.log('------------------------------------------------------------');
 
     const newDetails = [];
@@ -244,17 +226,17 @@ async function main() {
     await transporter.verify();
     console.log('✅ SMTP Connection verified! Sending process started...');
 
-    for (let i = 0; i < unsentLeads.length; i++) {
+    for (let i = 0; i < limit; i++) {
       const lead = unsentLeads[i];
       const email = lead.email;
       const name = lead.name;
       const company = lead.company;
 
-      console.log(`[${i + 1}/${unsentLeads.length}] Sending to ${name} <${email}> (${company})...`);
+      console.log(`[${i + 1}/${limit}] Sending to ${name} <${email}> (${company})...`);
 
       try {
         const salutation = getSalutation(name, email, company);
-        const html = generatePsychologicalEmailTemplate(salutation, company, company.toLowerCase());
+        const text = generatePsychologicalTextTemplate(salutation, company, company.toLowerCase());
         
         // Subject line is quality-focused (No money mentions)
         const subject = `Vetted Gen-Z creators and developers for ${company} (Quality Guaranteed Pilot)`;
@@ -263,7 +245,7 @@ async function main() {
           from: `"Swatantra Shukla" <${gmailUser}>`,
           to: email,
           subject: subject,
-          html: html
+          text: text
         };
 
         const info = await transporter.sendMail(mailOptions);
@@ -277,7 +259,7 @@ async function main() {
       }
 
       // Delay to avoid SMTP block / spam detection (5 seconds)
-      if (i < unsentLeads.length - 1) {
+      if (i < limit - 1) {
         await sleep(5000);
       }
     }

@@ -2727,7 +2727,7 @@ function logout(){
   const finish=()=>{
     localStorage.removeItem('ngg_token');
     localStorage.removeItem('ngg_user');
-    window.location.href='/login?logged_out=1';
+    window.location.href='/';
   };
   const clearServerSession=()=>fetch('/api/logout',{method:'POST',keepalive:true}).catch(()=>{});
   const run=()=>clearServerSession().finally(finish);

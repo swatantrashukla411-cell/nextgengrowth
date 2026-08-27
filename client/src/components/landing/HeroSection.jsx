@@ -57,29 +57,29 @@ export function HeroSection() {
           <div className="lp-hero-content">
             {/* Pill badge */}
             <div ref={pillRef} className="lp-hero-pill">
-              <Zap size={14} /> India's Student Workforce Ecosystem
+              <Zap size={14} /> India's Student Talent Hub
             </div>
 
             {/* Headline */}
             <div ref={headlineRef} className="lp-hero-headline-wrapper">
               <h1 className="lp-hero-headline">
-                Build the <span>Future of</span> Student Work.
+                Where Student <span>Potential Meets</span> Opportunity.
               </h1>
             </div>
 
             {/* Subheading */}
             <p ref={subheadlineRef} className="lp-subtitle">
-              One ecosystem where brands discover verified talent, students build real careers, and opportunities become reality.
+              We connect ambitious college students with real-world projects, internships, gigs, brands and organizations — helping students gain experience and earn while helping organizations discover talented young people.
             </p>
 
             {/* CTA Buttons */}
             <div ref={ctasRef} className="lp-hero-ctas">
-              <Link to="/register" className="lp-btn lp-btn-primary">
-                Join NextGenGrowth <ArrowRight size={18} />
+              <Link to="/dashboard" className="lp-btn lp-btn-primary">
+                Explore Opportunities <ArrowRight size={18} />
               </Link>
-              <a href="#about" onClick={handleExploreClick} className="lp-btn lp-btn-secondary">
-                Explore Platform
-              </a>
+              <Link to="/brand-dashboard" className="lp-btn lp-btn-secondary">
+                Post an Opportunity
+              </Link>
             </div>
           </div>
 

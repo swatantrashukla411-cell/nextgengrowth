@@ -1,0 +1,909 @@
+{
+  "campaignRunAt": "2026-06-29T14:09:54.695Z",
+  "sender": "swatantrashukla411@gmail.com",
+  "totalCount": 100,
+  "sentCount": 100,
+  "failCount": 0,
+  "details": [
+    {
+      "id": 1,
+      "name": "Rahul Gupta",
+      "email": "rahul@bolna.ai",
+      "company": "Bolna AI",
+      "status": "sent",
+      "messageId": "<37e4ff56-4173-8dfc-9833-bfe505d60edd@gmail.com>",
+      "sentAt": "2026-06-29T13:56:10.315Z"
+    },
+    {
+      "id": 2,
+      "name": "Srikanth Prasad",
+      "email": "srikanth@perseus.dev",
+      "company": "Perseus",
+      "status": "sent",
+      "messageId": "<6aa29bfe-2b82-580b-5004-d5afa9a3368b@gmail.com>",
+      "sentAt": "2026-06-29T13:56:18.416Z"
+    },
+    {
+      "id": 3,
+      "name": "Vivek Raghavan",
+      "email": "vivek@sarvam.ai",
+      "company": "Sarvam AI",
+      "status": "sent",
+      "messageId": "<dea97d05-9a2c-b93f-0b43-f596c7d0d6c1@gmail.com>",
+      "sentAt": "2026-06-29T13:56:26.427Z"
+    },
+    {
+      "id": 4,
+      "name": "Adithya S",
+      "email": "adithya@cognitivelab.ai",
+      "company": "CognitiveLab",
+      "status": "sent",
+      "messageId": "<83543d68-03c5-6266-f27a-ecdb47583655@gmail.com>",
+      "sentAt": "2026-06-29T13:56:34.527Z"
+    },
+    {
+      "id": 5,
+      "name": "Shivam Sabharwal",
+      "email": "shivam@athina.ai",
+      "company": "Athina AI",
+      "status": "sent",
+      "messageId": "<c08bf39a-bd58-e665-0920-70b0eb833301@gmail.com>",
+      "sentAt": "2026-06-29T13:56:43.547Z"
+    },
+    {
+      "id": 6,
+      "name": "Karan Vaidya",
+      "email": "karan@composio.dev",
+      "company": "Composio",
+      "status": "sent",
+      "messageId": "<08317d32-3dd5-78cc-75e6-68527c698c00@gmail.com>",
+      "sentAt": "2026-06-29T13:56:52.589Z"
+    },
+    {
+      "id": 7,
+      "name": "Rohit Kumar",
+      "email": "rohit@segmind.com",
+      "company": "Segmind",
+      "status": "sent",
+      "messageId": "<bb242e8e-6180-aa02-4c26-d5604b23b3a0@gmail.com>",
+      "sentAt": "2026-06-29T13:57:00.402Z"
+    },
+    {
+      "id": 8,
+      "name": "Rishabh Srivastava",
+      "email": "rishabh@defog.ai",
+      "company": "Defog AI",
+      "status": "sent",
+      "messageId": "<235b96f3-e780-9fd5-032f-d50362ad9ac6@gmail.com>",
+      "sentAt": "2026-06-29T13:57:08.868Z"
+    },
+    {
+      "id": 9,
+      "name": "Rohit Agarwal",
+      "email": "rohit@portkey.ai",
+      "company": "Portkey AI",
+      "status": "sent",
+      "messageId": "<2cd30b30-bb3d-d6e8-f9c0-68d570b3d9bb@gmail.com>",
+      "sentAt": "2026-06-29T13:57:17.788Z"
+    },
+    {
+      "id": 10,
+      "name": "Isaiah Foster",
+      "email": "isaiah@bland.ai",
+      "company": "Bland AI",
+      "status": "sent",
+      "messageId": "<5c5b46e6-c963-5269-5f60-d5264c680fa8@gmail.com>",
+      "sentAt": "2026-06-29T13:57:25.845Z"
+    },
+    {
+      "id": 11,
+      "name": "Kwindla Kramer",
+      "email": "k@vapi.ai",
+      "company": "Vapi",
+      "status": "sent",
+      "messageId": "<daf19284-febc-5dd4-6cac-0e6baa6bc3e0@gmail.com>",
+      "sentAt": "2026-06-29T13:57:33.573Z"
+    },
+    {
+      "id": 12,
+      "name": "Henry Heng",
+      "email": "henry@flowiseai.com",
+      "company": "Flowise AI",
+      "status": "sent",
+      "messageId": "<4a36e984-b642-1c1a-e7fc-07b178a86c3c@gmail.com>",
+      "sentAt": "2026-06-29T13:57:42.111Z"
+    },
+    {
+      "id": 13,
+      "name": "Jerry Liu",
+      "email": "jerry@llamaindex.ai",
+      "company": "LlamaIndex",
+      "status": "sent",
+      "messageId": "<d2c53954-bd43-4a75-92a8-2bb670533d7a@gmail.com>",
+      "sentAt": "2026-06-29T13:57:50.554Z"
+    },
+    {
+      "id": 14,
+      "name": "Harrison Chase",
+      "email": "harrison@langchain.dev",
+      "company": "LangChain",
+      "status": "sent",
+      "messageId": "<09aa8af7-f0a9-a13e-df5e-4ad990a8a654@gmail.com>",
+      "sentAt": "2026-06-29T13:57:59.567Z"
+    },
+    {
+      "id": 15,
+      "name": "Demi Guo",
+      "email": "demi@pika.art",
+      "company": "Pika Labs",
+      "status": "sent",
+      "messageId": "<67a4ba97-9011-ff37-3664-79336f39aea8@gmail.com>",
+      "sentAt": "2026-06-29T13:58:07.707Z"
+    },
+    {
+      "id": 16,
+      "name": "Aravind Srivatsav",
+      "email": "aravind@fyno.io",
+      "company": "Fyno",
+      "status": "sent",
+      "messageId": "<0d3f82ce-185c-0369-9d15-57c4994d3673@gmail.com>",
+      "sentAt": "2026-06-29T13:58:15.339Z"
+    },
+    {
+      "id": 17,
+      "name": "Chris Frantz",
+      "email": "chris@loops.so",
+      "company": "Loops",
+      "status": "sent",
+      "messageId": "<d1a6c8c0-48ba-3fe0-824b-283d079e9b0f@gmail.com>",
+      "sentAt": "2026-06-29T13:58:23.840Z"
+    },
+    {
+      "id": 18,
+      "name": "Zeno Rocha",
+      "email": "zeno@resend.com",
+      "company": "Resend",
+      "status": "sent",
+      "messageId": "<bcea6b27-1168-2efe-07e0-fc3abe2a9ce5@gmail.com>",
+      "sentAt": "2026-06-29T13:58:32.359Z"
+    },
+    {
+      "id": 19,
+      "name": "Steven Tey",
+      "email": "steven@dub.co",
+      "company": "Dub.co",
+      "status": "sent",
+      "messageId": "<177d778b-9689-8def-cfcf-1a324460a7d7@gmail.com>",
+      "sentAt": "2026-06-29T13:58:41.327Z"
+    },
+    {
+      "id": 20,
+      "name": "James Hughes",
+      "email": "james@trigger.dev",
+      "company": "Trigger.dev",
+      "status": "sent",
+      "messageId": "<b19db73d-91eb-3404-96e9-0f77bb45b356@gmail.com>",
+      "sentAt": "2026-06-29T13:58:49.875Z"
+    },
+    {
+      "id": 21,
+      "name": "Colin Sidoti",
+      "email": "colin@clerk.dev",
+      "company": "Clerk",
+      "status": "sent",
+      "messageId": "<083692dd-39aa-38e0-46f8-eaefb6b493ac@gmail.com>",
+      "sentAt": "2026-06-29T13:58:57.789Z"
+    },
+    {
+      "id": 22,
+      "name": "Cameron Adams",
+      "email": "cameron@kinde.com",
+      "company": "Kinde",
+      "status": "sent",
+      "messageId": "<6bda2f39-12d6-4e73-51a4-a9469619c66b@gmail.com>",
+      "sentAt": "2026-06-29T13:59:06.298Z"
+    },
+    {
+      "id": 23,
+      "name": "Alexandre Bachand",
+      "email": "alexandre@hookdeck.com",
+      "company": "Hookdeck",
+      "status": "sent",
+      "messageId": "<76ac2ace-aa2f-0be3-63d1-0869826bc68a@gmail.com>",
+      "sentAt": "2026-06-29T13:59:14.554Z"
+    },
+    {
+      "id": 24,
+      "name": "Tomer Barnea",
+      "email": "tomer@novu.co",
+      "company": "Novu",
+      "status": "sent",
+      "messageId": "<68904dde-d23e-898f-ef8a-baf219820cda@gmail.com>",
+      "sentAt": "2026-06-29T13:59:22.191Z"
+    },
+    {
+      "id": 25,
+      "name": "Ben Rometsch",
+      "email": "ben@flagsmith.com",
+      "company": "Flagsmith",
+      "status": "sent",
+      "messageId": "<8a633dc9-5932-8470-7b5c-bbe1b7266e42@gmail.com>",
+      "sentAt": "2026-06-29T13:59:29.891Z"
+    },
+    {
+      "id": 26,
+      "name": "Graham Loomis",
+      "email": "graham@growthbook.io",
+      "company": "GrowthBook",
+      "status": "sent",
+      "messageId": "<68806230-a557-6bc7-8224-f7e51abe3e3d@gmail.com>",
+      "sentAt": "2026-06-29T13:59:37.943Z"
+    },
+    {
+      "id": 27,
+      "name": "Enzo Avigo",
+      "email": "enzo@june.so",
+      "company": "June.so",
+      "status": "sent",
+      "messageId": "<fa53bc48-bfe7-1706-e2a0-8c063ff6783e@gmail.com>",
+      "sentAt": "2026-06-29T13:59:46.456Z"
+    },
+    {
+      "id": 28,
+      "name": "Jay Khatri",
+      "email": "jay@highlight.io",
+      "company": "Highlight",
+      "status": "sent",
+      "messageId": "<848fdf45-97a6-2994-01e7-b1faf036b967@gmail.com>",
+      "sentAt": "2026-06-29T13:59:54.092Z"
+    },
+    {
+      "id": 29,
+      "name": "Juraj Masar",
+      "email": "juraj@betterstack.com",
+      "company": "Better Stack",
+      "status": "sent",
+      "messageId": "<d7a3c602-8504-523a-c493-7da3a6861de0@gmail.com>",
+      "sentAt": "2026-06-29T14:00:02.707Z"
+    },
+    {
+      "id": 30,
+      "name": "Ali Salah",
+      "email": "ali@instatus.com",
+      "company": "Instatus",
+      "status": "sent",
+      "messageId": "<f4b7ac17-8314-3e53-887b-1880b6764502@gmail.com>",
+      "sentAt": "2026-06-29T14:00:11.225Z"
+    },
+    {
+      "id": 31,
+      "name": "Tom Hacohen",
+      "email": "tom@svix.com",
+      "company": "Svix",
+      "status": "sent",
+      "messageId": "<390d4f0f-939b-9a51-b964-b8a8e75f5924@gmail.com>",
+      "sentAt": "2026-06-29T14:00:20.536Z"
+    },
+    {
+      "id": 32,
+      "name": "Sam Seely",
+      "email": "sam@knock.app",
+      "company": "Knock",
+      "status": "sent",
+      "messageId": "<e9ef5b10-95bf-33cf-94eb-4a5fb80de36d@gmail.com>",
+      "sentAt": "2026-06-29T14:00:29.161Z"
+    },
+    {
+      "id": 33,
+      "name": "Dan Farrelly",
+      "email": "dan@inngest.com",
+      "company": "Inngest",
+      "status": "sent",
+      "messageId": "<49d93feb-addb-345e-4fb2-9e071388fcb5@gmail.com>",
+      "sentAt": "2026-06-29T14:00:37.286Z"
+    },
+    {
+      "id": 34,
+      "name": "Neil Jagdish Patel",
+      "email": "neil@axiom.co",
+      "company": "Axiom",
+      "status": "sent",
+      "messageId": "<fc60a20a-0f35-b78a-d4eb-e747d6e5a9ad@gmail.com>",
+      "sentAt": "2026-06-29T14:00:45.293Z"
+    },
+    {
+      "id": 35,
+      "name": "Hannes Lenke",
+      "email": "hannes@checklyhq.com",
+      "company": "Checkly",
+      "status": "sent",
+      "messageId": "<fd49506a-4e7c-2244-8ff0-056d390b39c4@gmail.com>",
+      "sentAt": "2026-06-29T14:00:54.187Z"
+    },
+    {
+      "id": 36,
+      "name": "Rohit Taneja",
+      "email": "rohit@decentro.tech",
+      "company": "Decentro",
+      "status": "sent",
+      "messageId": "<0f33ee6a-d46e-9d4b-9936-cbca42c94200@gmail.com>",
+      "sentAt": "2026-06-29T14:01:02.404Z"
+    },
+    {
+      "id": 37,
+      "name": "Nishchay AG",
+      "email": "nishchay@changejar.in",
+      "company": "Jar",
+      "status": "sent",
+      "messageId": "<2562ebb6-a415-2378-d2f7-7970a2f96271@gmail.com>",
+      "sentAt": "2026-06-29T14:01:11.140Z"
+    },
+    {
+      "id": 38,
+      "name": "Ajinkya Kulkarni",
+      "email": "ajinkya@wintwealth.com",
+      "company": "Wint Wealth",
+      "status": "sent",
+      "messageId": "<936bc64f-9879-1b5c-af41-ceafadd2c8b8@gmail.com>",
+      "sentAt": "2026-06-29T14:01:20.567Z"
+    },
+    {
+      "id": 39,
+      "name": "Edul Patel",
+      "email": "edul@mudrex.com",
+      "company": "Mudrex",
+      "status": "sent",
+      "messageId": "<35afffac-350a-d2db-54d2-b07a4250574c@gmail.com>",
+      "sentAt": "2026-06-29T14:01:30.045Z"
+    },
+    {
+      "id": 40,
+      "name": "Viram Shah",
+      "email": "viram@vested.co.in",
+      "company": "Vested Finance",
+      "status": "sent",
+      "messageId": "<00b4b5d6-cef4-7a4f-5a02-b713cc3c70d6@gmail.com>",
+      "sentAt": "2026-06-29T14:01:39.163Z"
+    },
+    {
+      "id": 41,
+      "name": "Karthik Venkataraman",
+      "email": "karthik@fluid.money",
+      "company": "Fluid",
+      "status": "sent",
+      "messageId": "<56c2dd1e-da28-d77b-5a94-c42515d548f8@gmail.com>",
+      "sentAt": "2026-06-29T14:01:47.827Z"
+    },
+    {
+      "id": 42,
+      "name": "Rishabh Goel",
+      "email": "rishabh@finmo.co",
+      "company": "Finmo",
+      "status": "sent",
+      "messageId": "<04669878-7cf9-c8a8-8278-ca9130cfdd01@gmail.com>",
+      "sentAt": "2026-06-29T14:01:56.533Z"
+    },
+    {
+      "id": 43,
+      "name": "Anusha Ramakrishnan",
+      "email": "anusha@jify.co",
+      "company": "Jify",
+      "status": "sent",
+      "messageId": "<b43c5172-6c5b-73ae-50db-8d3e9824f3ba@gmail.com>",
+      "sentAt": "2026-06-29T14:02:04.481Z"
+    },
+    {
+      "id": 44,
+      "name": "Ashwin Deo",
+      "email": "ashwin@multipl.xyz",
+      "company": "Multipl",
+      "status": "sent",
+      "messageId": "<37468e80-f2f7-e295-479a-a5344ebfd36e@gmail.com>",
+      "sentAt": "2026-06-29T14:02:12.353Z"
+    },
+    {
+      "id": 45,
+      "name": "Sanjay Kumar",
+      "email": "sanjay@qubemoney.com",
+      "company": "Qube Money",
+      "status": "sent",
+      "messageId": "<670b6a02-37c6-b9ce-453c-dddeb990e019@gmail.com>",
+      "sentAt": "2026-06-29T14:02:21.407Z"
+    },
+    {
+      "id": 46,
+      "name": "Akash Singhal",
+      "email": "akash@lano.finance",
+      "company": "Lano Finance",
+      "status": "sent",
+      "messageId": "<72a53d66-53ca-9a54-e815-671ce96c1c20@gmail.com>",
+      "sentAt": "2026-06-29T14:02:31.030Z"
+    },
+    {
+      "id": 47,
+      "name": "Kushagra Manglik",
+      "email": "kushagra@saveo.in",
+      "company": "Saveo",
+      "status": "sent",
+      "messageId": "<61078686-be60-190b-fc2f-d672de265254@gmail.com>",
+      "sentAt": "2026-06-29T14:02:38.882Z"
+    },
+    {
+      "id": 48,
+      "name": "Abhinav Gupta",
+      "email": "abhinav@lentra.ai",
+      "company": "Lentra",
+      "status": "sent",
+      "messageId": "<0c2db815-501f-b7d9-f6f1-716ca3bc9d04@gmail.com>",
+      "sentAt": "2026-06-29T14:02:46.630Z"
+    },
+    {
+      "id": 49,
+      "name": "Gaurav Hinduja",
+      "email": "gaurav@capitalfloat.com",
+      "company": "Capital Float",
+      "status": "sent",
+      "messageId": "<8cc177cb-0ae5-7ce0-b082-0ac58debfccf@gmail.com>",
+      "sentAt": "2026-06-29T14:02:54.882Z"
+    },
+    {
+      "id": 50,
+      "name": "Dhiren Kotian",
+      "email": "dhiren@finbox.in",
+      "company": "FinBox",
+      "status": "sent",
+      "messageId": "<c66f22f5-d455-53f4-1d1c-3041cfe8e76c@gmail.com>",
+      "sentAt": "2026-06-29T14:03:03.902Z"
+    },
+    {
+      "id": 51,
+      "name": "Vaibhav Sisinty",
+      "email": "vaibhav@growthschool.io",
+      "company": "GrowthSchool",
+      "status": "sent",
+      "messageId": "<da30a9ac-443e-7361-1ccd-e0be2ae9a649@gmail.com>",
+      "sentAt": "2026-06-29T14:03:11.982Z"
+    },
+    {
+      "id": 52,
+      "name": "Aditya Kulkarni",
+      "email": "aditya@stoaschool.com",
+      "company": "Stoa School",
+      "status": "sent",
+      "messageId": "<45904395-f231-b31e-3e01-33f65b109a7b@gmail.com>",
+      "sentAt": "2026-06-29T14:03:20.196Z"
+    },
+    {
+      "id": 53,
+      "name": "Siddharth Maheshwari",
+      "email": "siddharth@newtonschool.co",
+      "company": "Newton School",
+      "status": "sent",
+      "messageId": "<6fbad4ec-d3da-b31b-7aec-666311c45f7c@gmail.com>",
+      "sentAt": "2026-06-29T14:03:28.776Z"
+    },
+    {
+      "id": 54,
+      "name": "Prateek Shukla",
+      "email": "prateek@masaischool.com",
+      "company": "Masai School",
+      "status": "sent",
+      "messageId": "<f28cbd05-d3be-f14b-3bf1-032d06232a5c@gmail.com>",
+      "sentAt": "2026-06-29T14:03:36.907Z"
+    },
+    {
+      "id": 55,
+      "name": "Shivam Dutta",
+      "email": "shivam@almabetter.com",
+      "company": "AlmaBetter",
+      "status": "sent",
+      "messageId": "<ee23d894-64ef-69e2-89de-9224a0620e82@gmail.com>",
+      "sentAt": "2026-06-29T14:03:44.638Z"
+    },
+    {
+      "id": 56,
+      "name": "Aman Agarwal",
+      "email": "aman@frekil.com",
+      "company": "Frekil",
+      "status": "sent",
+      "messageId": "<1e1d5fd8-cca4-b795-4e6e-7f6fa5483381@gmail.com>",
+      "sentAt": "2026-06-29T14:03:52.745Z"
+    },
+    {
+      "id": 57,
+      "name": "Ravi Shekhar",
+      "email": "ravi@codingninjas.com",
+      "company": "Coding Ninjas",
+      "status": "sent",
+      "messageId": "<8a54b9b6-3777-a792-e392-4038d6565d0c@gmail.com>",
+      "sentAt": "2026-06-29T14:04:01.825Z"
+    },
+    {
+      "id": 58,
+      "name": "Gaurav Munjal",
+      "email": "gaurav@prepladder.com",
+      "company": "PrepLadder",
+      "status": "sent",
+      "messageId": "<82538ba0-cdca-d65c-d6b0-48b27f3ae308@gmail.com>",
+      "sentAt": "2026-06-29T14:04:10.130Z"
+    },
+    {
+      "id": 59,
+      "name": "Aditya Shankar",
+      "email": "aditya.shankar@doubtnut.com",
+      "company": "Doubtnut Education",
+      "status": "sent",
+      "messageId": "<96ef8f90-102e-edfa-7239-950fc4739ec1@gmail.com>",
+      "sentAt": "2026-06-29T14:04:18.203Z"
+    },
+    {
+      "id": 60,
+      "name": "Shyam Gupta",
+      "email": "shyam@boardinfinity.com",
+      "company": "Board Infinity Academy",
+      "status": "sent",
+      "messageId": "<a9a93044-a40d-aa5a-4836-440a797d21b5@gmail.com>",
+      "sentAt": "2026-06-29T14:04:27.112Z"
+    },
+    {
+      "id": 61,
+      "name": "Tanveer Singh",
+      "email": "tanveer@campk12.com",
+      "company": "Camp K12 Code",
+      "status": "sent",
+      "messageId": "<d16b6524-5917-3a86-44e0-f8c6a86ee408@gmail.com>",
+      "sentAt": "2026-06-29T14:04:35.975Z"
+    },
+    {
+      "id": 62,
+      "name": "Neha Joshi",
+      "email": "neha@eduvanz.com",
+      "company": "Eduvanz",
+      "status": "sent",
+      "messageId": "<2e55105b-8e0f-74a2-08b6-b2230c37ba2c@gmail.com>",
+      "sentAt": "2026-06-29T14:04:44.952Z"
+    },
+    {
+      "id": 63,
+      "name": "Mayank Kumar",
+      "email": "mayank@upgradcampus.com",
+      "company": "upGrad Campus",
+      "status": "sent",
+      "messageId": "<0f252cba-46ba-5ca9-5eaf-67a91c97369a@gmail.com>",
+      "sentAt": "2026-06-29T14:04:53.306Z"
+    },
+    {
+      "id": 64,
+      "name": "Akshay Saxena",
+      "email": "akshay@avantifellows.org",
+      "company": "Avanti Fellows",
+      "status": "sent",
+      "messageId": "<aa2dea14-d96c-6721-ac04-ffc9f7f37481@gmail.com>",
+      "sentAt": "2026-06-29T14:05:01.255Z"
+    },
+    {
+      "id": 65,
+      "name": "Karan Gupta",
+      "email": "karan@kyt.com",
+      "company": "Kyt Academy",
+      "status": "sent",
+      "messageId": "<4bbd0fc0-50c3-f6c5-b627-75e9d35b264d@gmail.com>",
+      "sentAt": "2026-06-29T14:05:09.933Z"
+    },
+    {
+      "id": 66,
+      "name": "Aniket Shah",
+      "email": "aniket@swish.delivery",
+      "company": "Swish Delivery",
+      "status": "sent",
+      "messageId": "<8fb9ff9d-2858-99f8-52df-8ce7cb4782f9@gmail.com>",
+      "sentAt": "2026-06-29T14:05:18.006Z"
+    },
+    {
+      "id": 67,
+      "name": "Yogesh Chavan",
+      "email": "yogesh@peerlist.io",
+      "company": "Peerlist",
+      "status": "sent",
+      "messageId": "<2a2cb372-2101-ef9f-a831-8a4123df3894@gmail.com>",
+      "sentAt": "2026-06-29T14:05:25.870Z"
+    },
+    {
+      "id": 68,
+      "name": "Ayush Ranjan",
+      "email": "ayush@huddle01.com",
+      "company": "Huddle01",
+      "status": "sent",
+      "messageId": "<994cfb82-ec53-2c44-d4b0-1cc1000a34e6@gmail.com>",
+      "sentAt": "2026-06-29T14:05:34.421Z"
+    },
+    {
+      "id": 69,
+      "name": "Harish Uthayakumar",
+      "email": "harish@bluelearn.in",
+      "company": "Bluelearn",
+      "status": "sent",
+      "messageId": "<f4ca4f37-c6e3-caca-9bd6-207d54b2a5b8@gmail.com>",
+      "sentAt": "2026-06-29T14:05:42.116Z"
+    },
+    {
+      "id": 70,
+      "name": "Varun Mayya",
+      "email": "varun@scenes.media",
+      "company": "Scenes",
+      "status": "sent",
+      "messageId": "<e0b2559d-e231-ebdf-cf35-33510c4f8474@gmail.com>",
+      "sentAt": "2026-06-29T14:05:49.895Z"
+    },
+    {
+      "id": 71,
+      "name": "Abhishek Prasad",
+      "email": "abhishek@questbook.xyz",
+      "company": "Quest Book",
+      "status": "sent",
+      "messageId": "<358b4747-bf63-c913-5a8c-ee908b11b0bf@gmail.com>",
+      "sentAt": "2026-06-29T14:05:59.123Z"
+    },
+    {
+      "id": 72,
+      "name": "Harini Janakiraman",
+      "email": "harini@buildship.com",
+      "company": "BuildShip",
+      "status": "sent",
+      "messageId": "<ab525aaf-ef5f-b322-7f27-5cb7f047958f@gmail.com>",
+      "sentAt": "2026-06-29T14:06:08.303Z"
+    },
+    {
+      "id": 73,
+      "name": "Abel Mengistu",
+      "email": "abel@flutterflow.io",
+      "company": "FlutterFlow",
+      "status": "sent",
+      "messageId": "<761dda04-d050-03ec-33bd-60051bbeca41@gmail.com>",
+      "sentAt": "2026-06-29T14:06:16.210Z"
+    },
+    {
+      "id": 74,
+      "name": "Rishabh Poddar",
+      "email": "rishabh@supertokens.com",
+      "company": "SuperTokens",
+      "status": "sent",
+      "messageId": "<cda0efc5-0fd3-a019-4e99-2d4dcaaf8e15@gmail.com>",
+      "sentAt": "2026-06-29T14:06:24.605Z"
+    },
+    {
+      "id": 75,
+      "name": "Honey Mittal",
+      "email": "honey@locofy.ai",
+      "company": "Locofy",
+      "status": "sent",
+      "messageId": "<1155240c-e326-291c-0968-01340fd7bc16@gmail.com>",
+      "sentAt": "2026-06-29T14:06:32.278Z"
+    },
+    {
+      "id": 76,
+      "name": "Pranav Bajpayee",
+      "email": "pranav@nocodb.com",
+      "company": "NocoDB",
+      "status": "sent",
+      "messageId": "<612bffdf-1556-9e22-875c-eb4a74d0e3d4@gmail.com>",
+      "sentAt": "2026-06-29T14:06:40.480Z"
+    },
+    {
+      "id": 77,
+      "name": "Navaneeth PK",
+      "email": "navaneeth@tooljet.com",
+      "company": "ToolJet",
+      "status": "sent",
+      "messageId": "<2898cac4-fe9a-a040-b24d-d549a6fcf771@gmail.com>",
+      "sentAt": "2026-06-29T14:06:48.090Z"
+    },
+    {
+      "id": 78,
+      "name": "Abhishek Nayak",
+      "email": "abhishek@appsmith.com",
+      "company": "Appsmith",
+      "status": "sent",
+      "messageId": "<14f8c2c0-618a-b640-ca34-9fee1c8e8d00@gmail.com>",
+      "sentAt": "2026-06-29T14:06:56.400Z"
+    },
+    {
+      "id": 79,
+      "name": "Tanmai Gopal",
+      "email": "tanmai@hasura.io",
+      "company": "Hasura",
+      "status": "sent",
+      "messageId": "<60e3fe09-a294-a494-4f64-e93dc21c1a3c@gmail.com>",
+      "sentAt": "2026-06-29T14:07:04.495Z"
+    },
+    {
+      "id": 80,
+      "name": "Pranay Pradyumna",
+      "email": "pranay@signoz.io",
+      "company": "SigNoz",
+      "status": "sent",
+      "messageId": "<29383486-ff2c-9d44-d777-ce99a47319f7@gmail.com>",
+      "sentAt": "2026-06-29T14:07:12.180Z"
+    },
+    {
+      "id": 81,
+      "name": "Akash Gupta",
+      "email": "akash@zypp.electric",
+      "company": "Zypp Electric",
+      "status": "sent",
+      "messageId": "<a05a8d94-3089-637e-95f9-cc426ef09a14@gmail.com>",
+      "sentAt": "2026-06-29T14:07:20.186Z"
+    },
+    {
+      "id": 82,
+      "name": "Saurav Kumar",
+      "email": "saurav@eulermotors.com",
+      "company": "Euler Motors",
+      "status": "sent",
+      "messageId": "<cf7e626f-9147-c66c-d3e5-a1d374e3a4bc@gmail.com>",
+      "sentAt": "2026-06-29T14:07:28.781Z"
+    },
+    {
+      "id": 83,
+      "name": "Amit Gupta",
+      "email": "amit@yulu.bike",
+      "company": "Yulu",
+      "status": "sent",
+      "messageId": "<713ec6dd-4137-37ee-006d-875e0533d8c7@gmail.com>",
+      "sentAt": "2026-06-29T14:07:36.971Z"
+    },
+    {
+      "id": 84,
+      "name": "Ankit Mittal",
+      "email": "ankit@sheru.se",
+      "company": "Sheru",
+      "status": "sent",
+      "messageId": "<52709019-5406-87ba-0d16-e3ff965051e2@gmail.com>",
+      "sentAt": "2026-06-29T14:07:44.704Z"
+    },
+    {
+      "id": 85,
+      "name": "Pulkit Khurana",
+      "email": "pulkit@batterysmart.in",
+      "company": "Battery Smart",
+      "status": "sent",
+      "messageId": "<ac5c5600-24fc-beec-05a4-dbe11efa6976@gmail.com>",
+      "sentAt": "2026-06-29T14:07:52.711Z"
+    },
+    {
+      "id": 86,
+      "name": "Pritesh Mahajan",
+      "email": "pritesh@revampmoto.in",
+      "company": "Revamp Moto",
+      "status": "sent",
+      "messageId": "<59789b2f-9596-8975-938d-e91170a5baec@gmail.com>",
+      "sentAt": "2026-06-29T14:08:00.347Z"
+    },
+    {
+      "id": 87,
+      "name": "Akshay Shekhar",
+      "email": "akshay@kazam.in",
+      "company": "Kazam",
+      "status": "sent",
+      "messageId": "<f3a0ad32-5d0b-8c94-b5f3-b40ade4877b9@gmail.com>",
+      "sentAt": "2026-06-29T14:08:08.051Z"
+    },
+    {
+      "id": 88,
+      "name": "Punit Goyal",
+      "email": "punit@blu-smart.com",
+      "company": "BluSmart Mobility",
+      "status": "sent",
+      "messageId": "<7cccb47b-8d0c-4f60-5456-453a20fbfafd@gmail.com>",
+      "sentAt": "2026-06-29T14:08:16.102Z"
+    },
+    {
+      "id": 89,
+      "name": "Siddharth Goel",
+      "email": "siddharth@zypp.in",
+      "company": "Zypp Courier",
+      "status": "sent",
+      "messageId": "<069d779e-c76f-7e23-8a81-646d6b66ccb8@gmail.com>",
+      "sentAt": "2026-06-29T14:08:24.200Z"
+    },
+    {
+      "id": 90,
+      "name": "Aman Gupta",
+      "email": "aman@batterysmart.co.in",
+      "company": "Battery Smart Grid",
+      "status": "sent",
+      "messageId": "<0a5dbded-9bc7-c855-d32b-5a7ac546795d@gmail.com>",
+      "sentAt": "2026-06-29T14:08:32.330Z"
+    },
+    {
+      "id": 91,
+      "name": "Pratik Kamdar",
+      "email": "pratik@neuronenergy.in",
+      "company": "Neuron Energy",
+      "status": "sent",
+      "messageId": "<9f859ae1-67fb-5bba-0541-8ffb9f3369cd@gmail.com>",
+      "sentAt": "2026-06-29T14:08:39.975Z"
+    },
+    {
+      "id": 92,
+      "name": "Gagan Malhotra",
+      "email": "gagan@sheru.in",
+      "company": "Sheru Cloud",
+      "status": "sent",
+      "messageId": "<c5ceee8b-e9b6-8cfc-4e76-ecbdd70eaf4c@gmail.com>",
+      "sentAt": "2026-06-29T14:08:48.042Z"
+    },
+    {
+      "id": 93,
+      "name": "Shreyas Shibulal",
+      "email": "shreyas@micelio.com",
+      "company": "Micelio Mobility",
+      "status": "sent",
+      "messageId": "<f8878ee2-6d99-8678-6dc2-bda0d59d4152@gmail.com>",
+      "sentAt": "2026-06-29T14:08:56.157Z"
+    },
+    {
+      "id": 94,
+      "name": "Abhinav Singh",
+      "email": "abhinav.singh@yulu.co.in",
+      "company": "Yulu Bike Network",
+      "status": "sent",
+      "messageId": "<90d5522f-f119-740f-d739-bd3fea4c919e@gmail.com>",
+      "sentAt": "2026-06-29T14:09:04.252Z"
+    },
+    {
+      "id": 95,
+      "name": "Rohan Sengupta",
+      "email": "rohan@kazam.co.in",
+      "company": "Kazam EV Charge",
+      "status": "sent",
+      "messageId": "<9f75e077-7e23-add4-22fc-71821dbc8cf8@gmail.com>",
+      "sentAt": "2026-06-29T14:09:13.523Z"
+    },
+    {
+      "id": 96,
+      "name": "Yash Sharma",
+      "email": "yash@oddity.agency",
+      "company": "Oddity Agency",
+      "status": "sent",
+      "messageId": "<abf5973f-bf61-05af-77c8-69e72c67b193@gmail.com>",
+      "sentAt": "2026-06-29T14:09:21.383Z"
+    },
+    {
+      "id": 97,
+      "name": "Prashant Ghildiyal",
+      "email": "prashant@devtron.ai",
+      "company": "Devtron",
+      "status": "sent",
+      "messageId": "<18eb46dd-4637-9032-39ad-0a4653d189c0@gmail.com>",
+      "sentAt": "2026-06-29T14:09:29.667Z"
+    },
+    {
+      "id": 98,
+      "name": "Neha Sengupta",
+      "email": "neha@keploy.io",
+      "company": "Keploy",
+      "status": "sent",
+      "messageId": "<689227eb-e923-a286-b17b-dafeb342cb51@gmail.com>",
+      "sentAt": "2026-06-29T14:09:37.901Z"
+    },
+    {
+      "id": 99,
+      "name": "Prukalpa Sankar",
+      "email": "prukalpa@atlan.com",
+      "company": "Atlan",
+      "status": "sent",
+      "messageId": "<5da2897f-b623-248a-b9a1-2f4f108f9e67@gmail.com>",
+      "sentAt": "2026-06-29T14:09:46.271Z"
+    },
+    {
+      "id": 100,
+      "name": "Manish Jethani",
+      "email": "manish@hevodata.com",
+      "company": "Hevo Data Platform",
+      "status": "sent",
+      "messageId": "<7540df85-eb89-b12d-655e-cce43d0304eb@gmail.com>",
+      "sentAt": "2026-06-29T14:09:54.695Z"
+    }
+  ]
+}

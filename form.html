@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML-Only Forms Learning</title>
+</head>
+<body>
+
+    <h1>Student Registration Form (Pure HTML)</h1>
+    <p>This form demonstrates all the core HTML form controls, inputs, and attributes. No CSS is used here.</p>
+
+    <!-- 
+      =========================================
+      THE HTML FORM
+      =========================================
+      - `action`: Specifies where to send the form-data when a form is submitted (e.g., a backend server script like submit.php).
+      - `method`: Specifies the HTTP method to use when sending form-data. 
+        - "get" (default) appends form data to the URL (visible, limited size).
+        - "post" sends form data inside the body of the request (secure, unlimited size).
+    -->
+    <form action="/submit-form-handler" method="POST">
+
+        <!-- 
+          `<fieldset>` is used to group related elements in a form. It draws a box around them.
+          `<legend>` defines a caption/title for the `<fieldset>` element.
+        -->
+        <fieldset>
+            <legend>Personal Information</legend>
+
+            <!-- 
+              `<label>` defines a label for a form control.
+              - The `for` attribute MUST match the `id` of the input element to link them.
+                This is crucial for accessibility (screen readers) and allows users to click the label to focus the input.
+              - `required` attribute makes it mandatory to fill this field before submitting.
+            -->
+            <p>
+                <label for="fullname">Full Name:</label><br>
+                <input type="text" id="fullname" name="fullname" placeholder="Enter your full name" required>
+            </p>
+
+            <p>
+                <label for="useremail">Email Address:</label><br>
+                <!-- `type="email"` automatically validates that the input looks like an email address -->
+                <input type="email" id="useremail" name="useremail" placeholder="example@domain.com" required>
+            </p>
+
+            <p>
+                <label for="userpassword">Password:</label><br>
+                <!-- `type="password"` hides the text characters as they are typed -->
+                <input type="password" id="userpassword" name="userpassword" placeholder="Create a strong password" required>
+            </p>
+
+            <p>
+                <label for="age">Age:</label><br>
+                <!-- `type="number"` restricts input to numbers and adds up/down arrows. `min` and `max` define limits -->
+                <input type="number" id="age" name="age" min="16" max="100" placeholder="Min 16">
+            </p>
+
+        </fieldset>
+
+        <br> <!-- Horizontal spacing -->
+
+        <fieldset>
+            <legend>Course Preferences</legend>
+
+            <!-- 
+              Drop-down List:
+              - `<select>` creates a drop-down list.
+              - `<option>` defines options in the drop-down list.
+            -->
+            <p>
+                <label for="course">Select Course:</label><br>
+                <select id="course" name="course">
+                    <option value="">-- Choose a Course --</option>
+                    <option value="html-css">HTML5 & CSS3 Masterclass</option>
+                    <option value="javascript">Modern JavaScript (ES6+)</option>
+                    <option value="react">React & Next.js Frameworks</option>
+                </select>
+            </p>
+
+            <!-- 
+              Radio Buttons:
+              - `type="radio"` allows the user to select only ONE option from a set.
+              - IMPORTANT: To group radio buttons together, they MUST share the exact same `name` attribute ("experience").
+            -->
+            <p>
+                <label>Programming Experience:</label><br>
+                <input type="radio" id="exp-beginner" name="experience" value="beginner" checked>
+                <label for="exp-beginner">Beginner</label><br>
+                
+                <input type="radio" id="exp-intermediate" name="experience" value="intermediate">
+                <label for="exp-intermediate">Intermediate</label><br>
+                
+                <input type="radio" id="exp-advanced" name="experience" value="advanced">
+                <label for="exp-advanced">Advanced</label>
+            </p>
+
+            <!-- 
+              Checkboxes:
+              - `type="checkbox"` allows the user to select zero or more options from a set.
+              - Each checkbox can have its own unique `name`.
+            -->
+            <p>
+                <label>What tools do you already use? (Select all that apply):</label><br>
+                <input type="checkbox" id="tool-vscode" name="tools" value="vscode">
+                <label for="tool-vscode">VS Code</label><br>
+                
+                <input type="checkbox" id="tool-git" name="tools" value="git">
+                <label for="tool-git">Git & GitHub</label><br>
+                
+                <input type="checkbox" id="tool-codepen" name="tools" value="codepen">
+                <label for="tool-codepen">CodePen</label>
+            </p>
+
+        </fieldset>
+
+        <br>
+
+        <fieldset>
+            <legend>Additional Details</legend>
+
+            <!-- 
+              Text Area:
+              - `<textarea>` creates a multi-line text input field.
+              - `rows` specifies the visible number of lines.
+              - `cols` specifies the visible width of the text area.
+            -->
+            <p>
+                <label for="bio">Tell us about your learning goals:</label><br>
+                <textarea id="bio" name="bio" rows="4" cols="50" placeholder="I want to learn web development to..."></textarea>
+            </p>
+
+            <!-- 
+              File Upload:
+              - `type="file"` allows users to upload local files (e.g., resume or image).
+            -->
+            <p>
+                <label for="resume">Upload Profile Picture:</label><br>
+                <input type="file" id="resume" name="profile_pic">
+            </p>
+
+            <!-- 
+              Terms & Conditions Checkbox (Single checkbox validation):
+            -->
+            <p>
+                <input type="checkbox" id="terms" name="terms" value="agreed" required>
+                <label for="terms">I agree to the Terms of Service & Privacy Policy</label>
+            </p>
+
+        </fieldset>
+
+        <br>
+
+        <!-- 
+          Form Submission buttons:
+          - `<input type="submit">` or `<button type="submit">` submits the form.
+          - `<input type="reset">` resets all fields in the form to their default values.
+        -->
+        <input type="submit" value="Register Now">
+        <input type="reset" value="Clear Form">
+
+    </form>
+
+</body>
+</html>

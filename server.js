@@ -328,6 +328,11 @@ const platformSettingSchema = new mongoose.Schema({
   },
 },{timestamps:true});
 
+userSchema.index({createdAt:-1});
+applicationSchema.index({createdAt:-1});
+earningSchema.index({createdAt:-1});
+jobSchema.index({createdAt:-1});
+
 const User        = mongoose.model("User",userSchema);
 const OTP         = mongoose.model("OTP",otpSchema);
 const Application = mongoose.model("Application",applicationSchema);
@@ -342,6 +347,101 @@ const NewsletterSubscriber = mongoose.model("NewsletterSubscriber",newsletterSub
 const MentorRequest = mongoose.model("MentorRequest",mentorRequestSchema);
 const BlogEvent = mongoose.model("BlogEvent",blogEventSchema);
 const PlatformSetting = mongoose.model("PlatformSetting",platformSettingSchema);
+
+// ═══════════════════════════════════════════
+// CAMPUS ECOSYSTEM SCHEMAS
+// ═══════════════════════════════════════════
+const campusInquirySchema = new mongoose.Schema({
+  companyName: { type: String, required: true },
+  email: { type: String, required: true, lowercase: true },
+  campaignGoal: { type: String, enum: ['brand_awareness', 'app_installs', 'product_sampling', 'campus_hiring', 'event_promotion', 'other'], default: 'brand_awareness' },
+  targetCampuses: { type: Number, default: 50 },
+  budgetRange: { type: String, enum: ['under_50k', '50k_1l', '1l_5l', '5l_plus'], default: 'under_50k' },
+  message: { type: String, default: '' },
+  status: { type: String, enum: ['new', 'contacted', 'converted', 'closed'], default: 'new' },
+  createdAt: { type: Date, default: Date.now }
+});
+campusInquirySchema.index({ status: 1, createdAt: -1 });
+campusInquirySchema.index({ email: 1 });
+
+const campusApplicationSchema = new mongoose.Schema({
+  fullName: { type: String, required: true },
+  email: { type: String, required: true, lowercase: true },
+  collegeName: { type: String, required: true },
+  year: { type: String, enum: ['1st', '2nd', '3rd', '4th', 'PG'], required: true },
+  city: { type: String, required: true },
+  instagramHandle: { type: String, default: '' },
+  whyJoin: { type: String, default: '' },
+  status: { type: String, enum: ['applied', 'shortlisted', 'selected', 'rejected'], default: 'applied' },
+  createdAt: { type: Date, default: Date.now }
+});
+campusApplicationSchema.index({ status: 1, createdAt: -1 });
+campusApplicationSchema.index({ email: 1 }, { unique: true });
+
+const CampusInquiry = mongoose.model('CampusInquiry', campusInquirySchema);
+const CampusApplication = mongoose.model('CampusApplication', campusApplicationSchema);
+
+// ═══════════════════════════════════════════
+// BELGIUM WAFFLE CO. COUPON SCHEMAS & MODELS
+// ═══════════════════════════════════════════
+const couponSchema = new mongoose.Schema({
+  couponId: { type: String, required: true, unique: true, uppercase: true, trim: true },
+  campaignId: { type: String, default: "BWC_COLLEGE_2026" },
+  discountType: { type: String, default: "percentage" },
+  discountValue: { type: Number, default: 20 },
+  status: { type: String, enum: ["unused", "redeemed"], default: "unused", index: true },
+  storeId: { type: String, default: null },
+  storeName: { type: String, default: null },
+  redeemedAt: { type: Date, default: null },
+  createdAt: { type: Date, default: Date.now }
+}, { timestamps: true });
+
+couponSchema.index({ couponId: 1 }, { unique: true });
+couponSchema.index({ status: 1 });
+
+const storeSchema = new mongoose.Schema({
+  storeId: { type: String, required: true, unique: true, uppercase: true, trim: true },
+  name: { type: String, required: true, trim: true },
+  city: { type: String, default: "Delhi" },
+  isActive: { type: Boolean, default: true }
+}, { timestamps: true });
+
+const Coupon = mongoose.model("Coupon", couponSchema);
+const Store = mongoose.model("Store", storeSchema);
+
+// Auto-seed initial stores and test coupon BW000001
+async function seedInitialCouponsAndStores() {
+  try {
+    const storeCount = await Store.countDocuments();
+    if (storeCount === 0) {
+      await Store.insertMany([
+        { storeId: "STORE001", name: "Kamla Nagar", city: "Delhi" },
+        { storeId: "STORE002", name: "Hudson Lane", city: "Delhi" },
+        { storeId: "STORE003", name: "Connaught Place", city: "Delhi" }
+      ]);
+      console.log("✅ Belgium Waffle Co. stores seeded (Kamla Nagar, Hudson Lane, Connaught Place)");
+    }
+
+    const testCoupon = await Coupon.findOne({ couponId: "BW000001" });
+    if (!testCoupon) {
+      await Coupon.create({
+        couponId: "BW000001",
+        campaignId: "BWC_COLLEGE_2026",
+        discountType: "percentage",
+        discountValue: 20,
+        status: "unused"
+      });
+      console.log("✅ Initial Test Coupon BW000001 created successfully!");
+    }
+  } catch (err) {
+    console.error("❌ Error seeding initial coupons/stores:", err.message);
+  }
+}
+
+// Call seed logic on DB connect
+mongoose.connection.once("open", () => {
+  seedInitialCouponsAndStores();
+});
 
 console.log("✅ All models loaded!");
 
@@ -2710,120 +2810,6 @@ app.get("/api/student/stats",verifyToken,async(req,res)=>{
   }catch(err){res.status(500).json({success:false,message:"Server error."});}
 });
 
-const DEMO_JOBS=[
-  {
-    id:"666666666666666666660001",
-    ico:"🎬",
-    brand:"GlowSkin Co.",
-    title:"Create 5 Instagram Reels for a skincare launch",
-    cat:"video",
-    tags:["Video Editing","Social Media","Instagram Reels"],
-    pay:"₹2,500 - ₹4,000",
-    days:"4 days",
-    badge:"hot",
-    description:"Edit 5 short-form reels from raw product clips for a skincare launch. Add captions, transitions, clean pacing, trending audio suggestions, and export in 9:16 format. Final output should feel premium, simple, and suitable for Instagram ads.",
-    applicationQuestions:["Share one reel/editing sample link.","Which editing app do you use?","How fast can you deliver the first draft?"],
-  },
-  {
-    id:"666666666666666666660002",
-    ico:"🎨",
-    brand:"UrbanSip",
-    title:"Design a 6-slide Instagram carousel",
-    cat:"design",
-    tags:["Graphic Design","Canva","Branding"],
-    pay:"₹1,500 - ₹2,500",
-    days:"3 days",
-    badge:"new",
-    description:"Create a clean 6-slide carousel explaining a new cold coffee product. The design should include a strong hook, product benefits, ingredient highlight, and final CTA. Brand colors, copy outline, and product photos will be provided.",
-    applicationQuestions:["Share a Canva/Figma design sample.","Can you match an existing brand style?","What will you need from the brand to start?"],
-  },
-  {
-    id:"666666666666666666660003",
-    ico:"💻",
-    brand:"LearnLoop",
-    title:"Build a responsive landing page section",
-    cat:"web",
-    tags:["Web Development","HTML","CSS","Landing Page"],
-    pay:"₹3,000 - ₹6,000",
-    days:"5 days",
-    badge:"hot",
-    description:"Build a responsive landing page hero plus pricing/benefits section for an edtech product. The section should work cleanly on mobile and desktop, with polished spacing, strong CTA placement, and simple animation if possible.",
-    applicationQuestions:["Share one deployed web page or GitHub link.","Which stack will you use?","Can you make it mobile responsive?"],
-  },
-  {
-    id:"666666666666666666660004",
-    ico:"✍️",
-    brand:"FitFuel",
-    title:"Write 2 SEO blog articles for a nutrition brand",
-    cat:"writing",
-    tags:["Content Writing","SEO","Research"],
-    pay:"₹1,800 - ₹3,000",
-    days:"4 days",
-    badge:"new",
-    description:"Write two beginner-friendly SEO articles of 900-1200 words each. Topics will be around healthy snacking and simple meal planning. Content should include headings, meta title, meta description, and practical examples.",
-    applicationQuestions:["Share one writing sample.","Are you comfortable doing light keyword research?","How many revisions are included?"],
-  },
-  {
-    id:"666666666666666666660005",
-    ico:"📱",
-    brand:"CampusDrip",
-    title:"Create a 14-day social media content calendar",
-    cat:"social",
-    tags:["Social Media","Content Writing","Instagram"],
-    pay:"₹2,000 - ₹3,500",
-    days:"3 days",
-    badge:"hot",
-    description:"Plan 14 days of Instagram content for a student fashion brand. Include post ideas, reel hooks, captions, CTA, and hashtag direction. The goal is to make the page look active and conversion-focused.",
-    applicationQuestions:["Share a content calendar or caption sample.","Which niches have you planned content for?","Can you include reel ideas too?"],
-  },
-  {
-    id:"666666666666666666660006",
-    ico:"📸",
-    brand:"DeskNest",
-    title:"Edit 20 product photos for marketplace listing",
-    cat:"photo",
-    tags:["Photography","Lightroom","Product"],
-    pay:"₹1,200 - ₹2,200",
-    days:"2 days",
-    badge:"new",
-    description:"Edit 20 product photos for a desk accessory listing. Work includes background cleanup, color correction, crop consistency, brightness balance, and export in web-ready sizes.",
-    applicationQuestions:["Share before/after photo edits.","Which editing tool do you use?","Can you deliver consistent export sizes?"],
-  },
-  {
-    id:"666666666666666666660007",
-    ico:"📊",
-    brand:"SaaSBridge",
-    title:"Build a clean B2B lead research sheet",
-    cat:"data",
-    tags:["Data & Excel","Research","Google Sheets"],
-    pay:"₹2,000 - ₹4,000",
-    days:"5 days",
-    badge:"hot",
-    description:"Research 80 Indian startup leads and organize them in Google Sheets with company name, website, category, founder/contact, LinkedIn, email if public, and short relevance note. Accuracy matters more than speed.",
-    applicationQuestions:["Share any research/sheet sample.","How will you verify lead quality?","Can you work in Google Sheets?"],
-  },
-  {
-    id:"666666666666666666660008",
-    ico:"🤖",
-    brand:"OpsPilot",
-    title:"Create an AI workflow for customer reply drafts",
-    cat:"ai",
-    tags:["AI Tools","Automation","Business Communication"],
-    pay:"₹2,500 - ₹5,000",
-    days:"4 days",
-    badge:"new",
-    description:"Design a simple AI-assisted workflow that turns customer messages into polished reply drafts. Include prompt templates, tone rules, escalation cases, and a short Loom-style explanation script.",
-    applicationQuestions:["Which AI tools have you used?","Share one workflow or prompt example.","Can you document the process clearly?"],
-  },
-].map(job=>({
-  ...job,
-  brandId:"",
-  postedAt:new Date().toISOString(),
-  isLive:true,
-  isDemo:false,
-  applicantCount:0,
-}));
-
 // ✅ LIVE JOBS — fetches from DB (brand posted jobs)
 app.get("/api/jobs",verifyToken,async(req,res)=>{
   try{
@@ -2855,10 +2841,10 @@ app.get("/api/jobs",verifyToken,async(req,res)=>{
       isLive:true,
       applicantCount:countMap[String(j._id)]||0,
     }));
-    res.json({success:true,jobs:result.length?result:DEMO_JOBS,isDemoFallback:!result.length});
+    res.json({success:true,jobs:result,isDemoFallback:false});
   }catch(err){
     console.error("Jobs load error:",err.message);
-    res.json({success:true,jobs:DEMO_JOBS,isDemoFallback:true});
+    res.json({success:true,jobs:[],isDemoFallback:false});
   }
 });
 
@@ -2999,20 +2985,6 @@ app.post("/api/apply",verifyToken,async(req,res)=>{
     const existing=await Application.findOne({studentId:req.user.id,jobId});
     if(existing)return res.status(409).json({success:false,message:"Already applied for this project."});
     let job=await Job.findById(jobId);
-    if(!job){
-      const fallbackJob=DEMO_JOBS.find(j=>j.id===jobId);
-      if(fallbackJob){
-        job={
-          _id:fallbackJob.id,
-          title:fallbackJob.title,
-          brandName:fallbackJob.brand,
-          brandId:null,
-          budget:fallbackJob.pay,
-          applicationQuestions:fallbackJob.applicationQuestions||[],
-          status:"open",
-        };
-      }
-    }
     if(!job)return res.status(404).json({success:false,message:"Project not found."});
     if(job.status!=="open"){
       return res.status(400).json({success:false,message:"This project is already approved and closed for new applications."});
@@ -4464,7 +4436,9 @@ app.put("/api/admin/kyc/:id",adminOnly,async(req,res)=>{
 
 app.get("/api/admin/users",adminOnly,async(req,res)=>{
   try{
-    const users=await User.find().select("-password").sort({createdAt:-1});
+    const users=await User.find()
+      .select("firstName lastName email role college companyName studentBadge createdAt avatar skills")
+      .sort({createdAt:-1});
     res.json({success:true,users:users.map(u=>({...u.toObject(),name:`${u.firstName} ${u.lastName}`}))});
   }catch(err){res.status(500).json({success:false,message:"Server error."});}
 });
@@ -5010,6 +4984,338 @@ app.post('/api/ask-ai', async (req, res) => {
   }
 });
 // --- NEXTGENGROWTH AI LOGIC END ---
+
+// ═══════════════════════════════════════════
+// CAMPUS ECOSYSTEM API
+// ═══════════════════════════════════════════
+app.post('/api/campus/inquiry', async (req, res) => {
+  try {
+    const { companyName, email, campaignGoal, targetCampuses, budgetRange, message } = req.body;
+    if (!companyName || !email) return res.status(400).json({ error: 'Company name and email are required.' });
+    const inquiry = await CampusInquiry.create({ companyName, email, campaignGoal, targetCampuses: Number(targetCampuses) || 50, budgetRange, message });
+    res.status(201).json({ success: true, message: 'Campus campaign inquiry submitted successfully!', id: inquiry._id });
+  } catch (err) {
+    console.error('Campus inquiry error:', err);
+    res.status(500).json({ error: 'Failed to submit inquiry. Please try again.' });
+  }
+});
+
+app.post('/api/campus/apply', async (req, res) => {
+  try {
+    const { fullName, email, collegeName, year, city, instagramHandle, whyJoin } = req.body;
+    if (!fullName || !email || !collegeName || !year || !city) return res.status(400).json({ error: 'All required fields must be filled.' });
+    const existing = await CampusApplication.findOne({ email: email.toLowerCase() });
+    if (existing) return res.status(409).json({ error: 'You have already applied. We will reach out soon!' });
+    const application = await CampusApplication.create({ fullName, email, collegeName, year, city, instagramHandle, whyJoin });
+    res.status(201).json({ success: true, message: 'Welcome to the NNG Campus Network!', id: application._id });
+  } catch (err) {
+    console.error('Campus application error:', err);
+    if (err.code === 11000) return res.status(409).json({ error: 'You have already applied with this email.' });
+    res.status(500).json({ error: 'Failed to submit application. Please try again.' });
+  }
+});
+
+app.get('/api/campus/stats', async (req, res) => {
+  try {
+    const [inquiryCount, applicationCount] = await Promise.all([
+      CampusInquiry.countDocuments(),
+      CampusApplication.countDocuments()
+    ]);
+    res.json({
+      campuses: 500,
+      ambassadors: 50000 + applicationCount,
+      monthlyReach: '10M+',
+      brandCampaigns: 200 + inquiryCount,
+      activeCities: 45
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch stats.' });
+  }
+});
+
+// ═══════════════════════════════════════════
+// BELGIUM WAFFLE CO. COUPON REDEMPTION APIS
+// ═══════════════════════════════════════════
+
+// 1. Get stores list
+app.get('/api/coupon/stores', async (req, res) => {
+  try {
+    const stores = await Store.find({ isActive: true }).select('storeId name city').sort({ name: 1 }).lean();
+    res.json({ success: true, stores });
+  } catch (err) {
+    console.error('Error fetching stores:', err);
+    res.status(500).json({ error: 'Failed to fetch stores list.' });
+  }
+});
+
+// 2. Fetch coupon status by Coupon ID
+app.get('/api/coupon/:couponId', async (req, res) => {
+  try {
+    const couponId = String(req.params.couponId || '').toUpperCase().trim();
+    if (!couponId) {
+      return res.status(400).json({ error: 'Coupon ID is required.' });
+    }
+
+    const coupon = await Coupon.findOne({ couponId }).lean();
+    if (!coupon) {
+      return res.status(404).json({
+        exists: false,
+        error: 'This coupon is invalid or does not exist.'
+      });
+    }
+
+    res.json({
+      exists: true,
+      couponId: coupon.couponId,
+      status: coupon.status, // "unused" or "redeemed"
+      discountValue: coupon.discountValue,
+      discountType: coupon.discountType,
+      campaignId: coupon.campaignId,
+      storeId: coupon.storeId || null,
+      storeName: coupon.storeName || null,
+      redeemedAt: coupon.redeemedAt || null
+    });
+  } catch (err) {
+    console.error('Error checking coupon status:', err);
+    res.status(500).json({ error: 'Server error while checking coupon status.' });
+  }
+});
+
+// 3. Redeem Coupon (Atomic Update for Double-Redemption Protection)
+app.post('/api/coupon/redeem', async (req, res) => {
+  try {
+    const { couponId, storeId } = req.body;
+    const cleanCouponId = String(couponId || '').toUpperCase().trim();
+    const cleanStoreId = String(storeId || '').trim();
+
+    if (!cleanCouponId || !cleanStoreId) {
+      return res.status(400).json({ error: 'Coupon ID and Store selection are required.' });
+    }
+
+    // Verify valid store
+    const store = await Store.findOne({ storeId: cleanStoreId, isActive: true });
+    if (!store) {
+      return res.status(400).json({ error: 'Invalid store selected. Please select a valid store.' });
+    }
+
+    // ATOMIC UPDATE: Only update if current status is "unused"
+    // Race-condition safe (double click / parallel request protection)
+    const now = new Date();
+    const updatedCoupon = await Coupon.findOneAndUpdate(
+      { couponId: cleanCouponId, status: 'unused' },
+      {
+        $set: {
+          status: 'redeemed',
+          storeId: store.storeId,
+          storeName: store.name,
+          redeemedAt: now
+        }
+      },
+      { new: true }
+    );
+
+    if (!updatedCoupon) {
+      // Check if coupon exists or was already redeemed
+      const existing = await Coupon.findOne({ couponId: cleanCouponId });
+      if (!existing) {
+        return res.status(404).json({ error: 'This coupon is invalid or does not exist.' });
+      }
+      return res.status(409).json({
+        alreadyRedeemed: true,
+        error: 'COUPON ALREADY REDEEMED',
+        storeName: existing.storeName,
+        redeemedAt: existing.redeemedAt
+      });
+    }
+
+    // Return clean success payload
+    res.json({
+      success: true,
+      message: 'COUPON REDEEMED SUCCESSFULLY',
+      couponId: updatedCoupon.couponId,
+      discountValue: updatedCoupon.discountValue,
+      storeName: updatedCoupon.storeName,
+      redeemedAt: updatedCoupon.redeemedAt
+    });
+  } catch (err) {
+    console.error('Error redeeming coupon:', err);
+    res.status(500).json({ error: 'Failed to process redemption. Please try again.' });
+  }
+});
+
+// Serve Mobile Redemption Page for /redeem/:couponId
+app.get('/redeem/:couponId', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'redeem.html'));
+});
+
+// ═══════════════════════════════════════════
+// ADMIN & BULK COUPON GENERATION APIS
+// ═══════════════════════════════════════════
+
+// Admin Stats Endpoint
+app.get('/api/coupon/admin/stats', async (req, res) => {
+  try {
+    const [totalCoupons, redeemedCoupons, unusedCoupons, storeStats] = await Promise.all([
+      Coupon.countDocuments(),
+      Coupon.countDocuments({ status: 'redeemed' }),
+      Coupon.countDocuments({ status: 'unused' }),
+      Coupon.aggregate([
+        { $match: { status: 'redeemed' } },
+        { $group: { _id: '$storeName', count: { $sum: 1 } } },
+        { $sort: { count: -1 } }
+      ])
+    ]);
+
+    const redemptionRate = totalCoupons > 0 ? ((redeemedCoupons / totalCoupons) * 100).toFixed(1) + '%' : '0%';
+
+    const stores = await Store.find({ isActive: true }).select('name storeId').lean();
+    const storeMap = {};
+    stores.forEach(s => { storeMap[s.name || s.storeId] = 0; });
+    storeStats.forEach(s => {
+      if (s._id) storeMap[s._id] = s.count;
+    });
+
+    const storePerformance = Object.keys(storeMap).map(name => ({
+      name,
+      count: storeMap[name]
+    }));
+
+    res.json({
+      success: true,
+      totalCoupons,
+      redeemedCoupons,
+      unusedCoupons,
+      redemptionRate,
+      storePerformance
+    });
+  } catch (err) {
+    console.error('Error fetching admin stats:', err);
+    res.status(500).json({ error: 'Failed to fetch analytics.' });
+  }
+});
+
+// Admin Coupon Table Listing Endpoint
+app.get('/api/coupon/admin/list', async (req, res) => {
+  try {
+    const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+    const limit = Math.min(parseInt(req.query.limit, 10) || 100, 1000);
+    const search = String(req.query.search || '').trim();
+    const status = String(req.query.status || '').trim();
+
+    const filter = {};
+    if (status && status !== 'all') {
+      filter.status = status;
+    }
+    if (search) {
+      filter.$or = [
+        { couponId: new RegExp(search, 'i') },
+        { storeName: new RegExp(search, 'i') }
+      ];
+    }
+
+    const [coupons, total] = await Promise.all([
+      Coupon.find(filter)
+        .sort({ couponId: 1 })
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .lean(),
+      Coupon.countDocuments(filter)
+    ]);
+
+    res.json({
+      success: true,
+      coupons,
+      total,
+      page,
+      pages: Math.ceil(total / limit)
+    });
+  } catch (err) {
+    console.error('Error fetching coupon list:', err);
+    res.status(500).json({ error: 'Failed to fetch coupon list.' });
+  }
+});
+
+// Bulk Coupon Generator API
+app.post('/api/coupon/admin/generate-bulk', async (req, res) => {
+  try {
+    const { count = 100, prefix = 'BW', campaignId = 'BWC_COLLEGE_2026', discountValue = 20 } = req.body;
+    const numToGenerate = Math.min(Math.max(parseInt(count, 10) || 10, 1), 10000);
+
+    const existingCoupons = await Coupon.find({ couponId: new RegExp(`^${prefix}\\d+`, 'i') })
+      .select('couponId')
+      .lean();
+
+    let maxNum = 0;
+    existingCoupons.forEach(c => {
+      const match = c.couponId.match(new RegExp(`^${prefix}(\\d+)`, 'i'));
+      if (match && match[1]) {
+        const n = parseInt(match[1], 10);
+        if (n > maxNum) maxNum = n;
+      }
+    });
+
+    const newCoupons = [];
+    const now = new Date();
+    for (let i = 1; i <= numToGenerate; i++) {
+      const nextNum = maxNum + i;
+      const formattedId = `${prefix}${String(nextNum).padStart(6, '0')}`;
+      newCoupons.push({
+        couponId: formattedId,
+        campaignId,
+        discountType: 'percentage',
+        discountValue: Number(discountValue) || 20,
+        status: 'unused',
+        storeId: null,
+        storeName: null,
+        redeemedAt: null,
+        createdAt: now
+      });
+    }
+
+    const result = await Coupon.insertMany(newCoupons, { ordered: false });
+
+    res.json({
+      success: true,
+      message: `Successfully generated ${result.length} coupons!`,
+      generatedCount: result.length,
+      startId: newCoupons[0]?.couponId,
+      endId: newCoupons[newCoupons.length - 1]?.couponId
+    });
+  } catch (err) {
+    console.error('Bulk generation error:', err);
+    res.status(500).json({ error: 'Failed to bulk generate coupons.' });
+  }
+});
+
+// Add Store API
+app.post('/api/coupon/admin/add-store', async (req, res) => {
+  try {
+    const { storeId, name, city = 'Delhi' } = req.body;
+    if (!name) return res.status(400).json({ error: 'Store name is required.' });
+
+    const cleanStoreId = storeId ? String(storeId).toUpperCase().trim() : `STORE${String(Date.now()).slice(-4)}`;
+    const newStore = await Store.create({
+      storeId: cleanStoreId,
+      name: String(name).trim(),
+      city: String(city).trim()
+    });
+
+    res.json({ success: true, message: 'Store added successfully!', store: newStore });
+  } catch (err) {
+    console.error('Error adding store:', err);
+    res.status(500).json({ error: 'Failed to add store.' });
+  }
+});
+
+// Web Routes for Admin Dashboard and Printable Cards
+app.get('/coupon-admin', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'coupon-admin.html'));
+});
+
+app.get('/coupon-print', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'coupon-print.html'));
+});
+
 app.listen(PORT,()=>{
   const razorpayConfig=getRazorpayConfig();
   console.log(`\n🚀 Server: http://localhost:${PORT}`);

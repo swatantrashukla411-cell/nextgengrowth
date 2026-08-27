@@ -1,0 +1,103 @@
+diff --git a/public/for-brands.html b/public/for-brands.html
+--- a/public/for-brands.html
++++ b/public/for-brands.html
+@@ -1636,6 +1636,81 @@
+   @media (max-width: 768px) {
+-    .nav-links, .nav-ctas .btn-outline {
++    .nav-links, .nav-ctas .btn-outline, .nav-ctas .btn-primary {
+       display: none;
+     }
+     .nav-toggle {
+       display: flex;
+     }
++    
++    /* Mobile Menu Height Overflow & Scrollability */
++    .mobile-menu {
++      overflow-y: auto;
++      justify-content: flex-start;
++      padding: 100px 24px 40px;
++    }
++    
++    /* Section Padding Reduction on Mobile */
++    section {
++      padding: 60px 0;
++    }
++    .hero-sec {
++      padding: 130px 0 60px;
++    }
++
++    /* Hero Visual Mobile Scaling & Overflow Fix */
++    .hero-visual {
++      height: 280px;
++      margin-top: 20px;
++    }
++    .mock-dashboard {
++      width: 100%;
++      height: 260px;
++      left: 0;
++      top: 0;
++    }
++    .mock-card-1, .mock-card-2 {
++      display: none;
++    }
++  }
++
++  @media (max-width: 640px) {
++    /* Stats Strip Stack Layout */
++    .stats-strip {
++      grid-template-columns: 1fr;
++      text-align: center;
++      gap: 30px;
++      padding-top: 20px;
++    }
++    .stat-card {
++      text-align: center;
++    }
++  }
++
++  @media (max-width: 576px) {
++    /* Case Studies Stats Wrap */
++    .case-card {
++      padding: 24px 20px;
++    }
++    .case-stats {
++      flex-wrap: wrap;
++      gap: 20px;
++    }
++  }
++
++  @media (max-width: 480px) {
++    /* Logo text hiding on tiny screens */
++    .logo span {
++      display: none;
++    }
++    
++    /* Ambassador workflow step wrapping */
++    .workflow-mock {
++      padding: 20px 16px;
++    }
++    .flow-step {
++      padding: 10px 12px;
++      flex-wrap: wrap;
++      gap: 10px;
++    }
++    .flow-step .left-info {
++      width: 100%;
++    }
++    
++    /* Preview Content Box Flex-wrap */
++    .dash-preview-box {
++      height: auto;
++      min-height: 380px;
++      padding: 16px;
++    }
++    .preview-content div {
++      padding: 16px !important;
++    }
++  }
++
++  /* Word-break for direct email/phone contact cards */
++  .direct-card p {
++    word-break: break-all;
+   }
+ </style>

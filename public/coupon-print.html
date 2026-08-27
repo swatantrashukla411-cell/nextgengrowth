@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Belgium Waffle Co. - Print Physical Coupon Cards</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background-color: #0F172A;
+      color: #000;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* PRINT SPECIFIC STYLES */
+    @media print {
+      body {
+        background-color: #fff !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .page-break {
+        page-break-after: always;
+      }
+      .coupon-card {
+        border: 2px dashed #000 !important;
+        box-shadow: none !important;
+        background-color: #fff !important;
+      }
+    }
+
+    .coupon-card {
+      background: #ffffff;
+      border: 2px dashed #334155;
+      position: relative;
+    }
+  </style>
+</head>
+<body class="p-6">
+
+  <!-- Control Header (Hidden when printing) -->
+  <div class="no-print max-w-6xl mx-auto mb-8 bg-slate-900 border border-slate-800 rounded-2xl p-6 text-slate-100 flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <h1 class="text-xl font-bold text-amber-400">🖨️ Physical Coupon Print Studio</h1>
+      <p class="text-xs text-slate-400">Generate print-ready physical cards with unique QR codes for stall distribution.</p>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <select id="cardLimit" onchange="loadPrintCoupons()" class="bg-slate-800 border border-slate-700 text-slate-200 text-xs px-3 py-2 rounded-xl">
+        <option value="12">Print 12 Cards (1 Sheet)</option>
+        <option value="24" selected>Print 24 Cards (2 Sheets)</option>
+        <option value="60">Print 60 Cards (5 Sheets)</option>
+        <option value="120">Print 120 Cards (10 Sheets)</option>
+      </select>
+
+      <button onclick="window.print()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-5 py-2.5 rounded-xl text-sm shadow-lg transition flex items-center gap-2">
+        <span>🖨️ PRINT PDF (Ctrl + P)</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Coupon Grid Container -->
+  <div id="printContainer" class="max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    <!-- Coupons dynamically rendered here -->
+  </div>
+
+  <script>
+    async function loadPrintCoupons() {
+      const limit = document.getElementById('cardLimit').value;
+      const container = document.getElementById('printContainer');
+      container.innerHTML = `<div class="col-span-full text-center text-slate-400 py-12">Generating high-resolution QR coupons...</div>`;
+
+      try {
+        const res = await fetch(`/api/coupon/admin/list?limit=${limit}&status=unused`);
+        const data = await res.json();
+
+        if (data.success && data.coupons && data.coupons.length > 0) {
+          container.innerHTML = '';
+
+          const origin = window.location.origin;
+
+          for (const coupon of data.coupons) {
+            const redeemUrl = `${origin}/redeem/${coupon.couponId}`;
+
+            const cardDiv = document.createElement('div');
+            cardDiv.className = 'coupon-card rounded-2xl p-5 shadow-xl flex flex-col justify-between items-center text-center space-y-3';
+            
+            cardDiv.innerHTML = `
+              <!-- Brand Header -->
+              <div class="w-full border-b border-amber-900/20 pb-2">
+                <div class="text-[10px] uppercase font-bold tracking-widest text-amber-800">Campus Stall Exclusive</div>
+                <div class="font-serif text-xl font-extrabold text-amber-950 tracking-tight">BELGIUM WAFFLE CO.</div>
+              </div>
+
+              <!-- Offer Badge -->
+              <div class="w-full bg-amber-500 rounded-xl py-2 px-3 text-slate-950 font-black">
+                <div class="text-2xl font-black tracking-tight leading-none">20% OFF</div>
+                <div class="text-[9px] uppercase tracking-wider opacity-90 font-bold">ANY WAFFLE PURCHASE</div>
+              </div>
+
+              <!-- QR Code Container -->
+              <div class="p-2 bg-white rounded-xl border border-slate-200 shadow-sm flex flex-col items-center">
+                <canvas id="qr_${coupon.couponId}" class="w-28 h-28"></canvas>
+                <span class="font-mono text-xs font-black tracking-widest text-slate-900 mt-1">${coupon.couponId}</span>
+              </div>
+
+              <!-- Terms & Instructions -->
+              <div class="w-full text-[9px] text-slate-600 leading-tight border-t border-slate-200 pt-2 space-y-1">
+                <p class="font-semibold text-slate-800">Scan QR Code at store counter to redeem.</p>
+                <p>Valid at participating Belgium Waffle Co. stores. One-time use only. Powered by NextGenGrowth.</p>
+              </div>
+            `;
+
+            container.appendChild(cardDiv);
+
+            // Generate QR Code on Canvas
+            setTimeout(() => {
+              const canvas = document.getElementById(`qr_${coupon.couponId}`);
+              if (canvas) {
+                QRCode.toCanvas(canvas, redeemUrl, {
+                  width: 112,
+                  margin: 1,
+                  color: { dark: '#000000', light: '#FFFFFF' }
+                });
+              }
+            }, 50);
+          }
+
+        } else {
+          container.innerHTML = `<div class="col-span-full text-center text-amber-400 py-12">No unused coupons found. Please generate coupons from Admin Dashboard first.</div>`;
+        }
+      } catch (err) {
+        console.error('Error loading print coupons:', err);
+        container.innerHTML = `<div class="col-span-full text-center text-red-400 py-12">Failed to load print coupons.</div>`;
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', loadPrintCoupons);
+  </script>
+</body>
+</html>

@@ -16,7 +16,7 @@ export const DashboardLayout = () => {
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate('/');
   };
 
   // Role-based navigation config

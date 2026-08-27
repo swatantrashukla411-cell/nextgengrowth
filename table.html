@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- The title element is standard HTML for the browser tab -->
+    <title>HTML-Only Table Learning</title>
+</head>
+<body>
+
+    <!-- 
+      Heading and paragraph tags to describe the page.
+    -->
+    <h1>Web Development Course Tracker (Pure HTML)</h1>
+    <p>This table is created using only HTML tags and traditional HTML table attributes. No CSS is used.</p>
+
+    <!-- 
+      =========================================
+      THE HTML-ONLY TABLE
+      =========================================
+      In pure HTML (without CSS), we use traditional attributes to style and structure:
+      - `border="1"`: Draws a 1-pixel border around the table and all its cells.
+      - `cellpadding="12"`: Adds 12 pixels of space inside each cell (between the text and the cell border).
+      - `cellspacing="0"`: Removes the default double-border spacing between adjacent cells.
+      - `width="80%"`: Makes the table span 80% of the screen width.
+      - `align="center"`: Centers the entire table horizontally on the page.
+    -->
+    <table border="1" cellpadding="12" cellspacing="0" width="80%" align="center">
+
+        <!-- 
+          `<caption>` acts as a title for the table and is placed immediately after the opening <table> tag.
+        -->
+        <caption>Q3 Batch Enrollment & Status</caption>
+
+        <!-- 
+          `<thead>` wraps the table header rows.
+        -->
+        <thead>
+            <!-- `<tr>` starts a new row -->
+            <tr>
+                <!-- 
+                  `<th>` defines header cells. By default, browsers display <th> text as bold and centered.
+                  - `scope="col"` specifies that this header cell applies to the entire column.
+                -->
+                <th scope="col">Course Name</th>
+                <th scope="col">Instructor</th>
+                <th scope="col">Students Enrolled</th>
+                <th scope="col">Status</th>
+                <th scope="col">Weekly Hours</th>
+            </tr>
+        </thead>
+
+        <!-- 
+          `<tbody>` wraps the primary data rows.
+        -->
+        <tbody>
+            
+            <!-- Row 1 -->
+            <tr>
+                <!-- 
+                  `scope="row"` specifies that this header cell is the header for the horizontal row.
+                -->
+                <th scope="row" align="left">HTML5 & CSS3 Masterclass</th>
+                <td>Sarah Jenkins</td>
+                <!-- `align="center"` is a classic HTML attribute used to center text inside a cell -->
+                <td align="center">142</td>
+                <td align="center">Active</td>
+                <td align="right">8 hrs</td>
+            </tr>
+
+            <!-- Row 2 -->
+            <!-- 
+              `bgcolor="#f2f2f2"` is an old HTML-only attribute that changes the background color of the row.
+              This allows us to create alternating row colors without CSS!
+            -->
+            <tr bgcolor="#f9f9f9">
+                <th scope="row" align="left">Modern JavaScript (ES6+)</th>
+                <td>David Miller</td>
+                <td align="center">189</td>
+                <td align="center">Active</td>
+                <td align="right">10 hrs</td>
+            </tr>
+
+            <!-- Row 3 -->
+            <tr>
+                <th scope="row" align="left">React & Next.js Frameworks</th>
+                <td>Elena Rostova</td>
+                <td align="center">210</td>
+                <td align="center">Active</td>
+                <td align="right">12 hrs</td>
+            </tr>
+
+            <!-- Row 4 -->
+            <tr bgcolor="#f9f9f9">
+                <th scope="row" align="left">Tailwind CSS Advanced Layouts</th>
+                <td>Marcus Vance</td>
+                <td align="center">95</td>
+                <td align="center">Pending</td>
+                <td align="right">6 hrs</td>
+            </tr>
+
+            <!-- Row 5 (Demonstrating Colspan) -->
+            <tr>
+                <!-- 
+                  `colspan="2"` merges the "Course Name" and "Instructor" columns.
+                  This cell will stretch across two columns.
+                -->
+                <td colspan="2">Special Webinar: Advanced UI Design</td>
+                <td align="center">350</td>
+                <td align="center">Active</td>
+                <td align="right">2 hrs</td>
+            </tr>
+        </tbody>
+
+        <!-- 
+          `<tfoot>` wraps the summary/total row.
+        -->
+        <tfoot>
+            <!-- 
+              `bgcolor="#eaeaea"` gives the footer a distinct background color.
+            -->
+            <tr bgcolor="#eaeaea">
+                <!-- We span this cell across 2 columns as well -->
+                <td colspan="2"><strong>Total Students & Hours</strong></td>
+                <!-- Centered total sum -->
+                <td align="center"><strong>986</strong></td>
+                <!-- Empty spacer cell -->
+                <td align="center">—</td>
+                <!-- Right-aligned total hours -->
+                <td align="right"><strong>38 hrs / week</strong></td>
+            </tr>
+
+        </tfoot>
+
+    </table>
+
+</body>
+</html>

@@ -1,26 +1,5 @@
-/**
- * ═══════════════════════════════════════════════════════════════
- * NextGenGrowth — Seed Realistic Projects & Long-Term Roles
- * ═══════════════════════════════════════════════════════════════
- * 
- * This script creates:
- *   1. Realistic brand accounts (if they don't already exist)
- *   2. Short-term projects (Jobs) under those brands
- *   3. Long-term monthly roles under those brands
- *
- * Run:  node seed_projects.js
- * ═══════════════════════════════════════════════════════════════
- */
-
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
-require('dotenv').config();
-
-const MONGO_URI = process.env.MONGODB_URI;
-if (!MONGO_URI) {
-  console.error('❌ MONGODB_URI not set in .env');
-  process.exit(1);
-}
+console.log("⚠️ Seeding fake projects is disabled. Only real user projects are allowed on NextGenGrowth.");
+process.exit(0);
 
 // ─── Schemas (mirrored from server.js) ───────────────────────
 const userSchema = new mongoose.Schema({

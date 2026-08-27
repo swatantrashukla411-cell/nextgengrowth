@@ -8,6 +8,7 @@ import { DashboardLayout } from './layouts/DashboardLayout';
 import { StudentDashboard } from './pages/StudentDashboard';
 import { BrandDashboard } from './pages/BrandDashboard';
 import LandingPage from './pages/LandingPage';
+import CampusPage from './pages/CampusPage';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Routes>
           {/* Public Auth routes */}
           <Route path="/" element={<LandingPage />} />
+          <Route path="/campus" element={<CampusPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 

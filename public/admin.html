@@ -1136,7 +1136,7 @@ function safeUrl(url){
 }
 
 async function loadAll(){
-  await Promise.all([loadStats(),loadUsers(),loadProjects(),loadBlogPosts(),loadApps(),loadLongTermRoles(),loadKyc(),loadStudentVerifications(),loadMentorRequests(),loadTxs(),loadSettings()]);
+  await Promise.all([loadStats(),loadUsers()]);
 }
 
 async function refreshAll(){
@@ -1314,7 +1314,7 @@ function renderDashUsers(users){
       <td><span class="tag ${u.role==='student'?'tg':'tb2'}">${u.role==='student'?'🎓 Student':'🏢 Brand'}</span>${u.role==='student'?`<div style="margin-top:6px">${badgeTag(u.studentBadge||'beginner')}</div>`:''}</td>
       <td style="font-size:.8rem;color:var(--muted)">${esc(u.college||u.companyName||'—')}</td>
       <td>${skills}</td>
-      <td style="font-size:.76rem;color:var(--muted)">${new Date(u.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</td>
+      <td style="font-size:.76rem;color:var(--muted)">${u.createdAt ? new Date(u.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}) : '—'}</td>
       <td><div class="inline-actions">${profileBtn}<button class="btn bdan bsm" onclick="showConfirm('user','${userId}','${esc(safeName)}')">Delete</button></div></td>
     </tr>`;
   }).join('');
@@ -1337,7 +1337,7 @@ function renderUsers(){
       <td><div class="user-cell"><div class="u-av">${avatar}</div><div><div class="u-name">${esc(displayName)}</div><div class="u-email">${esc(u.email||'')}</div></div></div></td>
       <td><span class="tag ${u.role==='student'?'tg':'tb2'}">${u.role==='student'?'🎓 Student':'🏢 Brand'}</span>${u.role==='student'?`<div style="margin-top:6px">${badgeTag(u.studentBadge||'beginner')}</div>`:''}</td>
       <td>${u.role==='student'?`<div style="font-size:.8rem">${esc(u.college||'Not set')}</div><div style="margin-top:4px">${skills}</div>`:`<span style="font-size:.8rem;color:var(--muted)">${esc(u.companyName||'—')}</span>`}</td>
-      <td style="font-size:.78rem;color:var(--muted)">${new Date(u.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</td>
+      <td style="font-size:.78rem;color:var(--muted)">${u.createdAt ? new Date(u.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}) : '—'}</td>
       <td><div class="inline-actions">${profileBtn}<button class="btn bdan bsm" onclick="showConfirm('user','${userId}','${esc(safeName)}')">Delete</button></div></td>
     </tr>`;
   }).join('');
@@ -2242,7 +2242,7 @@ function toggleAdminMenu(){
 function closeAdminMenu(){setAdminMenu(false);}
 window.addEventListener('resize',()=>{if(window.innerWidth>980)closeAdminMenu();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeAdminMenu();});
-function goTo(pg,navBtn){
+async function goTo(pg,navBtn){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   const el=document.getElementById('page-'+pg);if(el)el.classList.add('active');
   document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
@@ -2251,6 +2251,33 @@ function goTo(pg,navBtn){
   document.getElementById('pgTitle').textContent=PT[pg]||'Dashboard';
   document.getElementById('mc').scrollTop=0;
   closeAdminMenu();
+
+  // Lazy load data for the active page
+  try{
+    if(pg==='dashboard'){
+      await Promise.all([loadStats(),loadUsers()]);
+    }else if(pg==='users'){
+      await loadUsers();
+    }else if(pg==='projects'){
+      await loadProjects();
+    }else if(pg==='blog'){
+      await loadBlogPosts();
+    }else if(pg==='applications'){
+      await loadApps();
+    }else if(pg==='longterm'){
+      await loadLongTermRoles();
+    }else if(pg==='kyc'){
+      await loadKyc();
+    }else if(pg==='verifications'){
+      await loadStudentVerifications();
+    }else if(pg==='mentors'){
+      await loadMentorRequests();
+    }else if(pg==='transactions'){
+      await loadTxs();
+    }else if(pg==='settings'){
+      await loadSettings();
+    }
+  }catch(e){console.error('Error loading tab data:',e);}
 }
 
 function showToast(msg,type='info'){

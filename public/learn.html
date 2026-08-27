@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML Forms Learning</title>
+</head>
+<body>
+    <h1>Student Registration Form (Pure HTML)</h1>
+    <p>This form demonstrates all the core HTML form controls, inputs, and attributes. No CSS is used here.</p>
+    <form action="submit.php" method="post">
+        <fieldset>
+            <legend>Personal Information</legend>
+            <p>
+            <label for="fullname">Full Name:</label><br>
+            <input type="text" id="fullname" name="fullname" placeholder="Enter Your Name" required>
+            </p>
+            <p>
+                <label for="username">Email Address:</label><br>
+                <input type="email" id="username" name="username" placeholder="example@domain.com" required>
+            </p>
+            <p>
+                <label for="password">Password:</label><br>
+                <input type="password" id="password" name="password" placeholder="Create a strong password" required>
+                
+            </p>
+            <p>
+                <label for="age">Age:</label><br>
+                <input type="number" id="age" name="age" min="16" max="100" placeholder="Min 16" required>
+            </p>
+        </fieldset>
+        <br>
+        <fieldset>
+            <legend>Course Preferences</legend>
+            <p>
+                <label for="course">Select Course:</label><br>
+                <select id="course" name="course">
+                    <option value="">Select your course</option>
+                    <option value="html-css">HTML & CSS</option>
+                    <option value="javascript">Modern JavaScript (ES6+)</option>
+                    <option value="react">React & Next.js Frameworks</option>
+                </select>
+            </p>
+            <p>
+                <label>Programming Experience:</label><br>
+                <input type="radio" id="exp-begginer" name="experience" value="exp-begginer" checked>
+                <label for="exp-begginer">Beginner</label><br>
+                <input type="radio" id="exp-intermediate" name="experience" value="exp-intermediate" checked>
+                <label for="exp-begginer">Intermediate</label><br>
+                <input type="radio" id="exp-advanced" name="experience" value="exp-advanced" checked>
+                <label for="exp-begginer">Advanced</label><br>
+            </p>
+            <p>
+                <label>What tools do you already use? (Select all that apply):</label><br>
+                <input type="checkbox" id="tool-vscode" name="tools" value="vscode">
+                <label for="tool-vscode">VS Code</label><br>
+                <input type="checkbox" id="tool-git" name="tools" value="git">
+                <label for="tool-git">Git & GitHub</label><br>
+                <input type="checkbox" id="tool-codepen" name="tools" value="codepen">
+                <label for="tool-codepen">CodePen</label><br>
+            </p>
+        </fieldset>
+
+    </form>
+</body>
+</html>

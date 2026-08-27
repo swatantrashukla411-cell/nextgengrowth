@@ -1,0 +1,809 @@
+{
+  "campaignRunAt": "2026-06-29T14:28:10.058Z",
+  "sender": "swatantrashukla411@gmail.com",
+  "totalCount": 100,
+  "sentCount": 100,
+  "failCount": 0,
+  "details": [
+    {
+      "id": 1,
+      "company": "Bolna AI",
+      "email": "rahul@bolna.ai",
+      "status": "sent",
+      "messageId": "<0db4a1df-56fe-8680-6843-bfe20015b8d8@gmail.com>",
+      "sentAt": "2026-06-29T14:13:44.711Z"
+    },
+    {
+      "id": 2,
+      "company": "Perseus",
+      "email": "srikanth@perseus.dev",
+      "status": "sent",
+      "messageId": "<a5cc6d98-a58a-23a2-ee5a-adc1ce3a466d@gmail.com>",
+      "sentAt": "2026-06-29T14:13:53.751Z"
+    },
+    {
+      "id": 3,
+      "company": "Composio",
+      "email": "karan@composio.dev",
+      "status": "sent",
+      "messageId": "<e761ad04-27f6-88a2-af79-c88fcff18a76@gmail.com>",
+      "sentAt": "2026-06-29T14:14:01.876Z"
+    },
+    {
+      "id": 4,
+      "company": "Athina AI",
+      "email": "shivam@athina.ai",
+      "status": "sent",
+      "messageId": "<e7d08089-1efb-7865-2413-36cdb368d6e7@gmail.com>",
+      "sentAt": "2026-06-29T14:14:09.588Z"
+    },
+    {
+      "id": 5,
+      "company": "Sarvam AI",
+      "email": "vivek@sarvam.ai",
+      "status": "sent",
+      "messageId": "<f11780da-d5f6-e22e-5276-08a677f68c23@gmail.com>",
+      "sentAt": "2026-06-29T14:14:18.081Z"
+    },
+    {
+      "id": 6,
+      "company": "Defog AI",
+      "email": "rishabh@defog.ai",
+      "status": "sent",
+      "messageId": "<00fcc2b6-b64a-f5b0-f7e0-073471348d79@gmail.com>",
+      "sentAt": "2026-06-29T14:14:30.000Z"
+    },
+    {
+      "id": 7,
+      "company": "Portkey AI",
+      "email": "rohit@portkey.ai",
+      "status": "sent",
+      "messageId": "<900616e3-d76e-5bb6-eeb8-a4d41c94661e@gmail.com>",
+      "sentAt": "2026-06-29T14:14:38.000Z"
+    },
+    {
+      "id": 8,
+      "company": "Bland AI",
+      "email": "isaiah@bland.ai",
+      "status": "sent",
+      "messageId": "<8ae878d7-80f0-a41d-7759-d8d8cf9b6b4a@gmail.com>",
+      "sentAt": "2026-06-29T14:14:46.000Z"
+    },
+    {
+      "id": 9,
+      "company": "Vapi",
+      "email": "k@vapi.ai",
+      "status": "sent",
+      "messageId": "<d4119c59-a374-5b0c-0fb9-14d26a3aabed@gmail.com>",
+      "sentAt": "2026-06-29T14:15:21.621Z"
+    },
+    {
+      "id": 10,
+      "company": "Flowise",
+      "email": "henry@flowiseai.com",
+      "status": "sent",
+      "messageId": "<7097cdc4-6e57-e8da-72dc-f16494f020e9@gmail.com>",
+      "sentAt": "2026-06-29T14:15:30.150Z"
+    },
+    {
+      "id": 11,
+      "company": "LlamaIndex",
+      "email": "jerry@llamaindex.ai",
+      "status": "sent",
+      "messageId": "<77b0f0d4-1786-c306-2da2-9eb14f579684@gmail.com>",
+      "sentAt": "2026-06-29T14:15:38.359Z"
+    },
+    {
+      "id": 12,
+      "company": "LangSmith",
+      "email": "harrison@langchain.dev",
+      "status": "sent",
+      "messageId": "<3b6381a6-bdeb-a736-7d62-d3f523ae8d8a@gmail.com>",
+      "sentAt": "2026-06-29T14:15:47.275Z"
+    },
+    {
+      "id": 13,
+      "company": "Pika Labs",
+      "email": "demi@pika.art",
+      "status": "sent",
+      "messageId": "<bfae4b8d-11b6-cb9c-a5c9-16a73e6a3951@gmail.com>",
+      "sentAt": "2026-06-29T14:15:56.236Z"
+    },
+    {
+      "id": 14,
+      "company": "CognitiveLab",
+      "email": "adithya@cognitivelab.ai",
+      "status": "sent",
+      "messageId": "<8f2aed8b-d212-3e5d-ef19-12c2ec1ca9b1@gmail.com>",
+      "sentAt": "2026-06-29T14:16:04.304Z"
+    },
+    {
+      "id": 15,
+      "company": "Segmind",
+      "email": "rohit@segmind.com",
+      "status": "sent",
+      "messageId": "<a276359b-00cf-43c3-4b51-e66b2281390d@gmail.com>",
+      "sentAt": "2026-06-29T14:16:13.436Z"
+    },
+    {
+      "id": 16,
+      "company": "ElevenLabs",
+      "email": "mateusz@elevenlabs.io",
+      "status": "sent",
+      "messageId": "<f8de6937-4daf-783f-7efb-3e21bc3f04dd@gmail.com>",
+      "sentAt": "2026-06-29T14:16:21.272Z"
+    },
+    {
+      "id": 17,
+      "company": "Perplexity AI",
+      "email": "aravind@perplexity.ai",
+      "status": "sent",
+      "messageId": "<db07500b-ed31-daa1-5945-c4f1c6d19555@gmail.com>",
+      "sentAt": "2026-06-29T14:16:30.744Z"
+    },
+    {
+      "id": 18,
+      "company": "Anyscale",
+      "email": "robert@anyscale.com",
+      "status": "sent",
+      "messageId": "<f550e255-4017-281f-97b5-be90bbc5388f@gmail.com>",
+      "sentAt": "2026-06-29T14:16:38.780Z"
+    },
+    {
+      "id": 19,
+      "company": "Fireworks AI",
+      "email": "lin@fireworks.ai",
+      "status": "sent",
+      "messageId": "<252e96aa-6dbd-0729-c84f-a6037a90adb3@gmail.com>",
+      "sentAt": "2026-06-29T14:16:47.332Z"
+    },
+    {
+      "id": 20,
+      "company": "Together AI",
+      "email": "vipul@together.ai",
+      "status": "sent",
+      "messageId": "<dada6042-f370-f512-7d1a-dd89114b815e@gmail.com>",
+      "sentAt": "2026-06-29T14:16:55.014Z"
+    },
+    {
+      "id": 21,
+      "company": "Fal.ai",
+      "email": "gorkem@fal.ai",
+      "status": "sent",
+      "messageId": "<99c5eacb-4d67-3ee3-4870-069de7bf3b91@gmail.com>",
+      "sentAt": "2026-06-29T14:17:03.798Z"
+    },
+    {
+      "id": 22,
+      "company": "RunPod",
+      "email": "ramtin@runpod.io",
+      "status": "sent",
+      "messageId": "<5fdf1a5c-d9d2-f814-54b0-5336896f5fd2@gmail.com>",
+      "sentAt": "2026-06-29T14:17:12.901Z"
+    },
+    {
+      "id": 23,
+      "company": "Vast.ai",
+      "email": "alex@vast.ai",
+      "status": "sent",
+      "messageId": "<17f5d271-34e5-e499-5916-bba1f6fb10c1@gmail.com>",
+      "sentAt": "2026-06-29T14:17:22.015Z"
+    },
+    {
+      "id": 24,
+      "company": "Cognition AI",
+      "email": "scott@cognition.ai",
+      "status": "sent",
+      "messageId": "<91c1aefd-bf79-32b3-8868-6a3103c22b80@gmail.com>",
+      "sentAt": "2026-06-29T14:17:30.974Z"
+    },
+    {
+      "id": 25,
+      "company": "Midjourney",
+      "email": "david@midjourney.com",
+      "status": "sent",
+      "messageId": "<281b2460-b075-6bc8-dbb8-8071dac9ea61@gmail.com>",
+      "sentAt": "2026-06-29T14:17:38.751Z"
+    },
+    {
+      "id": 26,
+      "company": "Runway",
+      "email": "cristobal@runwayml.com",
+      "status": "sent",
+      "messageId": "<0cc708aa-b39c-7f42-1d61-acd0f9e906b0@gmail.com>",
+      "sentAt": "2026-06-29T14:17:47.581Z"
+    },
+    {
+      "id": 27,
+      "company": "Synthesia",
+      "email": "victor@synthesia.io",
+      "status": "sent",
+      "messageId": "<26933a97-7e2d-b459-64cf-a46e1d754e83@gmail.com>",
+      "sentAt": "2026-06-29T14:17:55.626Z"
+    },
+    {
+      "id": 28,
+      "company": "Jasper AI",
+      "email": "dave@jasper.ai",
+      "status": "sent",
+      "messageId": "<780611eb-810f-e88e-9919-23690c464deb@gmail.com>",
+      "sentAt": "2026-06-29T14:18:04.112Z"
+    },
+    {
+      "id": 29,
+      "company": "Copy.ai",
+      "email": "paul@copy.ai",
+      "status": "sent",
+      "messageId": "<ca7ec2ca-c659-40c1-6782-598fa7159879@gmail.com>",
+      "sentAt": "2026-06-29T14:18:12.688Z"
+    },
+    {
+      "id": 30,
+      "company": "Writer.com",
+      "email": "may@writer.com",
+      "status": "sent",
+      "messageId": "<381821c0-5c33-777d-277b-1613825e76b5@gmail.com>",
+      "sentAt": "2026-06-29T14:18:20.846Z"
+    },
+    {
+      "id": 31,
+      "company": "Cohere",
+      "email": "aidan@cohere.com",
+      "status": "sent",
+      "messageId": "<d341f8c8-3c24-b190-03ec-fdd61931d73d@gmail.com>",
+      "sentAt": "2026-06-29T14:18:29.378Z"
+    },
+    {
+      "id": 32,
+      "company": "Anthropic",
+      "email": "dario@anthropic.com",
+      "status": "sent",
+      "messageId": "<b0950b21-3dc1-1ea1-d88f-ca9a337fe078@gmail.com>",
+      "sentAt": "2026-06-29T14:18:38.405Z"
+    },
+    {
+      "id": 33,
+      "company": "Hugging Face",
+      "email": "clement@huggingface.co",
+      "status": "sent",
+      "messageId": "<f880a808-c17c-e3a8-694a-0655161dcc54@gmail.com>",
+      "sentAt": "2026-06-29T14:18:47.197Z"
+    },
+    {
+      "id": 34,
+      "company": "Replicate",
+      "email": "ben@replicate.com",
+      "status": "sent",
+      "messageId": "<1d9d0a57-fac6-475f-4c51-f9a4e4b40a57@gmail.com>",
+      "sentAt": "2026-06-29T14:18:55.784Z"
+    },
+    {
+      "id": 35,
+      "company": "Pinecone",
+      "email": "edo@pinecone.io",
+      "status": "sent",
+      "messageId": "<b85f104b-b038-caad-f67f-161e50283ac1@gmail.com>",
+      "sentAt": "2026-06-29T14:19:03.438Z"
+    },
+    {
+      "id": 36,
+      "company": "Weaviate",
+      "email": "bob@weaviate.io",
+      "status": "sent",
+      "messageId": "<bc7b5c90-44a5-6081-1330-14d9911cec4b@gmail.com>",
+      "sentAt": "2026-06-29T14:19:12.130Z"
+    },
+    {
+      "id": 37,
+      "company": "Milvus",
+      "email": "charles@zilliz.com",
+      "status": "sent",
+      "messageId": "<2ff17edc-848a-83e8-e2f5-056ef60c0c0e@gmail.com>",
+      "sentAt": "2026-06-29T14:19:20.158Z"
+    },
+    {
+      "id": 38,
+      "company": "Qdrant",
+      "email": "andre@qdrant.com",
+      "status": "sent",
+      "messageId": "<b27c67fe-f3b5-40d4-ae86-01c1de10255d@gmail.com>",
+      "sentAt": "2026-06-29T14:19:28.704Z"
+    },
+    {
+      "id": 39,
+      "company": "Chroma DB",
+      "email": "jeff@trychroma.com",
+      "status": "sent",
+      "messageId": "<97118a9d-2ed0-8ea1-4d9b-a00851a9446b@gmail.com>",
+      "sentAt": "2026-06-29T14:19:37.287Z"
+    },
+    {
+      "id": 40,
+      "company": "Langflow",
+      "email": "rodrigo@langflow.org",
+      "status": "sent",
+      "messageId": "<027d19c0-5151-5a6f-8ae8-e31140306419@gmail.com>",
+      "sentAt": "2026-06-29T14:19:45.407Z"
+    },
+    {
+      "id": 41,
+      "company": "AgentOps",
+      "email": "alex@agentops.ai",
+      "status": "sent",
+      "messageId": "<b6929286-76d1-1457-f2aa-b5e45ccabf01@gmail.com>",
+      "sentAt": "2026-06-29T14:19:54.489Z"
+    },
+    {
+      "id": 42,
+      "company": "Superagent",
+      "email": "ismail@superagent.sh",
+      "status": "sent",
+      "messageId": "<5b71f041-5330-c22e-0657-65a6cedae699@gmail.com>",
+      "sentAt": "2026-06-29T14:20:03.015Z"
+    },
+    {
+      "id": 43,
+      "company": "AutoGPT",
+      "email": "toran@autogpt.co",
+      "status": "sent",
+      "messageId": "<ffa06c5e-e7bf-7267-8d59-aeae88f59980@gmail.com>",
+      "sentAt": "2026-06-29T14:20:11.963Z"
+    },
+    {
+      "id": 44,
+      "company": "Deepgram",
+      "email": "scott@deepgram.com",
+      "status": "sent",
+      "messageId": "<a4896d7b-6654-246d-1bf6-b595b26b8130@gmail.com>",
+      "sentAt": "2026-06-29T14:20:19.730Z"
+    },
+    {
+      "id": 45,
+      "company": "AssemblyAI",
+      "email": "dylan@assemblyai.com",
+      "status": "sent",
+      "messageId": "<b69fae9e-996e-74fa-e3a7-eeb879d8f79b@gmail.com>",
+      "sentAt": "2026-06-29T14:20:28.547Z"
+    },
+    {
+      "id": 46,
+      "company": "Gladia",
+      "email": "jean@gladia.io",
+      "status": "sent",
+      "messageId": "<1eb7df8b-4fd9-13ea-3a5c-0c0fba4fb565@gmail.com>",
+      "sentAt": "2026-06-29T14:20:37.276Z"
+    },
+    {
+      "id": 47,
+      "company": "Braintrust",
+      "email": "anish@braintrust.dev",
+      "status": "sent",
+      "messageId": "<90cd3c88-244d-cbb5-7021-8c30e2809ba2@gmail.com>",
+      "sentAt": "2026-06-29T14:20:46.314Z"
+    },
+    {
+      "id": 48,
+      "company": "Arize AI",
+      "email": "jason@arize.com",
+      "status": "sent",
+      "messageId": "<f6215e43-3e04-5f5c-e283-bd78afb71f29@gmail.com>",
+      "sentAt": "2026-06-29T14:20:54.500Z"
+    },
+    {
+      "id": 49,
+      "company": "Phoenix",
+      "email": "arize-phoenix@arize.com",
+      "status": "sent",
+      "messageId": "<77e3abcd-3c72-7ef7-8ee3-51469586e2f5@gmail.com>",
+      "sentAt": "2026-06-29T14:21:02.163Z"
+    },
+    {
+      "id": 50,
+      "company": "Fiddler AI",
+      "email": "krishna@fiddler.ai",
+      "status": "sent",
+      "messageId": "<c30859d9-8aa5-f75a-0268-6df5006281d2@gmail.com>",
+      "sentAt": "2026-06-29T14:21:11.106Z"
+    },
+    {
+      "id": 51,
+      "company": "WhyLabs",
+      "email": "alessio@whylabs.ai",
+      "status": "sent",
+      "messageId": "<583f2446-05ba-ec20-aa00-b82713e0126a@gmail.com>",
+      "sentAt": "2026-06-29T14:21:19.703Z"
+    },
+    {
+      "id": 52,
+      "company": "Arthur AI",
+      "email": "mariel@arthur.ai",
+      "status": "sent",
+      "messageId": "<0bb1b92a-a374-43e3-e029-da639f7547c8@gmail.com>",
+      "sentAt": "2026-06-29T14:21:27.344Z"
+    },
+    {
+      "id": 53,
+      "company": "Giskard",
+      "email": "alex@giskard.ai",
+      "status": "sent",
+      "messageId": "<9dd833b1-2b45-a6a7-f679-48c45d15dfc1@gmail.com>",
+      "sentAt": "2026-06-29T14:21:36.326Z"
+    },
+    {
+      "id": 54,
+      "company": "Ragas",
+      "email": "shahul@ragas.io",
+      "status": "sent",
+      "messageId": "<70fe0800-6f13-fef0-0e64-454fc712e10a@gmail.com>",
+      "sentAt": "2026-06-29T14:21:44.469Z"
+    },
+    {
+      "id": 55,
+      "company": "TruLens",
+      "email": "evaluation@trulens.org",
+      "status": "sent",
+      "messageId": "<09fd99fa-8e20-e082-b49f-bd45cd7bb951@gmail.com>",
+      "sentAt": "2026-06-29T14:21:52.186Z"
+    },
+    {
+      "id": 56,
+      "company": "Cleanlab",
+      "email": "curtis@cleanlab.ai",
+      "status": "sent",
+      "messageId": "<62836c11-76f5-d928-5581-a7e6650d8efd@gmail.com>",
+      "sentAt": "2026-06-29T14:21:59.758Z"
+    },
+    {
+      "id": 57,
+      "company": "Snorkel AI",
+      "email": "alex@snorkel.ai",
+      "status": "sent",
+      "messageId": "<31d156af-de4a-86ee-a3fc-da0d15fbeb0d@gmail.com>",
+      "sentAt": "2026-06-29T14:22:08.417Z"
+    },
+    {
+      "id": 58,
+      "company": "Scale AI",
+      "email": "alexandr@scale.com",
+      "status": "sent",
+      "messageId": "<0c005eec-429a-df5b-d5d2-5ec08c962a4c@gmail.com>",
+      "sentAt": "2026-06-29T14:22:17.425Z"
+    },
+    {
+      "id": 59,
+      "company": "Labelbox",
+      "email": "manu@labelbox.com",
+      "status": "sent",
+      "messageId": "<104b012b-b6c4-fb20-0b26-3ca95425ee45@gmail.com>",
+      "sentAt": "2026-06-29T14:22:25.549Z"
+    },
+    {
+      "id": 60,
+      "company": "V7 Labs",
+      "email": "alberto@v7labs.com",
+      "status": "sent",
+      "messageId": "<0978dc4e-3134-30f7-d2c1-86efa2eaf72f@gmail.com>",
+      "sentAt": "2026-06-29T14:22:33.217Z"
+    },
+    {
+      "id": 61,
+      "company": "Roboflow",
+      "email": "joseph@roboflow.com",
+      "status": "sent",
+      "messageId": "<61a00683-55e7-53de-6f0f-8b3f4d230c6f@gmail.com>",
+      "sentAt": "2026-06-29T14:22:41.266Z"
+    },
+    {
+      "id": 62,
+      "company": "Dify.ai",
+      "email": "peizhi@dify.ai",
+      "status": "sent",
+      "messageId": "<993c424f-c49c-0169-b6f6-00fabd8f3f13@gmail.com>",
+      "sentAt": "2026-06-29T14:22:48.928Z"
+    },
+    {
+      "id": 63,
+      "company": "Flowith",
+      "email": "hello@flowith.com",
+      "status": "sent",
+      "messageId": "<4af3a6a1-33d8-97a7-89a3-29a566b69d68@gmail.com>",
+      "sentAt": "2026-06-29T14:22:57.945Z"
+    },
+    {
+      "id": 64,
+      "company": "Phind",
+      "email": "michael@phind.com",
+      "status": "sent",
+      "messageId": "<7a2760bd-8931-6fcd-c19b-f930ece29ee1@gmail.com>",
+      "sentAt": "2026-06-29T14:23:06.943Z"
+    },
+    {
+      "id": 65,
+      "company": "Tabnine",
+      "email": "dror@tabnine.com",
+      "status": "sent",
+      "messageId": "<a7f9f690-eba4-7d28-d135-c642234b11d0@gmail.com>",
+      "sentAt": "2026-06-29T14:23:15.892Z"
+    },
+    {
+      "id": 66,
+      "company": "Double.bot",
+      "email": "support@double.bot",
+      "status": "sent",
+      "messageId": "<5db16b76-76f2-0aa3-5360-f91efd4c719c@gmail.com>",
+      "sentAt": "2026-06-29T14:23:26.787Z"
+    },
+    {
+      "id": 67,
+      "company": "CodiumAI",
+      "email": "itamar@codium.ai",
+      "status": "sent",
+      "messageId": "<5a3f3136-83c1-3431-3977-174ccc901f37@gmail.com>",
+      "sentAt": "2026-06-29T14:23:35.743Z"
+    },
+    {
+      "id": 68,
+      "company": "Bito",
+      "email": "amar@bito.ai",
+      "status": "sent",
+      "messageId": "<76a0cbf0-1c4d-26b3-a192-f60954a759a2@gmail.com>",
+      "sentAt": "2026-06-29T14:23:43.528Z"
+    },
+    {
+      "id": 69,
+      "company": "Sourcegraph Cody",
+      "email": "quinn@sourcegraph.com",
+      "status": "sent",
+      "messageId": "<d3cc6f7f-ffa1-6798-19ca-740a4d1af7bb@gmail.com>",
+      "sentAt": "2026-06-29T14:23:52.074Z"
+    },
+    {
+      "id": 70,
+      "company": "Sweep AI",
+      "email": "william@sweep.dev",
+      "status": "sent",
+      "messageId": "<b39d506e-4006-de1f-4fef-73323d009378@gmail.com>",
+      "sentAt": "2026-06-29T14:23:59.852Z"
+    },
+    {
+      "id": 71,
+      "company": "Mutable AI",
+      "email": "sohrob@mutable.ai",
+      "status": "sent",
+      "messageId": "<be1fe390-4255-740a-705e-5cdf1858c991@gmail.com>",
+      "sentAt": "2026-06-29T14:24:08.550Z"
+    },
+    {
+      "id": 72,
+      "company": "Codeium",
+      "email": "varun@codeium.com",
+      "status": "sent",
+      "messageId": "<9062bbc9-8549-e98e-6fc8-e08c7068c252@gmail.com>",
+      "sentAt": "2026-06-29T14:24:17.483Z"
+    },
+    {
+      "id": 73,
+      "company": "Anysphere",
+      "email": "arvid@anysphere.co",
+      "status": "sent",
+      "messageId": "<e9713a7d-6d1a-e7ba-db81-10771acd13ad@gmail.com>",
+      "sentAt": "2026-06-29T14:24:26.499Z"
+    },
+    {
+      "id": 74,
+      "company": "Superwhisper",
+      "email": "support@superwhisper.com",
+      "status": "sent",
+      "messageId": "<c37ad3a3-456c-c9fe-8ef5-5c0fed2b07cb@gmail.com>",
+      "sentAt": "2026-06-29T14:24:34.227Z"
+    },
+    {
+      "id": 75,
+      "company": "AudioPen",
+      "email": "louis@audiopen.org",
+      "status": "sent",
+      "messageId": "<896a74a7-fc96-740d-146d-a536fc5ec7b2@gmail.com>",
+      "sentAt": "2026-06-29T14:24:42.891Z"
+    },
+    {
+      "id": 76,
+      "company": "Limitless AI",
+      "email": "dan@limitless.ai",
+      "status": "sent",
+      "messageId": "<67fe28b0-fc8d-63a8-977b-8b35d96b0873@gmail.com>",
+      "sentAt": "2026-06-29T14:24:50.963Z"
+    },
+    {
+      "id": 77,
+      "company": "Otter.ai",
+      "email": "sam@otter.ai",
+      "status": "sent",
+      "messageId": "<7ed44684-3037-889e-6bad-a291892658f2@gmail.com>",
+      "sentAt": "2026-06-29T14:24:58.933Z"
+    },
+    {
+      "id": 78,
+      "company": "Fireflies.ai",
+      "email": "krishan@fireflies.ai",
+      "status": "sent",
+      "messageId": "<aac7c1d6-feb0-f11a-7861-7a738dcec7c6@gmail.com>",
+      "sentAt": "2026-06-29T14:25:07.463Z"
+    },
+    {
+      "id": 79,
+      "company": "Read AI",
+      "email": "david@read.ai",
+      "status": "sent",
+      "messageId": "<2c26891b-e2d5-a177-b528-bc22460bdc50@gmail.com>",
+      "sentAt": "2026-06-29T14:25:16.003Z"
+    },
+    {
+      "id": 80,
+      "company": "Fathom",
+      "email": "richard@fathom.video",
+      "status": "sent",
+      "messageId": "<5bfcdd9d-0275-400d-2a70-0b1f60a813f4@gmail.com>",
+      "sentAt": "2026-06-29T14:25:23.786Z"
+    },
+    {
+      "id": 81,
+      "company": "Gong.io",
+      "email": "amit@gong.io",
+      "status": "sent",
+      "messageId": "<83e41bc8-26f3-3a4b-b384-f66e5a57e5a9@gmail.com>",
+      "sentAt": "2026-06-29T14:25:32.938Z"
+    },
+    {
+      "id": 82,
+      "company": "Chorus.ai",
+      "email": "roy@chorus.ai",
+      "status": "sent",
+      "messageId": "<45f6015b-59a1-1a30-fe62-a1a5e3c425cc@gmail.com>",
+      "sentAt": "2026-06-29T14:25:41.102Z"
+    },
+    {
+      "id": 83,
+      "company": "Humata AI",
+      "email": "cyrus@humata.ai",
+      "status": "sent",
+      "messageId": "<46af40ef-57e1-d3c4-f6e4-280db041f2e7@gmail.com>",
+      "sentAt": "2026-06-29T14:25:48.778Z"
+    },
+    {
+      "id": 84,
+      "company": "ChatPDF",
+      "email": "support@chatpdf.com",
+      "status": "sent",
+      "messageId": "<b32024aa-5a1c-9cd5-23d8-14646434c855@gmail.com>",
+      "sentAt": "2026-06-29T14:25:57.366Z"
+    },
+    {
+      "id": 85,
+      "company": "Julius AI",
+      "email": "rahul@julius.ai",
+      "status": "sent",
+      "messageId": "<8815265b-9271-a5c4-7fd2-459670dfcf05@gmail.com>",
+      "sentAt": "2026-06-29T14:26:05.497Z"
+    },
+    {
+      "id": 86,
+      "company": "Rose.com",
+      "email": "tony@rose.com",
+      "status": "sent",
+      "messageId": "<d02d862d-c02b-109b-0269-0ee1a7b5acf2@gmail.com>",
+      "sentAt": "2026-06-29T14:26:14.398Z"
+    },
+    {
+      "id": 87,
+      "company": "Hebbia",
+      "email": "george@hebbia.ai",
+      "status": "sent",
+      "messageId": "<b9409fee-e6a5-e31a-b890-bfa24bbba2bf@gmail.com>",
+      "sentAt": "2026-06-29T14:26:23.191Z"
+    },
+    {
+      "id": 88,
+      "company": "AlphaSense",
+      "email": "jack@alpha-sense.com",
+      "status": "sent",
+      "messageId": "<b307970e-ad87-9fb9-a219-f3da76bd1d9e@gmail.com>",
+      "sentAt": "2026-06-29T14:26:30.825Z"
+    },
+    {
+      "id": 89,
+      "company": "Elicit",
+      "email": "andreas@elicit.org",
+      "status": "sent",
+      "messageId": "<311093b3-094c-cd8e-9dbb-541bad8ec916@gmail.com>",
+      "sentAt": "2026-06-29T14:26:39.785Z"
+    },
+    {
+      "id": 90,
+      "company": "Consensus",
+      "email": "christian@consensus.app",
+      "status": "sent",
+      "messageId": "<cb7040cc-cd91-efa3-86d8-afe8510d70a7@gmail.com>",
+      "sentAt": "2026-06-29T14:26:48.154Z"
+    },
+    {
+      "id": 91,
+      "company": "SciSpace",
+      "email": "saikiran@scispace.com",
+      "status": "sent",
+      "messageId": "<107c79d3-30a3-40b5-aae2-d67cf066858d@gmail.com>",
+      "sentAt": "2026-06-29T14:26:56.329Z"
+    },
+    {
+      "id": 92,
+      "company": "QuillBot",
+      "email": "rohan@quillbot.com",
+      "status": "sent",
+      "messageId": "<fa1698c6-4f20-fa6b-2639-208bfe024946@gmail.com>",
+      "sentAt": "2026-06-29T14:27:04.295Z"
+    },
+    {
+      "id": 93,
+      "company": "Grammarly",
+      "email": "brad@grammarly.com",
+      "status": "sent",
+      "messageId": "<9b29a0ab-5d9d-f2bd-4f83-648c07a57ed3@gmail.com>",
+      "sentAt": "2026-06-29T14:27:12.404Z"
+    },
+    {
+      "id": 94,
+      "company": "DeepL",
+      "email": "jaroslaw@deepl.com",
+      "status": "sent",
+      "messageId": "<099bb368-4e24-f4ed-f632-c13994e0f317@gmail.com>",
+      "sentAt": "2026-06-29T14:27:20.017Z"
+    },
+    {
+      "id": 95,
+      "company": "HeyGen",
+      "email": "joshua@heygen.com",
+      "status": "sent",
+      "messageId": "<20b690dc-1797-7f75-fa20-d51d3bd5c1b1@gmail.com>",
+      "sentAt": "2026-06-29T14:27:28.094Z"
+    },
+    {
+      "id": 96,
+      "company": "D-ID",
+      "email": "gil@d-id.com",
+      "status": "sent",
+      "messageId": "<81edfe09-1127-01f8-e8e2-913c5b0382fc@gmail.com>",
+      "sentAt": "2026-06-29T14:27:36.178Z"
+    },
+    {
+      "id": 97,
+      "company": "ElevenLabs Reader",
+      "email": "support@elevenlabs.io",
+      "status": "sent",
+      "messageId": "<154c3989-ebb8-75c1-f3e7-39d77a07007e@gmail.com>",
+      "sentAt": "2026-06-29T14:27:43.795Z"
+    },
+    {
+      "id": 98,
+      "company": "Suno AI",
+      "email": "mikey@suno.com",
+      "status": "sent",
+      "messageId": "<2ff03416-4ff7-59bf-5f49-3d38ff108831@gmail.com>",
+      "sentAt": "2026-06-29T14:27:52.772Z"
+    },
+    {
+      "id": 99,
+      "company": "Owkin",
+      "email": "thomas@owkin.com",
+      "status": "sent",
+      "messageId": "<ef855957-a0ae-159d-1c4d-b84a330fddc5@gmail.com>",
+      "sentAt": "2026-06-29T14:28:00.864Z"
+    },
+    {
+      "id": 100,
+      "company": "Shield AI",
+      "email": "ryan@shield.ai",
+      "status": "sent",
+      "messageId": "<22779759-2974-8179-17f2-948f70627203@gmail.com>",
+      "sentAt": "2026-06-29T14:28:10.058Z"
+    }
+  ]
+}

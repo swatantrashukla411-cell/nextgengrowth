@@ -44,6 +44,7 @@ export function Navbar() {
             <a href="#features" className="lp-nav-link" onClick={(e) => scrollToSection(e, 'features')}>Features</a>
             <a href="#timeline" className="lp-nav-link" onClick={(e) => scrollToSection(e, 'timeline')}>Timeline</a>
             <a href="#whyus" className="lp-nav-link" onClick={(e) => scrollToSection(e, 'whyus')}>Why NNG</a>
+            <Link to="/campus" className="lp-nav-link">Campus</Link>
             <a href="#community" className="lp-nav-link" onClick={(e) => scrollToSection(e, 'community')}>Community</a>
           </div>
 
@@ -74,6 +75,7 @@ export function Navbar() {
         <a href="#features" className="lp-nav-link" style={{ fontSize: '1.2rem' }} onClick={(e) => scrollToSection(e, 'features')}>Features</a>
         <a href="#timeline" className="lp-nav-link" style={{ fontSize: '1.2rem' }} onClick={(e) => scrollToSection(e, 'timeline')}>Timeline</a>
         <a href="#whyus" className="lp-nav-link" style={{ fontSize: '1.2rem' }} onClick={(e) => scrollToSection(e, 'whyus')}>Why NNG</a>
+        <Link to="/campus" className="lp-nav-link" style={{ fontSize: '1.2rem' }} onClick={() => setIsMobileMenuOpen(false)}>Campus</Link>
         <a href="#community" className="lp-nav-link" style={{ fontSize: '1.2rem' }} onClick={(e) => scrollToSection(e, 'community')}>Community</a>
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginTop: '20px' }}>
