@@ -4,6 +4,19 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
   <title>Brand Dashboard – NextGenGrowth</title>
+  <script>
+    (function(){
+      try{
+        const token=localStorage.getItem('ngg_token');
+        const user=JSON.parse(localStorage.getItem('ngg_user')||'null');
+        if(!token||!user||user.role!=='brand'){
+          location.replace('/login?role=brand&redirect=post');
+        }
+      }catch(e){
+        location.replace('/login?role=brand');
+      }
+    })();
+  </script>
   <link rel="icon" href="/favicon.ico" sizes="any"/>
 <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png"/>

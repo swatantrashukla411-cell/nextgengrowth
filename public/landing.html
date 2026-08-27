@@ -1014,7 +1014,7 @@
     <a href="#philosophy">About</a>
   </div>
   <div class="nav-cta">
-    <a href="/brand-dashboard" class="btn btn-ghost">Post an Opportunity</a>
+    <a href="/brand-dashboard" onclick="handlePostOpportunity(event)" class="btn btn-ghost">Post an Opportunity</a>
     <a href="/register" class="btn btn-primary">Join NextGenGrowth
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
     </a>
@@ -1060,7 +1060,7 @@
           <a href="/dashboard" class="btn btn-primary">Explore Opportunities
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
           </a>
-          <a href="/brand-dashboard" class="btn btn-outline">Post an Opportunity</a>
+          <a href="/brand-dashboard" onclick="handlePostOpportunity(event)" class="btn btn-outline">Post an Opportunity</a>
           <a href="/brand-dashboard" class="btn btn-ghost">Find Student Talent</a>
         </div>
         <div class="skill-compass-cta">
@@ -1227,7 +1227,7 @@
           <li style="display: flex; gap: 10px; align-items: center; font-size: 15px; font-weight: 600; color: var(--ink-700);"><span style="color: var(--green-500); font-weight: 900;">✓</span> Verified student skill badges & admin review</li>
         </ul>
         <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-          <a href="/brand-dashboard" class="btn btn-primary" style="flex: 1; justify-content: center;">Post an Opportunity</a>
+          <a href="/brand-dashboard" onclick="handlePostOpportunity(event)" class="btn btn-primary" style="flex: 1; justify-content: center;">Post an Opportunity</a>
           <a href="/brand-dashboard" class="btn btn-outline" style="flex: 1; justify-content: center;">Find Student Talent</a>
         </div>
       </div>
@@ -1874,6 +1874,21 @@
       }
     });
   });
+  function handlePostOpportunity(e) {
+    if (e) e.preventDefault();
+    try {
+      const token = localStorage.getItem('ngg_token');
+      const user = JSON.parse(localStorage.getItem('ngg_user') || 'null');
+      if (token && user && user.role === 'brand') {
+        window.location.href = '/brand-dashboard#post';
+      } else {
+        window.location.href = '/login?role=brand&redirect=post';
+      }
+    } catch (err) {
+      window.location.href = '/login?role=brand&redirect=post';
+    }
+  }
+
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
       closeMobileMenu();

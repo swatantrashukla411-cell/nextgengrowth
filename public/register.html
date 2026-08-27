@@ -1184,6 +1184,13 @@
     }
     function googleAuth() { window.location.href = `/auth/google?role=${role}`; }
 
+    window.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(location.search);
+      if (params.get('role') === 'brand') {
+        selectRole('brand');
+      }
+    });
+
     // --- NAVIGATION ---
     function goStep(n) {
       document.querySelectorAll('.panel').forEach((p, i) => p.classList.toggle('active', i === n - 1));

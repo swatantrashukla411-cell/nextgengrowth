@@ -1084,6 +1084,15 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       const params = new URLSearchParams(location.search);
+      const requestedRole = params.get('role');
+      if (requestedRole === 'brand') {
+        const brandBtn = document.querySelector('.role-btn[data-role="brand"]');
+        if (brandBtn) setRole('brand', brandBtn);
+      }
+      if (params.get('redirect') === 'post') {
+        showAlert('Please log in or sign up as a Brand/Organization to post an opportunity.');
+      }
+
       const error = params.get('error');
       if (error === 'role_mismatch') {
         const actual = params.get('actual') || 'another role';
