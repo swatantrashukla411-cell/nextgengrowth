@@ -4733,7 +4733,7 @@ app.get("/blog/:slug",async(req,res)=>{
 
 app.get("/",(req,res)=>res.sendFile(path.join(__dirname,"public","landing.html"))); // ✅ Changed this to landing.html
 app.get("/for-brands",(req,res)=>res.sendFile(path.join(__dirname,"public","for-brands.html")));
-app.get("/campus",(req,res)=>res.sendFile(path.join(__dirname,"public","for-brands.html")));
+app.get("/campus",(req,res)=>res.sendFile(path.join(__dirname,"public","campus.html")));
 app.get("/login",(req,res)=>res.sendFile(path.join(__dirname,"public","login.html")));
 app.get("/register",(req,res)=>res.sendFile(path.join(__dirname,"public","register.html")));
 app.get("/skill-compass",(req,res)=>res.sendFile(path.join(__dirname,"public","skill-compass.html")));
