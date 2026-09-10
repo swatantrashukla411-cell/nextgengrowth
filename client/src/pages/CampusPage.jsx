@@ -7,6 +7,8 @@ import {
   Sun, Moon, ChevronLeft, Radar, ScanLine, Radio,
 } from 'lucide-react'
 import '../styles/campus.css'
+import CampusIconField from '../components/CampusIconField'
+import CollegeLogoMarquee from '../components/CollegeLogoMarquee'
 
 
 /* ---------- data ---------- */
@@ -641,8 +643,9 @@ export default function App() {
       </header>
 
       <main id="main">
-        {/* HERO v7 — clean, no floating icons, bigger founders video */}
+        {/* HERO with interactive floating ecosystem icons */}
         <section ref={heroRef} className="relative overflow-hidden pt-32 pb-20 sm:pt-40 sm:pb-28">
+          <CampusIconField />
           <div className="pointer-events-none absolute -top-40 right-0 h-[500px] w-[500px] rounded-full bg-[#00C271]/8 blur-3xl" />
 
           <div className="mx-auto max-w-7xl px-4 sm:px-6 relative z-10">
@@ -758,29 +761,9 @@ export default function App() {
             </div>
           </div>
 
-          <div className="relative mt-10">
-            <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-[var(--card)] to-transparent" />
-            <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-[var(--card)] to-transparent" />
-            <div className="marquee-track flex w-max items-center gap-4">
-              {[...colleges, ...colleges].map((c, i) => (
-                <div key={`r1-${i}`} className="flex h-24 w-40 shrink-0 items-center justify-center rounded-2xl border border-[var(--line)] bg-[var(--bg)] p-4 transition hover:border-[#00C271]/40">
-                  <img src={`/colleges/${c.file}`} alt={c.name} onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextSibling.style.display = 'block' }} className="max-h-14 max-w-full object-contain grayscale transition hover:grayscale-0" />
-                  <span className="hidden text-center text-xs font-semibold text-[var(--ink)]">{c.name}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="relative mt-4">
-            <div className="pointer-events-none absolute inset-y-0 left-0 z-10 w-24 bg-gradient-to-r from-[var(--card)] to-transparent" />
-            <div className="pointer-events-none absolute inset-y-0 right-0 z-10 w-24 bg-gradient-to-l from-[var(--card)] to-transparent" />
-            <div className="marquee-track-reverse flex w-max items-center gap-4">
-              {[...colleges].reverse().concat([...colleges].reverse()).map((c, i) => (
-                <div key={`r2-${i}`} className="flex h-24 w-40 shrink-0 items-center justify-center rounded-2xl border border-[var(--line)] bg-[var(--bg)] p-4 transition hover:border-[#00C271]/40">
-                  <img src={`/colleges/${c.file}`} alt={c.name} onError={(e) => { e.currentTarget.style.display = 'none'; e.currentTarget.nextSibling.style.display = 'block' }} className="max-h-14 max-w-full object-contain grayscale transition hover:grayscale-0" />
-                  <span className="hidden text-center text-xs font-semibold text-[var(--ink)]">{c.name}</span>
-                </div>
-              ))}
-            </div>
+          <div className="mt-10 space-y-4">
+            <CollegeLogoMarquee colleges={colleges} direction="left" speed={35} />
+            <CollegeLogoMarquee colleges={[...colleges].reverse()} direction="right" speed={40} />
           </div>
           <p className="mt-8 text-center text-xs text-[var(--muted)]">And many more across Delhi-NCR, UP, Uttarakhand, Punjab, and beyond.</p>
         </section>
