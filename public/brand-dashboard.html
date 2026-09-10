@@ -1232,6 +1232,7 @@ function renderLongTermRoles(){
         <div style="font-family:'Clash Display',sans-serif;font-weight:800;color:var(--gm);margin-top:10px">${esc(role.monthlyBudget)}</div>
         <div style="font-size:.78rem;color:var(--tm);margin-top:6px">${esc((role.skillsNeeded||[]).join(', ')||'Skills not listed')}</div>
         <div style="font-size:.78rem;color:var(--ts);margin-top:6px">Trial: ${esc(role.trialTask||'To be defined')} ${role.trialPay?`· ${esc(role.trialPay)}`:''}</div>
+        ${role.description?`<details style="margin-top:10px;background:var(--gp);border:1px solid var(--br);border-radius:8px;padding:8px 12px;font-size:.8rem"><summary style="cursor:pointer;font-weight:700;color:var(--td)">📋 View Full Role Description & Details</summary><div style="margin-top:8px;color:var(--tm);line-height:1.55;white-space:pre-wrap">${esc(role.description)}</div></details>`:''}
         <div style="margin-top:12px"><strong style="font-size:.78rem;color:var(--td)">Shortlisted Students (${apps.length})</strong>${appRows}</div>
       </div>`;
   }).join('');

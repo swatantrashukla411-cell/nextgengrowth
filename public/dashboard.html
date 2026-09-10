@@ -715,6 +715,8 @@
       <div class="fb">
         <button class="fbtn aif active" id="aiBtn" onclick="setFilter('ai',this)">✨ My Skills</button>
         <button class="fbtn" onclick="setFilter('all',this)">All</button>
+        <button class="fbtn" onclick="setFilter('internship',this)">🎓 Internships</button>
+        <button class="fbtn" onclick="setFilter('sports',this)">🏸 Sports</button>
         <button class="fbtn" onclick="setFilter('video',this)">🎬 Video</button>
         <button class="fbtn" onclick="setFilter('design',this)">🎨 Design</button>
         <button class="fbtn" onclick="setFilter('writing',this)">✍️ Writing</button>
@@ -1494,7 +1496,7 @@ function shareTwitter(){
 }
 
 // AI MATCHING
-const SKILL_KW={'Video Editing':['video','editing','reel','reels','tiktok','youtube','shorts','capcut'],'Graphic Design':['design','graphic','logo','canva','brand','branding','visual','figma','banner'],'Web Development':['web','website','html','css','wordpress','landing','page','frontend'],'Content Writing':['content','writing','blog','article','seo','copy','copywriting','newsletter'],'Social Media':['social','instagram','twitter','linkedin','media','post'],'Photography':['photo','photography','lightroom','product'],'Audio':['audio','music','sound','podcast'],'Data & Excel':['data','excel','spreadsheet'],'AI Tools':['ai','chatgpt','automation']};
+const SKILL_KW={'Video Editing':['video','editing','reel','reels','tiktok','youtube','shorts','capcut','creator'],'Graphic Design':['design','graphic','logo','canva','brand','branding','visual','figma','banner'],'Web Development':['web','website','html','css','wordpress','landing','page','frontend'],'Content Writing':['content','writing','blog','article','seo','copy','copywriting','newsletter','creator','script'],'Social Media':['social','instagram','twitter','linkedin','media','post','reels','creator'],'Photography':['photo','photography','lightroom','product'],'Audio':['audio','music','sound','podcast'],'Data & Excel':['data','excel','spreadsheet'],'AI Tools':['ai','chatgpt','automation'],'Content Creation':['content','creator','video','reels','badminton','sports','internship'],'Sports':['sports','badminton','racquet','fitness','athlete']};
 
 function matchJobs(skills,jobs){
   if(!skills||!skills.length)return jobs.map(j=>({...j,matchScore:0,isMatch:false,matchedTags:[]}));
@@ -1878,8 +1880,16 @@ function renderHomeMatchedJobs(jobs){
 /// PROJECTS
 function renderProjects(){
   let jobs=curFilter==='ai'?aiJobs:ALL_JOBS;
-  if(curCat!=='all')jobs=jobs.filter(j=>j.cat===curCat);
-  if(curSearch)jobs=jobs.filter(j=>[j.title,j.brand,getProjectDescription(j),...(j.tags||[])].join(' ').toLowerCase().includes(curSearch));
+  if(curCat!=='all'){
+    if(curCat==='internship'){
+      jobs=jobs.filter(j=>j.cat==='internship'||(j.categoryPath&&j.categoryPath.toLowerCase().includes('internship'))||(j.tags||[]).some(t=>t.toLowerCase().includes('internship'))||(j.roleType&&j.roleType.toLowerCase().includes('internship'))||(j.title&&j.title.toLowerCase().includes('internship')));
+    }else if(curCat==='sports'){
+      jobs=jobs.filter(j=>j.cat==='sports'||(j.categoryPath&&j.categoryPath.toLowerCase().includes('sports'))||(j.tags||[]).some(t=>t.toLowerCase().includes('sports'))||(j.title&&j.title.toLowerCase().includes('badminton'))||(j.title&&j.title.toLowerCase().includes('sports')));
+    }else{
+      jobs=jobs.filter(j=>j.cat===curCat||(j.tags||[]).some(t=>t.toLowerCase()===curCat.toLowerCase()));
+    }
+  }
+  if(curSearch)jobs=jobs.filter(j=>[j.title,j.brand,j.categoryPath,getProjectDescription(j),...(j.tags||[])].join(' ').toLowerCase().includes(curSearch));
   const grid=document.getElementById('projGrid');
   if(!jobs.length){grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--ts)"><div style="font-size:2rem;margin-bottom:8px">🔍</div><h3 style="font-family:'Clash Display',sans-serif;color:var(--td);margin-bottom:5px">No projects found</h3><p>Try different filter or add more skills</p></div>`;return;}
   const bdg={hot:'<span class="tag th">🔥 Hot</span>',new:'<span class="tag tn">✨ New</span>',apply:'<span class="tag trev">📝 Apply</span>',demo:'<span class="tag tdemo">Demo</span>'};
@@ -1898,7 +1908,26 @@ function renderProjects(){
       ? `<button class="pa" style="background:var(--gm);color:white;border-color:var(--gm);cursor:default" onclick="event.stopPropagation()">Applied ✓</button>`
       : `<button class="pa" onclick="event.stopPropagation();applyJob('${jobId}')">Apply</button>`;
 
-    return`<div class="pc project-card ${m?'matched':''}">${m?'<div class="match-bd">🤖 Match</div>':''}<div class="pt_"><div class="pi">${j.ico}</div><div style="padding-right:${m?'70px':'0'}"><div class="pb_">${esc(j.brand)}</div><div class="pn">${esc(j.title)}</div></div></div><div class="ptgs">${(j.tags||[]).map(t=>`<span class="ptg ${mt.includes(t)?'mt':''}">${esc(t)}</span>`).join('')}</div><div class="pf_"><div class="pf-top"><div class="pp">${esc(j.pay)}</div>${bdg[j.badge]||''}</div><div class="pm">⏱ ${esc(j.days)} &nbsp;·&nbsp; 📍 Remote &nbsp;·&nbsp; 👥 ${j.applicantCount || 0} applied</div><div class="project-actions"><button class="pa" style="background:white" onclick="event.stopPropagation();openProjectDetails('${jobId}')">Details</button>${brandBtn}${btnHtml}</div></div></div>`;
+    const categoryPathHtml = j.categoryPath
+      ? `<div style="font-size:.69rem;font-weight:700;color:#047857;background:#ecfdf5;border:1px solid #a7f3d0;padding:2px 8px;border-radius:100px;display:inline-flex;align-items:center;gap:4px;margin-bottom:6px;width:fit-content"><span>🎯</span> ${esc(j.categoryPath)}</div>`
+      : '';
+
+    const prominentHighlightsHtml = (j.timeCommitment || (j.tags||[]).includes('Internship'))
+      ? `<div style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1px solid #86efac;border-radius:8px;padding:6px 9px;margin:8px 0;display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap">
+          <span style="font-weight:700;color:#15803d;font-size:.84rem">💰 ${esc(j.pay)}</span>
+          <span style="font-weight:600;color:#0369a1;background:white;padding:2px 7px;border-radius:4px;border:1px solid #bae6fd;font-size:.7rem">⏱ ${esc(j.timeCommitment||'10–12 hrs/week')}</span>
+          <span style="font-weight:600;color:#047857;background:white;padding:2px 7px;border-radius:4px;border:1px solid #bbf7d0;font-size:.7rem">📍 Remote</span>
+        </div>`
+      : '';
+
+    return`<div class="pc project-card ${m?'matched':''}">
+      ${m?'<div class="match-bd">🤖 Match</div>':''}
+      ${categoryPathHtml}
+      <div class="pt_"><div class="pi">${j.ico||'🏢'}</div><div style="padding-right:${m?'70px':'0'}"><div class="pb_">${esc(j.brand)}</div><div class="pn">${esc(j.title)}</div></div></div>
+      ${prominentHighlightsHtml}
+      <div class="ptgs">${(j.tags||[]).map(t=>`<span class="ptg ${mt.includes(t)?'mt':''}">${esc(t)}</span>`).join('')}</div>
+      <div class="pf_"><div class="pf-top"><div class="pp">${esc(j.pay)}</div>${bdg[j.badge]||''}</div><div class="pm">⏱ ${esc(j.days)} &nbsp;·&nbsp; 📍 Remote &nbsp;·&nbsp; 👥 ${j.applicantCount || 0} applied</div><div class="project-actions"><button class="pa" style="background:white" onclick="event.stopPropagation();openProjectDetails('${jobId}')">Details</button>${brandBtn}${btnHtml}</div></div>
+    </div>`;
   }).join('');
 }
 
@@ -1931,7 +1960,22 @@ function openProjectDetails(id){
     : hasApplied
     ? `<button class="pa" style="background:var(--gm);color:white;border-color:var(--gm);cursor:default">Applied ✓</button>`
     : `<button class="pa" onclick="closeProjectDetails();applyJob('${jobId}')">Apply Now</button>`;
+
+  const categoryPathHtml = j.categoryPath
+    ? `<div style="font-size:.74rem;font-weight:700;color:#047857;background:#ecfdf5;border:1px solid #a7f3d0;padding:4px 12px;border-radius:100px;display:inline-flex;align-items:center;gap:6px;margin-bottom:10px">🎯 ${esc(j.categoryPath)}</div>`
+    : '';
+
+  const prominentBanner = (j.timeCommitment || (j.tags||[]).includes('Internship'))
+    ? `<div style="background:linear-gradient(135deg, #f0fdf4, #dcfce7);border:1.5px solid #86efac;border-radius:10px;padding:12px 14px;margin:10px 0 14px;display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+        <div style="font-weight:700;color:#15803d;font-size:1.05rem">💰 ${esc(j.pay||'₹10,000–₹15,000/month')}</div>
+        <div style="background:white;color:#0369a1;font-size:.76rem;font-weight:600;padding:4px 9px;border-radius:6px;border:1px solid #bae6fd">⏱ ${esc(j.timeCommitment||'Approx. 10–12 hours/week')}</div>
+        <div style="background:white;color:#b45309;font-size:.76rem;font-weight:600;padding:4px 9px;border-radius:6px;border:1px solid #fde68a">⏳ 3 Months Internship</div>
+        <div style="background:white;color:#15803d;font-size:.76rem;font-weight:600;padding:4px 9px;border-radius:6px;border:1px solid #bbf7d0">📍 Remote (India)</div>
+      </div>`
+    : '';
+
   content.innerHTML=`
+    ${categoryPathHtml}
     <div class="project-detail-title">${esc(j.title||'Project')}</div>
     <div class="project-detail-meta">
       <span>🏢 ${esc(j.brand||'Brand')}</span>
@@ -1940,6 +1984,7 @@ function openProjectDetails(id){
       <span>👥 ${j.applicantCount || 0} applied</span>
       <span>📍 Remote</span>
     </div>
+    ${prominentBanner}
     <div class="project-detail-desc">
       <strong>Project Description</strong>
       <p>${esc(desc)}</p>
@@ -2051,9 +2096,24 @@ function renderLongTermRoles(){
     const app=role.myApplication;
     const alreadyApplied=!!app;
     const skills=(role.skillsNeeded||[]).map(s=>`<span class="ptg">${esc(s)}</span>`).join('');
+    const ico = (role.roleTitle?.includes('🏸') || role.roleTitle?.toLowerCase().includes('badminton')) ? '🏸' : '💼';
+    const brandId=String(role.brandId||'');
+    const brandBtn=brandId?`<button class="pa" style="background:white" onclick="event.stopPropagation();openBrandProfile('${brandId}')">Brand</button>`:'';
+    const categoryPathHtml = role.categoryPath
+      ? `<div style="font-size:.69rem;font-weight:700;color:#047857;background:#ecfdf5;border:1px solid #a7f3d0;padding:2px 8px;border-radius:100px;display:inline-flex;align-items:center;gap:4px;margin-bottom:6px;width:fit-content"><span>🎯</span> ${esc(role.categoryPath)}</div>`
+      : '';
+    const prominentHighlightsHtml = `
+      <div style="background:linear-gradient(135deg,#f0fdf4,#dcfce7);border:1px solid #86efac;border-radius:8px;padding:6px 9px;margin:8px 0;display:flex;align-items:center;justify-content:space-between;gap:6px;flex-wrap:wrap">
+        <span style="font-weight:700;color:#15803d;font-size:.84rem">💰 ${esc(role.monthlyBudget||'Budget open')}</span>
+        <span style="font-weight:600;color:#0369a1;background:white;padding:2px 7px;border-radius:4px;border:1px solid #bae6fd;font-size:.7rem">⏱ ${esc(role.hoursPerWeek||'Flexible')}</span>
+        <span style="font-weight:600;color:#047857;background:white;padding:2px 7px;border-radius:4px;border:1px solid #bbf7d0;font-size:.7rem">📍 ${esc(role.workType||'Remote')}</span>
+      </div>`;
+
     return`
       <div class="pc">
-        <div class="pt_"><div class="pi">💼</div><div><div class="pb_">${esc(role.brandName||'Brand')}</div><div class="pn">${esc(role.roleTitle||'Long-term role')}</div></div></div>
+        ${categoryPathHtml}
+        <div class="pt_"><div class="pi">${ico}</div><div><div class="pb_">${esc(role.brandName||'Brand')}</div><div class="pn">${esc(role.roleTitle||'Long-term role')}</div></div></div>
+        ${prominentHighlightsHtml}
         <div class="ptgs">${skills||'<span class="ptg">Skills flexible</span>'}</div>
         <div style="font-size:.78rem;color:var(--tm);line-height:1.55;margin:8px 0">
           ${esc(role.duration||'1 month')} · ${esc(role.workType||'remote')} · ${esc(role.hoursPerWeek||'Flexible hours')}<br>
@@ -2063,11 +2123,76 @@ function renderLongTermRoles(){
         <div class="pf_">
           <div><div class="pp">${esc(role.monthlyBudget||'Budget open')}</div><div class="pm">7-day paid trial ${role.trialPay?`· ${esc(role.trialPay)}`:''}</div></div>
           <div class="project-actions">
+            <button class="pa" style="background:white" onclick="event.stopPropagation();openLongTermDetails('${esc(role.id||role._id)}')">Details</button>
+            ${brandBtn}
             ${alreadyApplied?longTermStatusTag(app.status):`<button class="pa" onclick="event.stopPropagation();openLongTermApply('${esc(role.id||role._id)}')">Apply</button>`}
           </div>
         </div>
       </div>`;
   }).join('');
+}
+
+function openLongTermDetails(roleId){
+  const role=longTermRoles.find(r=>String(r.id||r._id)===String(roleId));
+  if(!role){showToast('Role details not available. Please refresh.','error');return;}
+  const modal=document.getElementById('projectDetailModal');
+  const content=document.getElementById('projectDetailContent');
+  const app=role.myApplication;
+  const alreadyApplied=!!app;
+  const brandId=String(role.brandId||'');
+  const brandBtn=brandId?`<button class="pa" onclick="closeProjectDetails();openBrandProfile('${brandId}')">Brand Details</button>`:'';
+  const applyBtn=alreadyApplied
+    ? `<button class="pa" style="background:var(--gm);color:white;border-color:var(--gm);cursor:default">Applied ✓</button>`
+    : `<button class="pa" onclick="closeProjectDetails();openLongTermApply('${esc(role.id||role._id)}')">Apply Now</button>`;
+
+  const categoryPathHtml = role.categoryPath
+    ? `<div style="font-size:.74rem;font-weight:700;color:#047857;background:#ecfdf5;border:1px solid #a7f3d0;padding:4px 12px;border-radius:100px;display:inline-flex;align-items:center;gap:6px;margin-bottom:10px">🎯 ${esc(role.categoryPath)}</div>`
+    : `<div style="font-size:.74rem;font-weight:700;color:#047857;background:#ecfdf5;border:1px solid #a7f3d0;padding:4px 12px;border-radius:100px;display:inline-flex;align-items:center;gap:6px;margin-bottom:10px">💼 Long-Term Role / Internship</div>`;
+
+  const prominentBanner = `
+    <div style="background:linear-gradient(135deg, #f0fdf4, #dcfce7);border:1.5px solid #86efac;border-radius:10px;padding:12px 14px;margin:10px 0 14px;display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+      <div style="font-weight:700;color:#15803d;font-size:1.05rem">💰 ${esc(role.monthlyBudget||'Budget open')}</div>
+      <div style="background:white;color:#0369a1;font-size:.76rem;font-weight:600;padding:4px 9px;border-radius:6px;border:1px solid #bae6fd">⏱ ${esc(role.hoursPerWeek||'Flexible hours')}</div>
+      <div style="background:white;color:#b45309;font-size:.76rem;font-weight:600;padding:4px 9px;border-radius:6px;border:1px solid #fde68a">⏳ ${esc(role.duration||'3 Months')}</div>
+      <div style="background:white;color:#15803d;font-size:.76rem;font-weight:600;padding:4px 9px;border-radius:6px;border:1px solid #bbf7d0">📍 ${esc(role.workType||'Remote')}</div>
+    </div>`;
+
+  const desc = role.description || `Role: ${role.roleTitle}\nDuration: ${role.duration||'1 month'}\nExpected Weekly Output: ${role.expectedWeeklyOutput||'To be discussed'}\nPaid Trial Task: ${role.trialTask||'A small paid trial task will be assigned by brand/admin.'}`;
+
+  content.innerHTML=`
+    ${categoryPathHtml}
+    <div class="project-detail-title">${esc(role.roleTitle||'Long-Term Role')}</div>
+    <div class="project-detail-meta">
+      <span>🏢 ${esc(role.brandName||'Brand')}</span>
+      <span>💰 ${esc(role.monthlyBudget||'Budget open')}</span>
+      <span>⏱ ${esc(role.hoursPerWeek||'Flexible')}</span>
+      <span>⏳ ${esc(role.duration||'Ongoing')}</span>
+      <span>📍 ${esc(role.workType||'Remote')}</span>
+    </div>
+    ${prominentBanner}
+    <div class="project-detail-desc" style="background:#f8fafc;border:1px solid #e2e8f0;margin-bottom:12px">
+      <strong>📋 Role Summary & Key Deliverables</strong>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;font-size:.82rem;color:var(--tm);margin-top:6px">
+        <div><strong>Duration:</strong> ${esc(role.duration||'1 month')}</div>
+        <div><strong>Time Commitment:</strong> ${esc(role.hoursPerWeek||'Flexible')}</div>
+        <div><strong>Work Mode:</strong> ${esc(role.workType||'Remote')}</div>
+        <div><strong>Weekly Output:</strong> ${esc(role.expectedWeeklyOutput||'To be discussed')}</div>
+        <div><strong>Paid Trial:</strong> 7-day paid evaluation ${role.trialPay?`(${esc(role.trialPay)})`:''}</div>
+        <div><strong>Start Timeline:</strong> ${esc(role.startTimeline||'Immediate')}</div>
+      </div>
+      ${role.trialTask ? `<div style="margin-top:8px;padding-top:8px;border-top:1px dashed #cbd5e1"><strong>Trial Task:</strong> ${esc(role.trialTask)}</div>` : ''}
+    </div>
+    <div class="project-detail-desc">
+      <strong>Full Details & Instructions</strong>
+      <p>${esc(desc)}</p>
+    </div>
+    <div class="ptgs" style="margin-bottom:14px">
+      ${(role.skillsNeeded||[]).map(t=>`<span class="ptg">${esc(t)}</span>`).join('')}
+    </div>
+    <div class="project-detail-actions">${brandBtn}${applyBtn}</div>
+  `;
+  modal.classList.add('show');
+  modal.setAttribute('aria-hidden','false');
 }
 
 function renderLongTermApplications(){

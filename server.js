@@ -167,6 +167,12 @@ const jobSchema = new mongoose.Schema({
   description:{type:String,default:""},
   budget:{type:String,required:true},
   category:{type:String,required:true},
+  categoryPath:{type:String,default:""},
+  roleType:{type:String,default:""},
+  timeCommitment:{type:String,default:""},
+  duration:{type:String,default:""},
+  compensation:{type:String,default:""},
+  ico:{type:String,default:""},
   tags:{type:[String],default:[]},
   applicationQuestions:{type:[String],default:[]},
   deadline:{type:String,default:""},
@@ -209,6 +215,8 @@ const longTermRoleSchema = new mongoose.Schema({
   email:{type:String,default:""},
   whatsapp:{type:String,default:""},
   roleTitle:{type:String,required:true},
+  description:{type:String,default:""},
+  categoryPath:{type:String,default:""},
   skillsNeeded:{type:[String],default:[]},
   monthlyBudget:{type:String,required:true},
   duration:{type:String,default:"1 month"},
@@ -514,6 +522,8 @@ function longTermRoleDTO(role,extra={}){
     email:r.email||"",
     whatsapp:r.whatsapp||"",
     roleTitle:r.roleTitle||"",
+    description:r.description||r.adminNotes||"",
+    categoryPath:r.categoryPath||"",
     skillsNeeded:r.skillsNeeded||[],
     monthlyBudget:r.monthlyBudget||"",
     duration:r.duration||"",
@@ -2827,14 +2837,19 @@ app.get("/api/jobs",verifyToken,async(req,res)=>{
     const result=jobs.map(j=>({
       id:j._id,
       brandId:j.brandId?._id||j.brandId,
-      ico:"🏢",
+      ico:j.ico||(j.title?.includes("🏸")?"🏸":(j.category==="video"?"🎬":"🏢")),
       brand:j.brandName||`${j.brandId?.firstName||""} ${j.brandId?.lastName||""}`.trim(),
       title:j.title,
       cat:j.category,
+      categoryPath:j.categoryPath||"",
+      roleType:j.roleType||"",
+      timeCommitment:j.timeCommitment||"",
+      duration:j.duration||"",
+      compensation:j.compensation||j.budget||"",
       tags:j.tags||[],
       pay:j.budget,
       days:j.deadline||"Flexible",
-      badge:"new",
+      badge:"hot",
       description:j.description,
       applicationQuestions:j.applicationQuestions||[],
       postedAt:j.createdAt,
@@ -4718,6 +4733,7 @@ app.get("/blog/:slug",async(req,res)=>{
 
 app.get("/",(req,res)=>res.sendFile(path.join(__dirname,"public","landing.html"))); // ✅ Changed this to landing.html
 app.get("/for-brands",(req,res)=>res.sendFile(path.join(__dirname,"public","for-brands.html")));
+app.get("/campus",(req,res)=>res.sendFile(path.join(__dirname,"public","for-brands.html")));
 app.get("/login",(req,res)=>res.sendFile(path.join(__dirname,"public","login.html")));
 app.get("/register",(req,res)=>res.sendFile(path.join(__dirname,"public","register.html")));
 app.get("/skill-compass",(req,res)=>res.sendFile(path.join(__dirname,"public","skill-compass.html")));
@@ -4740,7 +4756,7 @@ Sitemap: ${getBaseUrl()}/sitemap.xml
 app.get("/sitemap.xml",async(req,res)=>{
   const posts=await getPublishedBlogPosts({limit:500});
   const urls=[
-    "/","/login","/register","/blog","/privacy","/terms","/refund-policy","/contact",
+    "/","/login","/register","/blog","/privacy","/terms","/refund-policy","/contact","/for-brands","/campus",
     ...BLOG_CATEGORIES.map(c=>`/blog/${c.slug}`),
     ...posts.map(p=>`/blog/${p.slug}`),
   ];

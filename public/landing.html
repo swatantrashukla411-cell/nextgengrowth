@@ -474,22 +474,42 @@
   .feat-card:hover .feat-icon { transform: translateY(-4px) scale(1.06); box-shadow: 0 8px 20px -6px rgba(16,185,129,0.35); }
   .feat-card h3 { margin-bottom: 8px; }
   .feat-card p { color: var(--ink-500); font-size: 15px; line-height: 1.7; }
-  .audience-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; margin-top: 28px; }
+  .audience-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; margin-top: 28px; margin-bottom: 50px; }
   .audience-card {
-    background: #fff; border: 1px solid var(--border); border-radius: 24px;
-    padding: 30px 30px 30px 36px; box-shadow: var(--shadow-sm);
+    background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg);
+    padding: 34px; box-shadow: var(--shadow-md);
     position: relative;
   }
+  .audience-card-orgs { background: var(--bg-soft); }
   .audience-card::before {
     content: ""; position: absolute; left: 0; top: 24px; bottom: 24px;
     width: 3px; border-radius: 999px;
     background: linear-gradient(to bottom, var(--green-400), var(--green-600));
   }
-  .audience-card h3 { margin-bottom: 16px; }
-  .audience-card ul { list-style: none; display: grid; gap: 12px; }
-  .audience-card li { display: flex; gap: 10px; color: var(--ink-700); font-weight: 600; font-size: 14.5px; }
-  .audience-card li::before { content: "✓"; color: var(--green-700); font-weight: 900; }
-  @media (max-width: 880px) { .audience-grid { grid-template-columns: 1fr; } }
+  .audience-card h3 { font-size: clamp(21px, 4.5vw, 26px); margin: 16px 0 12px; color: var(--ink-900); }
+  .audience-card p.card-intro { color: var(--ink-500); font-size: 15px; margin-bottom: 20px; }
+  .audience-card ul { list-style: none; display: grid; gap: 12px; margin-bottom: 28px; }
+  .audience-card li { display: flex; gap: 10px; align-items: flex-start; color: var(--ink-700); font-weight: 600; font-size: 14.5px; line-height: 1.45; }
+  .audience-card li::before { content: ""; display: none; }
+  .audience-card li .check { color: var(--green-500); font-weight: 900; flex-shrink: 0; margin-top: 1px; }
+  .audience-btn-row { display: flex; gap: 12px; flex-wrap: wrap; }
+  .audience-btn-row .btn { flex: 1 1 180px; justify-content: center; }
+  .campus-connector {
+    background: linear-gradient(135deg, var(--green-50), #fff);
+    border: 1px solid var(--green-300); border-radius: var(--radius);
+    padding: 28px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;
+  }
+  .campus-tag { font-size: 12px; font-weight: 800; text-transform: uppercase; color: var(--green-700); letter-spacing: 0.08em; }
+  @media (max-width: 880px) {
+    .audience-grid { grid-template-columns: 1fr; gap: 24px; }
+    .campus-connector { flex-direction: column; align-items: stretch; text-align: left; }
+    .campus-connector .btn { width: 100%; justify-content: center; }
+  }
+  @media (max-width: 560px) {
+    .audience-card { padding: 22px 18px; border-radius: 18px; }
+    .audience-btn-row { flex-direction: column; gap: 10px; }
+    .audience-btn-row .btn { width: 100%; flex: 1 1 auto; }
+  }
 
   /* ---------- Long-term hiring ---------- */
   .lt-shell {
@@ -909,9 +929,11 @@
   .nav-cta .btn-primary { padding-right:18px; }
 
   @media (max-width: 1080px) {
-    nav {
-      top:0;left:0;right:auto;transform:none;width:100vw;border-radius:0;border-left:0;border-right:0;border-top:0;
-      padding:10px 14px;background:#fff;max-width:100vw;box-sizing:border-box;backdrop-filter:none;-webkit-backdrop-filter:none;
+    nav, nav.scrolled {
+      top:0;left:0;right:0;transform:none;width:100%;border-radius:0;border-left:0;border-right:0;border-top:0;
+      border-bottom:1px solid rgba(16,185,129,0.12);
+      padding:10px 14px;background:#ffffff!important;max-width:100%;box-sizing:border-box;
+      box-shadow:0 4px 16px -4px rgba(6,95,70,0.08);backdrop-filter:none;-webkit-backdrop-filter:none;
     }
     .logo{max-width:calc(100% - 118px)}
     .logo span{font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -919,6 +941,10 @@
     .mobile-login{display:inline-flex;margin-left:auto;margin-right:8px}
     .nav-toggle{display:flex!important}
     .mobile-menu{backdrop-filter:none;-webkit-backdrop-filter:none}
+    .mobile-panel{
+      top:60px;left:12px;right:12px;max-height:calc(100vh - 76px);
+      overflow-y:auto;-webkit-overflow-scrolling:touch;
+    }
     .bg-decor{display:none}
     .logo-mark::after{display:none}
     .gradient-text,.eyebrow .dot{animation:none}
@@ -926,14 +952,14 @@
   }
 
   @media (max-width: 900px) {
-    .container{width:100%;max-width:calc(100vw - 36px);overflow:hidden}
-    section{padding:72px 18px}
-    .hero{padding-top:116px;padding-bottom:52px}
-    .hero h1{font-size:clamp(38px,12vw,58px)}
+    .container{width:100%;max-width:100%;box-sizing:border-box}
+    section{padding:64px 20px}
+    .hero{padding-top:104px;padding-bottom:48px}
+    .hero h1{font-size:clamp(34px,9.5vw,54px)}
     .hero p.lead{font-size:16.5px;max-width:100%;overflow-wrap:break-word}
     .hero-ctas{display:grid;grid-template-columns:1fr;width:100%;max-width:100%}
     .hero-ctas .btn{justify-content:center;width:100%}
-    .skill-compass-cta{display:grid;max-width:100%;padding:14px}
+    .skill-compass-cta{display:flex;flex-direction:column;align-items:stretch;gap:12px;max-width:100%;padding:16px}
     .skill-compass-cta a{width:100%;justify-content:center}
     .hero-trust{gap:12px}
     .trust-item{width:100%;background:#fff;border:1px solid var(--border);border-radius:14px;padding:10px 12px}
@@ -961,28 +987,36 @@
   }
 
   @media (max-width: 560px) {
-    section{padding-left:14px;padding-right:14px}
-    .container{width:100%;max-width:calc(100vw - 28px)}
-    .hero{padding-top:104px}
+    section{padding:48px 16px}
+    .container{width:100%;max-width:100%}
+    .hero{padding-top:92px;padding-bottom:36px}
     .eyebrow{font-size:12px;padding:6px 10px}
-    .lead{font-size:15.5px}
-    .btn{padding:12px 16px;font-size:14px}
-    .hero-visual{height:390px}
-    .panel{border-radius:16px;padding:14px}
-    .panel-main{height:292px}
+    .lead{font-size:15px;line-height:1.6}
+    .btn{padding:12px 18px;font-size:14px}
+    .hero-visual{height:auto;min-height:0;overflow:visible}
+    .panel{border-radius:16px;padding:16px}
+    .panel-main{position:relative;inset:auto;width:100%;height:auto;top:0;left:0;right:0}
     .panel-chart{height:116px}
     .panel-main > div[style*="display:flex; gap:12px"]{display:grid!important;grid-template-columns:1fr;gap:8px!important}
-    .panel-card-1{bottom:58px}
-    .panel-card-2{display:none}
+    .panel-card-1,.panel-card-2{display:none}
     .marquee{display:none}
-    .feat-card,.step,.bento .item,.col,.testi,.signal-card,.output-card,.case-card,.trust-panel,.audience-card,.faq-card{padding:20px;border-radius:16px}
-    .trust-note{display:block;border-radius:16px}
+    .feat-card,.step,.bento .item,.col,.testi,.signal-card,.output-card,.case-card,.trust-panel,.audience-card,.faq-card{padding:20px 16px;border-radius:16px}
+    .trust-note{display:block;border-radius:16px;padding:16px}
     .trust-note svg{margin-bottom:10px}
-    .stats-grid{grid-template-columns:1fr;gap:22px}
+    .stats-grid{grid-template-columns:1fr;gap:18px}
+    .stats-grid > div{border-left:none!important;padding-left:0!important}
+    .stats-grid > div + div{border-top:1px solid rgba(255,255,255,0.12);padding-top:18px}
     .compare-list li{font-size:14px}
     .footer-bottom{display:block}
     .footer-bottom div+div{margin-top:10px}
     .landing-ai-window{height:min(68vh,420px)}
+    #philosophy{padding:60px 16px!important}
+    .lt-panel{padding:22px 16px}
+    .lt-step{padding:16px 14px;gap:12px}
+    .lt-calc{padding:14px}
+    .lt-calc-row{font-size:13.5px}
+    .cta-band{padding:36px 16px}
+    .cta-band .btn{width:100%;justify-content:center}
   }
 
   ::selection { background: var(--green-200); color: var(--green-900); }
@@ -1010,7 +1044,7 @@
     <a href="/dashboard">Opportunities</a>
     <a href="#for-students">For Students</a>
     <a href="#for-organizations">For Organizations</a>
-    <a href="/campus">Campus</a>
+    <a href="/campus">Campus Marketing</a>
     <a href="#philosophy">About</a>
   </div>
   <div class="nav-cta">
@@ -1031,7 +1065,7 @@
     <a href="/dashboard" onclick="closeMobileMenu()">Opportunities <span>→</span></a>
     <a href="#for-students" onclick="closeMobileMenu()">For Students <span>→</span></a>
     <a href="#for-organizations" onclick="closeMobileMenu()">For Organizations <span>→</span></a>
-    <a href="/campus" onclick="closeMobileMenu()">Campus <span>→</span></a>
+    <a href="/campus" onclick="closeMobileMenu()">Campus Marketing <span>→</span></a>
     <a href="#philosophy" onclick="closeMobileMenu()">About <span>→</span></a>
     <a href="/brand-dashboard" style="color: var(--green-600); font-weight: 750;">Post an Opportunity ↗ <span>→</span></a>
     <div class="mobile-actions">
@@ -1196,51 +1230,51 @@
       <p class="lead">NextGenGrowth is India's Student Talent Hub connecting college students with organizations for outcome-driven work.</p>
     </div>
 
-    <div class="audience-grid" style="grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 50px;" id="for-students">
+    <div class="audience-grid" id="for-students">
       <!-- FOR STUDENTS -->
-      <div class="audience-card reveal" style="background: #fff; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 36px; box-shadow: var(--shadow-md);">
+      <div class="audience-card audience-card-students reveal">
         <span class="eyebrow"><span class="dot"></span>For Students</span>
-        <h3 style="font-size: 26px; margin: 16px 0 12px; color: var(--ink-900);">Turn your potential into opportunity.</h3>
-        <p style="color: var(--ink-500); font-size: 15px; margin-bottom: 20px;">Everything you need to kickstart your career while in college:</p>
-        <ul style="list-style: none; display: grid; gap: 12px; margin-bottom: 28px;">
-          <li style="display: flex; gap: 10px; align-items: center; font-size: 15px; font-weight: 600; color: var(--ink-700);"><span style="color: var(--green-500); font-weight: 900;">✓</span> Discover paid projects & gigs</li>
-          <li style="display: flex; gap: 10px; align-items: center; font-size: 15px; font-weight: 600; color: var(--ink-700);"><span style="color: var(--green-500); font-weight: 900;">✓</span> Find internships & long-term retainers</li>
-          <li style="display: flex; gap: 10px; align-items: center; font-size: 15px; font-weight: 600; color: var(--ink-700);"><span style="color: var(--green-500); font-weight: 900;">✓</span> Work directly with top brands & startups</li>
-          <li style="display: flex; gap: 10px; align-items: center; font-size: 15px; font-weight: 600; color: var(--ink-700);"><span style="color: var(--green-500); font-weight: 900;">✓</span> Apply for UGC video & creator projects</li>
-          <li style="display: flex; gap: 10px; align-items: center; font-size: 15px; font-weight: 600; color: var(--ink-700);"><span style="color: var(--green-500); font-weight: 900;">✓</span> Join Campus Ambassador programs</li>
-          <li style="display: flex; gap: 10px; align-items: center; font-size: 15px; font-weight: 600; color: var(--ink-700);"><span style="color: var(--green-500); font-weight: 900;">✓</span> Build verified skill badges & proof portfolio</li>
+        <h3>Turn your potential into opportunity.</h3>
+        <p class="card-intro">Everything you need to kickstart your career while in college:</p>
+        <ul>
+          <li><span class="check">✓</span> Discover paid projects &amp; gigs</li>
+          <li><span class="check">✓</span> Find internships &amp; long-term retainers</li>
+          <li><span class="check">✓</span> Work directly with top brands &amp; startups</li>
+          <li><span class="check">✓</span> Apply for UGC video &amp; creator projects</li>
+          <li><span class="check">✓</span> Join Campus Ambassador programs</li>
+          <li><span class="check">✓</span> Build verified skill badges &amp; proof portfolio</li>
         </ul>
         <a href="/dashboard" class="btn btn-primary" style="width: 100%; justify-content: center;">Explore Opportunities</a>
       </div>
 
       <!-- FOR ORGANIZATIONS -->
-      <div class="audience-card reveal" id="for-organizations" style="background: var(--bg-soft); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 36px; box-shadow: var(--shadow-md);">
-        <span class="eyebrow"><span class="dot"></span>For Brands & Organizations</span>
-        <h3 style="font-size: 26px; margin: 16px 0 12px; color: var(--ink-900);">Find the student talent you need.</h3>
-        <p style="color: var(--ink-500); font-size: 15px; margin-bottom: 20px;">Access India's brightest college talent for outcome-driven tasks:</p>
-        <ul style="list-style: none; display: grid; gap: 12px; margin-bottom: 28px;">
-          <li style="display: flex; gap: 10px; align-items: center; font-size: 15px; font-weight: 600; color: var(--ink-700);"><span style="color: var(--green-500); font-weight: 900;">✓</span> Post short-term outcome projects & gigs</li>
-          <li style="display: flex; gap: 10px; align-items: center; font-size: 15px; font-weight: 600; color: var(--ink-700);"><span style="color: var(--green-500); font-weight: 900;">✓</span> Post monthly internships & retainer roles</li>
-          <li style="display: flex; gap: 10px; align-items: center; font-size: 15px; font-weight: 600; color: var(--ink-700);"><span style="color: var(--green-500); font-weight: 900;">✓</span> Hire student video editors, designers & devs</li>
-          <li style="display: flex; gap: 10px; align-items: center; font-size: 15px; font-weight: 600; color: var(--ink-700);"><span style="color: var(--green-500); font-weight: 900;">✓</span> Recruit student UGC creators & marketers</li>
-          <li style="display: flex; gap: 10px; align-items: center; font-size: 15px; font-weight: 600; color: var(--ink-700);"><span style="color: var(--green-500); font-weight: 900;">✓</span> Build campus ambassador networks</li>
-          <li style="display: flex; gap: 10px; align-items: center; font-size: 15px; font-weight: 600; color: var(--ink-700);"><span style="color: var(--green-500); font-weight: 900;">✓</span> Verified student skill badges & admin review</li>
+      <div class="audience-card audience-card-orgs reveal" id="for-organizations">
+        <span class="eyebrow"><span class="dot"></span>For Brands &amp; Organizations</span>
+        <h3>Find the student talent you need.</h3>
+        <p class="card-intro">Access India's brightest college talent for outcome-driven tasks:</p>
+        <ul>
+          <li><span class="check">✓</span> Post short-term outcome projects &amp; gigs</li>
+          <li><span class="check">✓</span> Post monthly internships &amp; retainer roles</li>
+          <li><span class="check">✓</span> Hire student video editors, designers &amp; devs</li>
+          <li><span class="check">✓</span> Recruit student UGC creators &amp; marketers</li>
+          <li><span class="check">✓</span> Build campus ambassador networks</li>
+          <li><span class="check">✓</span> Verified student skill badges &amp; admin review</li>
         </ul>
-        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
-          <a href="/brand-dashboard" onclick="handlePostOpportunity(event)" class="btn btn-primary" style="flex: 1; justify-content: center;">Post an Opportunity</a>
-          <a href="/brand-dashboard" class="btn btn-outline" style="flex: 1; justify-content: center;">Find Student Talent</a>
+        <div class="audience-btn-row">
+          <a href="/brand-dashboard" onclick="handlePostOpportunity(event)" class="btn btn-primary">Post an Opportunity</a>
+          <a href="/brand-dashboard" class="btn btn-outline">Find Student Talent</a>
         </div>
       </div>
     </div>
 
     <!-- CAMPUS MARKETING CONNECTOR -->
-    <div style="background: linear-gradient(135deg, var(--green-50), #fff); border: 1px solid var(--green-300); border-radius: var(--radius); padding: 28px; display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;" class="reveal">
+    <div class="campus-connector reveal">
       <div>
-        <span style="font-size: 12px; font-weight: 800; text-transform: uppercase; color: var(--green-700); letter-spacing: 0.08em;">Campus Activation</span>
+        <span class="campus-tag">Campus Activation</span>
         <h4 style="font-size: 20px; font-weight: 800; margin: 4px 0;">Need to reach college campuses?</h4>
         <p style="color: var(--ink-500); font-size: 14.5px;">Explore our campus marketing solutions powered by student talent and ambassador networks.</p>
       </div>
-      <a href="/campus" class="btn btn-outline" style="border-color: var(--green-600); color: var(--green-800); font-weight: 700;">Explore Campus Marketing ↗</a>
+      <a href="/campus" class="btn btn-outline campus-btn" style="border-color: var(--green-600); color: var(--green-800); font-weight: 700;">Explore Campus Marketing ↗</a>
     </div>
   </div>
 </section>
