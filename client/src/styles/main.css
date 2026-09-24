@@ -1,35 +1,5 @@
 :root {
-  /* Brand Accents (Deep Emerald Human Palette) */
-  --brand-primary: #059669;       /* Deep Emerald - Primary Action */
-  --brand-primary-hover: #047857;
-  --brand-surface: #ECFDF5;       /* Light mint tint for active badges */
-  --brand-border: #A7F3D0;
-
-  /* Neutrals (Human, Paper-like Feel) */
-  --bg-canvas: #FAFAF9;          /* Warm stone tint instead of cold dead white */
-  --bg-card: #FFFFFF;
-  --border-subtle: #E2E8F0;
-  --border-strong: #CBD5E1;
-  --text-main: #0F172A;          /* Deep Slate */
-  --text-muted: #64748B;
-  --text-subtle: #94A3B8;
-
-  /* Escrow & Trust States */
-  --escrow-locked-bg: #FEF3C7;
-  --escrow-locked-text: #92400E;
-  --escrow-released-bg: #DCFCE7;
-  --escrow-released-text: #166534;
-
-  /* Shadows (Tactile, Soft Diffusion) */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-card: 0 1px 3px rgba(15, 23, 42, 0.06), 0 8px 24px -4px rgba(15, 23, 42, 0.04);
-  --shadow-focus: 0 0 0 3px rgba(5, 150, 105, 0.15);
-
-  /* Typography System */
-  --font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-
-  /* Backward Compatibility Variables */
+  /* Login CSS Variables */
   --green-900: #022c22;
   --green-800: #064e3b;
   --green-700: #047857;
@@ -45,10 +15,20 @@
   --soft: #f8fafc;
   --white: #ffffff;
   --danger: #ef4444;
-  --shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
-  --primary: #059669;
+  --shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
+
+  /* Register CSS Variables */
+  --primary: #10b981;
   --primary-dark: #047857;
   --primary-glow: #34d399;
+  --bg-dark: #020617;
+  --bg-light: #ffffff;
+  --text-dark: #0f172a;
+  --text-light: #f8fafc;
+  --gray-200: #e2e8f0;
+  --gray-400: #64748b;
+  --error: #ef4444;
+  --success: #10b981;
 }
 
 /* Base resets */
@@ -63,128 +43,10 @@ html {
 }
 
 body {
-  font-family: var(--font-sans);
-  color: var(--text-main);
-  background-color: var(--bg-canvas);
+  font-family: 'Outfit', system-ui, sans-serif;
+  color: var(--ink);
   min-height: 100vh;
   overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* Typography Utilities */
-.font-mono {
-  font-family: var(--font-mono) !important;
-  font-feature-settings: 'tnum' on, 'zero' on;
-}
-
-.font-display {
-  font-family: var(--font-sans) !important;
-  letter-spacing: -0.025em;
-  font-weight: 700;
-}
-
-/* Tactile Editorial Card */
-.card-tactile {
-  background: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: 12px;
-  box-shadow: var(--shadow-card);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-.card-tactile:hover {
-  border-color: var(--border-strong);
-}
-
-/* Tactile Buttons */
-.btn-emerald {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: var(--brand-primary);
-  color: #ffffff;
-  font-family: var(--font-sans);
-  font-size: 0.88rem;
-  font-weight: 600;
-  padding: 9px 18px;
-  border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  box-shadow: var(--shadow-sm);
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-.btn-emerald:hover {
-  background: var(--brand-primary-hover);
-  transform: translateY(-0.5px);
-}
-.btn-emerald:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.btn-secondary-tactile {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  background: #ffffff;
-  color: var(--text-main);
-  font-family: var(--font-sans);
-  font-size: 0.88rem;
-  font-weight: 600;
-  padding: 9px 18px;
-  border-radius: 8px;
-  border: 1px solid var(--border-strong);
-  box-shadow: var(--shadow-sm);
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-.btn-secondary-tactile:hover {
-  background: var(--bg-canvas);
-  border-color: #94a3b8;
-}
-
-/* Escrow Status Chips */
-.chip-escrow-locked {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--escrow-locked-bg);
-  color: var(--escrow-locked-text);
-  border: 1px solid #fde68a;
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 600;
-  padding: 3px 8px;
-  border-radius: 6px;
-}
-
-.chip-escrow-released {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: var(--escrow-released-bg);
-  color: var(--escrow-released-text);
-  border: 1px solid #bbf7d0;
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 600;
-  padding: 3px 8px;
-  border-radius: 6px;
-}
-
-.chip-college {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  background: #f1f5f9;
-  color: #334155;
-  border: 1px solid #e2e8f0;
-  font-size: 0.74rem;
-  font-weight: 600;
-  padding: 3px 8px;
-  border-radius: 6px;
 }
 
 h1, h2, h3, h4, h5, h6, .font-clash {

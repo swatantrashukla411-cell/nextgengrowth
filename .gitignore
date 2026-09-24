@@ -2,8 +2,8 @@
 node_modules/
 client/node_modules/
 
-# Build outputs (tracked for deployment)
-# client/dist/
+# Build outputs
+client/dist/
 
 # Environment files
 .env
@@ -27,12 +27,8 @@ hr_contacts.csv
 hr_campaign_report.json
 brand_contacts.csv
 brand_campaign_report.json
-
-
-
-
-prospects_database.csv
-prospects_database.xlsx
-
-# Scratch & temporary development scripts
 scratch/
+
+
+
+

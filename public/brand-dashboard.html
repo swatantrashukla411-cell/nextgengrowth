@@ -666,8 +666,9 @@
     <div class="page" id="page-profile">
       <div class="ph"><h2>Brand Profile 🏢</h2><p>Keep your brand profile complete.</p></div>
       <div class="g2">
-        <div class="card" style="text-align:center;padding:28px">
-          <div style="width:72px;height:72px;border-radius:16px;margin:0 auto 14px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);display:flex;align-items:center;justify-content:center;font-family:'Clash Display',sans-serif;font-size:1.6rem;font-weight:700;color:white" id="bpAv">?</div>
+          <div style="width:72px;height:72px;border-radius:16px;margin:0 auto 10px;background:linear-gradient(135deg,#3b82f6,#1d4ed8);display:flex;align-items:center;justify-content:center;font-family:'Clash Display',sans-serif;font-size:1.6rem;font-weight:700;color:white;overflow:hidden" id="bpAv">?</div>
+          <input class="photo-input" type="file" id="brandLogoInput" accept="image/png,image/jpeg,image/webp" style="display:none" onchange="handleBrandPhoto(this.files[0])">
+          <button class="btn bout bsm" style="margin:0 auto 12px;font-size:.76rem" onclick="document.getElementById('brandLogoInput').click()">📷 Upload Logo</button>
           <div style="font-family:'Clash Display',sans-serif;font-size:1.1rem;font-weight:700;margin-bottom:3px" id="bpNm">Your Brand</div>
           <div style="font-size:.8rem;color:var(--ts);margin-bottom:16px" id="bpEmail">—</div>
           <div style="display:flex;flex-direction:column;gap:8px;text-align:left">
@@ -798,6 +799,27 @@ const _tk=localStorage.getItem('ngg_token');
 const _u=JSON.parse(localStorage.getItem('ngg_user')||'null');
 if(!_tk||!_u){window.location.href='/login';}
 if(_u&&_u.role&&_u.role!=='brand'){window.location.href='/login';}
+
+// Instant hydration of brand logo & name
+if(_u){
+  try{
+    const _name=_u.companyName||_u.name||`${_u.firstName||''} ${_u.lastName||''}`.trim()||'Brand';
+    const _initials=(_name.slice(0,2)).toUpperCase();
+    const _avatar=_u.avatar||'';
+    const _hydrate=()=>{
+      ['sbAv','tbAv','bpAv'].forEach(id=>{
+        const el=document.getElementById(id);
+        if(!el)return;
+        if(_avatar)el.innerHTML=`<img src="${esc(_avatar)}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block" alt="Logo">`;
+        else el.textContent=_initials;
+      });
+      const sbNmEl=document.getElementById('sbNm');
+      if(sbNmEl){sbNmEl.textContent=_name;sbNmEl.classList.remove('skeleton');}
+    };
+    if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',_hydrate);
+    else _hydrate();
+  }catch(e){}
+}
 
 // STATE
 let myProjects=[], brandApps=[], brandWorkspaces=[], brandStudents=[], longTermRoles=[], curAppFilter='all', latestBriefDraft=null;
@@ -1004,8 +1026,16 @@ function loadBrandData(){
   const joined=_u.createdAt?new Date(_u.createdAt).toLocaleDateString('en-IN',{month:'long',year:'numeric'}):'Recently';
   const initials=(company.slice(0,2)).toUpperCase();
   const fn=_u.firstName||name.split(' ')[0]||'';
-  const brandLink=_u.brandLink||_u.portfolioLink||_u.linkedin||'';
-  ['sbAv','tbAv','bpAv'].forEach(id=>{const e=document.getElementById(id);if(e)e.textContent=initials;});
+  const avatar = _u.avatar || '';
+  ['sbAv','tbAv','bpAv'].forEach(id=>{
+    const e = document.getElementById(id);
+    if (!e) return;
+    if (avatar) {
+      e.innerHTML = `<img src="${esc(avatar)}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;display:block" alt="Logo">`;
+    } else {
+      e.textContent = initials;
+    }
+  });
   const sbNmEl = document.getElementById('sbNm');
   if (sbNmEl) {
     sbNmEl.textContent = company || name;
@@ -1887,6 +1917,64 @@ async function saveBrandProfile(){
   }catch{showToast('Saved locally!','info');}
 }
 
+function handleBrandPhoto(file){
+  if(!file)return;
+  if(!/^image\/(png|jpe?g|webp)$/i.test(file.type)){showToast('Upload PNG, JPG, or WebP photo.','error');return;}
+  const reader=new FileReader();
+  reader.onload=()=>{
+    const img=new Image();
+    img.onload=()=>{
+      const size=320;
+      const canvas=document.createElement('canvas');
+      canvas.width=size;canvas.height=size;
+      const ctx=canvas.getContext('2d');
+      const scale=Math.max(size/img.width,size/img.height);
+      const w=img.width*scale,h=img.height*scale;
+      ctx.drawImage(img,(size-w)/2,(size-h)/2,w,h);
+      const avatarData=canvas.toDataURL('image/jpeg',0.82);
+      uploadBrandPhoto(avatarData);
+    };
+    img.src=reader.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+async function uploadBrandPhoto(avatar){
+  showToast('Saving logo...','info');
+  try{
+    const res=await fetch('/api/profile/avatar',{
+      method:'PUT',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+_tk},
+      body:JSON.stringify({avatar})
+    });
+    const data=await res.json();
+    if(data.success){
+      const updated={..._u,...data.user,avatar:data.avatar||avatar};
+      localStorage.setItem('ngg_user',JSON.stringify(updated));
+      Object.assign(_u,updated);
+      loadBrandData();
+      showToast('Brand logo updated successfully!','success');
+    }else{
+      showToast(data.message||'Could not save logo.','error');
+    }
+  }catch{
+    showToast('Could not save logo. Check connection.','error');
+  }
+}
+
+async function fetchFreshBrandProfile(){
+  try{
+    const res=await fetch('/api/profile',{headers:{'Authorization':'Bearer '+_tk}});
+    const data=await res.json();
+    if(data.success){
+      const updated={..._u,...data.user};
+      localStorage.setItem('ngg_user',JSON.stringify(updated));
+      Object.assign(_u,data.user);
+      loadBrandData();
+    }
+  }catch(e){}
+}
+
 function openMenu(){
   document.getElementById('sidebar')?.classList.add('open');
   document.getElementById('drawerOverlay')?.classList.add('show');
@@ -1957,6 +2045,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   loadBrandStats();
   loadBrandApplications(); // ✅ Load real applications
   loadLongTermRoles();
+  fetchFreshBrandProfile();
   const intro=gsap.timeline({defaults:{ease:'power3.out'}});
   if(window.innerWidth>860){
     intro.fromTo('.sidebar',{x:-20,opacity:0},{x:0,opacity:1,duration:.5});
