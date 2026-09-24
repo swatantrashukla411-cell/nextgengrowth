@@ -5,10 +5,23 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { DashboardLayout } from './layouts/DashboardLayout';
-import { StudentDashboard } from './pages/StudentDashboard';
-import { BrandDashboard } from './pages/BrandDashboard';
 import LandingPage from './pages/LandingPage';
 import CampusPage from './pages/CampusPage';
+
+// Brand Pages
+import { BrandDashboard } from './pages/BrandDashboard';
+import { PostProjectWizard } from './pages/brand/PostProjectWizard';
+import { ApplicantsPipeline } from './pages/brand/ApplicantsPipeline';
+import { ActiveContractsView } from './pages/brand/ActiveContractsView';
+import { FinancialsInvoicesView } from './pages/brand/FinancialsInvoicesView';
+
+// Student Pages
+import { StudentDashboard } from './pages/StudentDashboard';
+import { OpportunityFeed } from './pages/student/OpportunityFeed';
+import { ProposalsTracker } from './pages/student/ProposalsTracker';
+import { ActiveProjectsView } from './pages/student/ActiveProjectsView';
+import { EarningsPayoutCenter } from './pages/student/EarningsPayoutCenter';
+import { ProfileVerificationHub } from './pages/student/ProfileVerificationHub';
 
 function App() {
   return (
@@ -31,10 +44,11 @@ function App() {
             }
           >
             <Route index element={<StudentDashboard />} />
-            <Route path="jobs" element={<div style={{ padding: '24px' }} className="card"><h3>Find Work</h3><p style={{ marginTop: '10px', color: 'var(--ts)', fontSize: '0.85rem' }}>Listing available student projects...</p></div>} />
-            <Route path="applications" element={<div style={{ padding: '24px' }} className="card"><h3>My Applications</h3><p style={{ marginTop: '10px', color: 'var(--ts)', fontSize: '0.85rem' }}>Track your project applications...</p></div>} />
-            <Route path="workspaces" element={<div style={{ padding: '24px' }} className="card"><h3>Workspaces</h3><p style={{ marginTop: '10px', color: 'var(--ts)', fontSize: '0.85rem' }}>Your active workspaces and deliverables...</p></div>} />
-            <Route path="profile" element={<div style={{ padding: '24px' }} className="card"><h3>Profile & KYC</h3><p style={{ marginTop: '10px', color: 'var(--ts)', fontSize: '0.85rem' }}>Manage verification credentials...</p></div>} />
+            <Route path="jobs" element={<OpportunityFeed />} />
+            <Route path="applications" element={<ProposalsTracker />} />
+            <Route path="workspaces" element={<ActiveProjectsView />} />
+            <Route path="earnings" element={<EarningsPayoutCenter />} />
+            <Route path="profile" element={<ProfileVerificationHub />} />
           </Route>
 
           {/* Brand Protected routes */}
@@ -47,12 +61,12 @@ function App() {
             }
           >
             <Route index element={<BrandDashboard />} />
-            <Route path="post" element={<div style={{ padding: '24px' }} className="card"><h3>Post a Project</h3><p style={{ marginTop: '10px', color: 'var(--ts)', fontSize: '0.85rem' }}>AI brief builder and details form...</p></div>} />
-            <Route path="projects" element={<div style={{ padding: '24px' }} className="card"><h3>My Projects</h3><p style={{ marginTop: '10px', color: 'var(--ts)', fontSize: '0.85rem' }}>Active and historical brand projects...</p></div>} />
-            <Route path="applications" element={<div style={{ padding: '24px' }} className="card"><h3>Applications</h3><p style={{ marginTop: '10px', color: 'var(--ts)', fontSize: '0.85rem' }}>Review submitted student profiles...</p></div>} />
-            <Route path="students" element={<div style={{ padding: '24px' }} className="card"><h3>Browse Students</h3><p style={{ marginTop: '10px', color: 'var(--ts)', fontSize: '0.85rem' }}>Search active student talents...</p></div>} />
-            <Route path="longterm" element={<div style={{ padding: '24px' }} className="card"><h3>Long-Term Hiring</h3><p style={{ marginTop: '10px', color: 'var(--ts)', fontSize: '0.85rem' }}>Manage monthly student retainers...</p></div>} />
-            <Route path="profile" element={<div style={{ padding: '24px' }} className="card"><h3>Brand Profile</h3><p style={{ marginTop: '10px', color: 'var(--ts)', fontSize: '0.85rem' }}>Manage company details...</p></div>} />
+            <Route path="post" element={<PostProjectWizard />} />
+            <Route path="projects" element={<ActiveContractsView />} />
+            <Route path="applications" element={<ApplicantsPipeline />} />
+            <Route path="invoices" element={<FinancialsInvoicesView />} />
+            <Route path="students" element={<ApplicantsPipeline />} />
+            <Route path="profile" element={<BrandDashboard />} />
           </Route>
 
           {/* Fallback route */}

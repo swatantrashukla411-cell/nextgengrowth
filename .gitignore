@@ -2,8 +2,8 @@
 node_modules/
 client/node_modules/
 
-# Build outputs
-client/dist/
+# Build outputs (tracked for deployment)
+# client/dist/
 
 # Environment files
 .env
@@ -31,3 +31,8 @@ brand_campaign_report.json
 
 
 
+prospects_database.csv
+prospects_database.xlsx
+
+# Scratch & temporary development scripts
+scratch/
