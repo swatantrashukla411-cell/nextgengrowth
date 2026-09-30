@@ -76,6 +76,8 @@ const userSchema = new mongoose.Schema({
   firstName:{type:String,default:""}, // ✅ FIXED: required removed for Google Login
   lastName:{type:String,default:""},  // ✅ FIXED: required removed for Google Login
   email:{type:String,required:true,unique:true,lowercase:true},
+  phone:{type:String,default:""},
+  whatsapp:{type:String,default:""},
   password:{type:String,default:""},
   role:{type:String,enum:["student","brand"],required:true},
   college:{type:String,default:""},
@@ -322,6 +324,7 @@ const platformSettingSchema = new mongoose.Schema({
   commissionRate:{type:Number,default:10,min:0,max:50},
   minProjectBudget:{type:Number,default:0,min:0},
   maxProjectBudget:{type:Number,default:50000,min:0},
+  whatsappCommunityLink:{type:String,default:""},
   features:{
     studentRegistrations:{type:Boolean,default:true},
     brandRegistrations:{type:Boolean,default:true},
@@ -1073,6 +1076,7 @@ const DEFAULT_PLATFORM_SETTINGS={
   commissionRate:10,
   minProjectBudget:0,
   maxProjectBudget:50000,
+  whatsappCommunityLink:cleanEnv("WHATSAPP_COMMUNITY_LINK")||"https://chat.whatsapp.com/HMHMu2g5viG8nBQNbjLXkQ",
   features:{
     studentRegistrations:true,
     brandRegistrations:true,
@@ -1105,6 +1109,7 @@ function normalizePlatformSettings(raw={}){
     commissionRate:Number.isFinite(commission)?Math.min(50,Math.max(0,commission)):DEFAULT_PLATFORM_SETTINGS.commissionRate,
     minProjectBudget:minBudget,
     maxProjectBudget:Math.max(minBudget,maxBudget),
+    whatsappCommunityLink:cleanText(settings.whatsappCommunityLink||DEFAULT_PLATFORM_SETTINGS.whatsappCommunityLink,300),
     features:{
       studentRegistrations:boolSetting(settings.features?.studentRegistrations,DEFAULT_PLATFORM_SETTINGS.features.studentRegistrations),
       brandRegistrations:boolSetting(settings.features?.brandRegistrations,DEFAULT_PLATFORM_SETTINGS.features.brandRegistrations),
@@ -2469,7 +2474,7 @@ app.post("/api/forgot-password/reset",authLimiter,async(req,res)=>{
 // ═══════════════════════════════════════════
 app.post("/api/register",authLimiter,async(req,res)=>{
   try{
-    const{firstName,lastName,email,password,role,college,year,skills,companyName,serviceNeeded,brandLink,referredBy}=req.body;
+    const{firstName,lastName,email,password,role,college,year,skills,companyName,serviceNeeded,brandLink,referredBy,whatsapp,phone}=req.body;
     if(!firstName||!lastName||!email||!password||!role)
       return res.status(400).json({success:false,message:"All fields required."});
     const settings=await getPlatformSettings();
@@ -2478,6 +2483,19 @@ app.post("/api/register",authLimiter,async(req,res)=>{
     if(settings.features.maintenanceMode||settings.features[allowedKey]===false){
       return res.status(403).json({success:false,message:`${normalizedRole==="brand"?"Brand":"Student"} registrations are currently closed.`});
     }
+
+    const rawPhone=String(whatsapp||phone||"").trim();
+    let cleanPhone="";
+    if(normalizedRole==="student"){
+      const digits=rawPhone.replace(/\D/g,"");
+      if(!rawPhone||digits.slice(-10).length!==10){
+        return res.status(400).json({success:false,message:"Please provide a valid 10-digit WhatsApp number."});
+      }
+      cleanPhone=formatIndianPhoneText(rawPhone);
+    }else if(rawPhone){
+      cleanPhone=formatIndianPhoneText(rawPhone);
+    }
+
     if(password.length<8)
       return res.status(400).json({success:false,message:"Password must be 8+ characters."});
     // Check OTP verified
@@ -2500,6 +2518,7 @@ app.post("/api/register",authLimiter,async(req,res)=>{
     const newUser=await User.create({
       firstName,lastName,email:email.toLowerCase(),password:hashedPwd,
       role:normalizedRole,college:college||"",year:year||"",
+      phone:cleanPhone,whatsapp:cleanPhone,
       skills:skills||[],companyName:companyName||"",brandLink:brandLink||"",serviceNeeded:serviceNeeded||"",
       isVerified:true,
       isApproved:true,
@@ -2527,8 +2546,14 @@ app.post("/api/register",authLimiter,async(req,res)=>{
       .catch(err=>console.error("Welcome email error:",err.message));
     notifyAdminSignup(newUser);
 
-    console.log(`✅ Registered [${normalizedRole}]: ${email}`);
-    res.status(201).json({success:true,message:`Welcome, ${firstName}! 🎉`,token,user:safeUser(newUser)});
+    console.log(`✅ Registered [${normalizedRole}]: ${email} (WhatsApp: ${cleanPhone||"N/A"})`);
+    res.status(201).json({
+      success:true,
+      message:`Welcome, ${firstName}! 🎉`,
+      token,
+      user:safeUser(newUser),
+      communityLink:settings.whatsappCommunityLink||process.env.WHATSAPP_COMMUNITY_LINK||""
+    });
   }catch(err){
     console.error("Register error:",err);
     res.status(500).json({success:false,message:"Server error."});
@@ -2570,7 +2595,7 @@ app.get("/api/profile",verifyToken,async(req,res)=>{
 
 app.put("/api/profile",verifyToken,async(req,res)=>{
   try{
-    const{firstName,lastName,college,year,skills,bio,linkedin,portfolioLink,headline,collegeId,avatar,workSamples,companyName,serviceNeeded,brandLink}=req.body;
+    const{firstName,lastName,college,year,skills,bio,linkedin,portfolioLink,headline,collegeId,avatar,workSamples,companyName,serviceNeeded,brandLink,whatsapp,phone}=req.body;
     const updates={};
     if(firstName!==undefined)updates.firstName=sanitizeString(firstName,60);
     if(lastName!==undefined)updates.lastName=sanitizeString(lastName,60);
@@ -2586,6 +2611,18 @@ app.put("/api/profile",verifyToken,async(req,res)=>{
     if(linkedin!==undefined)updates.linkedin=sanitizeString(linkedin,500);
     if(portfolioLink!==undefined)updates.portfolioLink=sanitizeString(portfolioLink,500);
     if(workSamples!==undefined)updates.workSamples=sanitizeWorkSamples(workSamples);
+    if(whatsapp!==undefined||phone!==undefined){
+      const rawWp=String(whatsapp!==undefined?whatsapp:phone||"").trim();
+      if(rawWp){
+        const digits=rawWp.replace(/\D/g,"");
+        if(digits.slice(-10).length!==10){
+          return res.status(400).json({success:false,message:"Please provide a valid 10-digit WhatsApp number."});
+        }
+        const formatted=formatIndianPhoneText(rawWp);
+        updates.whatsapp=formatted;
+        updates.phone=formatted;
+      }
+    }
     if(avatar!==undefined){
       if(!isDataAvatar(avatar)&&String(avatar||"").trim())return res.status(400).json({success:false,message:"Profile photo is too large or invalid."});
       updates.avatar=String(avatar||"");
@@ -2596,6 +2633,50 @@ app.put("/api/profile",verifyToken,async(req,res)=>{
     userObj.badge=getStudentBadgeInfo(updated);
     res.json({success:true,message:"Profile updated!",user:userObj});
   }catch(err){res.status(500).json({success:false,message:"Server error."});}
+});
+
+// ✅ Update Student WhatsApp & return Community Link
+app.post("/api/profile/whatsapp",verifyToken,async(req,res)=>{
+  try{
+    const rawWp=String(req.body.whatsapp||req.body.phone||"").trim();
+    const digits=rawWp.replace(/\D/g,"");
+    if(!rawWp||digits.slice(-10).length!==10){
+      return res.status(400).json({success:false,message:"Please enter a valid 10-digit WhatsApp number."});
+    }
+    const formatted=formatIndianPhoneText(rawWp);
+    const updated=await User.findByIdAndUpdate(
+      req.user.id,
+      {$set:{whatsapp:formatted,phone:formatted}},
+      {new:true,runValidators:false}
+    );
+    if(!updated)return res.status(404).json({success:false,message:"User not found."});
+    const settings=await getPlatformSettings();
+    const userObj=safeUser(updated);
+    userObj.profileCompletion=getProfileCompletion(updated);
+    userObj.badge=getStudentBadgeInfo(updated);
+    res.json({
+      success:true,
+      message:"WhatsApp number updated successfully!",
+      user:userObj,
+      communityLink:settings.whatsappCommunityLink||process.env.WHATSAPP_COMMUNITY_LINK||"https://chat.whatsapp.com/HMHMu2g5viG8nBQNbjLXkQ"
+    });
+  }catch(err){
+    console.error("WhatsApp update error:",err);
+    res.status(500).json({success:false,message:"Server error."});
+  }
+});
+
+// ✅ Public endpoint to get WhatsApp Community link
+app.get("/api/community-link",async(req,res)=>{
+  try{
+    const settings=await getPlatformSettings();
+    res.json({
+      success:true,
+      communityLink:settings.whatsappCommunityLink||process.env.WHATSAPP_COMMUNITY_LINK||"https://chat.whatsapp.com/HMHMu2g5viG8nBQNbjLXkQ"
+    });
+  }catch(err){
+    res.json({success:true,communityLink:"https://chat.whatsapp.com/HMHMu2g5viG8nBQNbjLXkQ"});
+  }
 });
 
 app.put("/api/profile/avatar",verifyToken,async(req,res)=>{
@@ -4452,10 +4533,38 @@ app.put("/api/admin/kyc/:id",adminOnly,async(req,res)=>{
 app.get("/api/admin/users",adminOnly,async(req,res)=>{
   try{
     const users=await User.find()
-      .select("firstName lastName email role college companyName studentBadge createdAt avatar skills")
+      .select("firstName lastName email role college companyName studentBadge createdAt avatar skills phone whatsapp")
       .sort({createdAt:-1});
     res.json({success:true,users:users.map(u=>({...u.toObject(),name:`${u.firstName} ${u.lastName}`}))});
   }catch(err){res.status(500).json({success:false,message:"Server error."});}
+});
+
+// ✅ Export all students to CSV with Phone & WhatsApp
+app.get("/api/admin/export-students-csv",adminOnly,async(req,res)=>{
+  try{
+    const students=await User.find({role:"student"}).sort({createdAt:-1});
+    let csv="First Name,Last Name,Email,WhatsApp,College,Year,Skills,Badge,Joined Date,WhatsApp Direct Link\n";
+    for(const s of students){
+      const fn=`"${(s.firstName||"").replace(/"/g,'""')}"`;
+      const ln=`"${(s.lastName||"").replace(/"/g,'""')}"`;
+      const em=`"${(s.email||"").replace(/"/g,'""')}"`;
+      const wp=`"${(s.whatsapp||s.phone||"").replace(/"/g,'""')}"`;
+      const cl=`"${(s.college||"").replace(/"/g,'""')}"`;
+      const yr=`"${(s.year||"").replace(/"/g,'""')}"`;
+      const sk=`"${(s.skills||[]).join("; ").replace(/"/g,'""')}"`;
+      const bg=`"${(s.studentBadge||"beginner").replace(/"/g,'""')}"`;
+      const dt=s.createdAt?new Date(s.createdAt).toISOString().split("T")[0]:"";
+      const rawDigits=(s.whatsapp||s.phone||"").replace(/\D/g,"");
+      const waLink=rawDigits.length>=10?`https://wa.me/91${rawDigits.slice(-10)}`:"";
+      csv+=`${fn},${ln},${em},${wp},${cl},${yr},${sk},${bg},${dt},${waLink}\n`;
+    }
+    res.setHeader("Content-Type","text/csv; charset=utf-8");
+    res.setHeader("Content-Disposition",'attachment; filename="nextgengrowth_students.csv"');
+    res.send(csv);
+  }catch(err){
+    console.error("Export students CSV error:",err);
+    res.status(500).send("Export failed.");
+  }
 });
 
 app.get("/api/admin/mentor-requests",adminOnly,async(req,res)=>{

@@ -648,6 +648,15 @@
         <div class="st">🎯 Your Skills<span class="sa" onclick="goTo('profile',null)">Edit →</span></div>
         <div class="skchips" id="homeSkills"><span style="color:var(--ts);font-size:.82rem">No skills yet. <a href="#" onclick="goTo('profile',null);return false" style="color:var(--gm);font-weight:600">Add skills →</a></span></div>
       </div>
+      <div class="card" style="margin-bottom:14px;background:linear-gradient(135deg,rgba(37,211,102,0.12),rgba(255,255,255,0.95));border:1.5px solid rgba(37,211,102,0.35);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+        <div>
+          <div class="st" style="margin-bottom:4px;color:#047857"><i class="fab fa-whatsapp" style="color:#25d366;font-size:1.2rem;margin-right:6px"></i> NextGenGrowth Skilled Team</div>
+          <p style="font-size:.82rem;color:var(--ts);line-height:1.45">Humari official WhatsApp Community join karo! Swatantra & team client projects aur paid tasks manually isi group se assign kar rahe hain.</p>
+        </div>
+        <button class="btn" style="background:#25d366;color:#fff;font-weight:700;border:none;border-radius:10px;padding:9px 18px;display:flex;align-items:center;gap:6px;cursor:pointer;" onclick="openCommunityWhatsApp()">
+          <i class="fab fa-whatsapp"></i> Join Community →
+        </button>
+      </div>
       <div class="card" style="margin-bottom:14px;background:linear-gradient(135deg,#f0fdf6,#fff);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
         <div>
           <div class="st" style="margin-bottom:4px">🧭 Skill Compass AI</div>
@@ -997,6 +1006,14 @@
           </div>
           <div class="fg"><label>Headline</label><input class="fi" type="text" id="pheadline" placeholder="e.g. Video Editor | Reels Specialist | Web Developer"/></div>
           <div class="fg"><label>Email (cannot change)</label><input class="fi" type="email" id="pem" readonly style="opacity:.6;cursor:not-allowed"/></div>
+          <div class="fg">
+            <label><i class="fab fa-whatsapp" style="color:#25d366"></i> WhatsApp Number <span style="color:#ef4444">*</span></label>
+            <div style="position:relative;display:flex;align-items:center;">
+              <span style="position:absolute;left:13px;color:var(--td);font-weight:700;font-size:0.9rem;pointer-events:none;">+91</span>
+              <input class="fi" type="tel" id="pwhatsapp" placeholder="9876543210" maxlength="10" style="padding-left:46px;" inputmode="numeric" oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)"/>
+            </div>
+            <small style="color:var(--ts);font-size:.74rem;margin-top:3px;display:block;">Direct client projects aur NextGenGrowth Skilled Team assignments isi number par aayenge.</small>
+          </div>
           <div class="fg"><label>College / University</label><input class="fi" type="text" id="pcl" placeholder="e.g. Delhi University"/></div>
           <div class="fg"><label>College Email / ID Proof</label><input class="fi" type="text" id="pcollegeId" placeholder="College email, roll no, or ID reference"/></div>
           <div class="fg"><label>Year of Study</label><select class="fi" id="pyear" style="padding-left:13px"><option>1st Year</option><option>2nd Year</option><option>3rd Year</option><option>4th Year</option><option>Post Graduate</option></select></div>
@@ -1160,6 +1177,34 @@
   <h3 style="font-family:'Clash Display', sans-serif; font-size:1.5rem; color:var(--td); margin-bottom:10px;">Welcome to NextGenGrowth!</h3>
   <p style="font-size:.95rem; color:var(--ts); margin-bottom:20px;">To get matched with the best brand projects, you need to set up your profile and add your skills.</p>
   <button class="btn bpri" style="width:100%; justify-content:center; font-size:1rem; padding:12px;" onclick="closeWelcomePopup()">Complete My Profile →</button>
+</div>
+
+<!-- ══ WHATSAPP COMMUNITY PROMPT MODAL ══ -->
+<div class="overlay" id="whatsappOverlay" style="z-index:9999; display:none;"></div>
+<div class="card" id="whatsappPromptModal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); z-index:10000; width:92%; max-width:440px; text-align:center; box-shadow:0 25px 60px rgba(0,0,0,0.3); border:2px solid rgba(37,211,102,0.4); border-radius:18px; padding:28px 24px; background:var(--card);">
+  <div style="width:58px; height:58px; border-radius:16px; background:rgba(37,211,102,0.15); display:inline-flex; align-items:center; justify-content:center; color:#25d366; font-size:2rem; margin-bottom:12px;">
+    <i class="fab fa-whatsapp"></i>
+  </div>
+  <div style="display:inline-block; background:rgba(37,211,102,0.15); color:#25d366; font-weight:700; font-size:0.75rem; padding:4px 12px; border-radius:20px; margin-bottom:10px; text-transform:uppercase; letter-spacing:0.05em;">
+    Exclusive Skilled Team
+  </div>
+  <h3 style="font-family:'Clash Display', sans-serif; font-size:1.35rem; color:var(--td); margin-bottom:8px; line-height:1.3;">
+    Join NextGenGrowth Skilled Team
+  </h3>
+  <p style="font-size:.86rem; color:var(--ts); margin-bottom:18px; line-height:1.5;">
+    Swatantra & team apne registered students ko direct client projects aur tasks WhatsApp se manually assign kar rahe hain. Community join karne aur projects lene ke liye apna WhatsApp number confirm karein:
+  </p>
+  <div style="position:relative; display:flex; align-items:center; margin-bottom:12px;">
+    <span style="position:absolute; left:14px; color:var(--td); font-weight:700; font-size:0.95rem; pointer-events:none;">+91</span>
+    <input class="fi" type="tel" id="modalWhatsappInput" placeholder="9876543210" maxlength="10" style="padding-left:48px; font-weight:600; font-size:1rem; letter-spacing:0.04em;" inputmode="numeric" oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)" />
+  </div>
+  <div id="modalWhatsappErr" style="display:none; color:var(--red); font-size:0.8rem; margin-bottom:12px; font-weight:600;">Please enter a valid 10-digit WhatsApp number</div>
+  <button class="btn" id="modalWhatsappSubmitBtn" style="width:100%; justify-content:center; font-size:0.96rem; padding:12px; background:#25d366; color:#fff; font-weight:700; border:none; border-radius:10px; cursor:pointer;" onclick="submitWhatsappModal()">
+    <i class="fab fa-whatsapp"></i> Save & Join WhatsApp Community →
+  </button>
+  <div style="margin-top:14px;">
+    <button onclick="closeWhatsappModal()" style="background:none;border:none;color:var(--ts);font-size:.78rem;cursor:pointer;text-decoration:underline;">I'll do this later</button>
+  </div>
 </div>
 <div class="brand-profile-modal" id="brandProfileModal" aria-hidden="true">
   <div class="brand-profile-card">
@@ -1835,8 +1880,9 @@ function loadUserData(userData){
   const greet=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
   document.getElementById('wbGreet').textContent=`${greet}, ${fn}! 👋`;
 
-  // ✅ Pre-fill ALL fields including bio and linkedin
-  const fields={pfn:fn,pln:u.lastName||parts.slice(1).join(' ')||'',pem:email,pcl:college,pyear:u.year||'1st Year',pheadline:u.headline||'',pcollegeId:u.collegeId||'',pbio:bio,plink:linkedin,pportfolio:u.portfolioLink||'',mentorName:name,mentorLinkedin:linkedin,mentorPortfolio:u.portfolioLink||'',verifyCategory:u.verificationCategory||'Video Editing',verifySampleLink:u.verificationSampleLink||'',verifyAnswer:u.verificationAnswer||''};
+  // ✅ Pre-fill ALL fields including bio, linkedin and whatsapp
+  const rawWp=(u.whatsapp||u.phone||'').replace(/\D/g,'').slice(-10);
+  const fields={pfn:fn,pln:u.lastName||parts.slice(1).join(' ')||'',pem:email,pwhatsapp:rawWp,pcl:college,pyear:u.year||'1st Year',pheadline:u.headline||'',pcollegeId:u.collegeId||'',pbio:bio,plink:linkedin,pportfolio:u.portfolioLink||'',mentorName:name,mentorLinkedin:linkedin,mentorPortfolio:u.portfolioLink||'',verifyCategory:u.verificationCategory||'Video Editing',verifySampleLink:u.verificationSampleLink||'',verifyAnswer:u.verificationAnswer||''};
   Object.entries(fields).forEach(([id,val])=>{const el=document.getElementById(id);if(el)el.value=val||'';});
 
   const emojiMap={'Video Editing':'🎬','Graphic Design':'🎨','Web Development':'💻','Content Writing':'✍️','Social Media':'📱','Photography':'📸','Audio':'🎵','Data & Excel':'📊','AI Tools':'🤖'};
@@ -1883,6 +1929,7 @@ async function fetchFreshProfile(){
       localStorage.setItem('ngg_user',JSON.stringify(updated));
       Object.assign(_u,data.user);
       loadUserData(updated);
+      checkWhatsappRequirement(data.user);
     }
   }catch(e){}
 }
@@ -2721,18 +2768,20 @@ async function saveProfile(){
   const skills=[...document.querySelectorAll('.sk-opt.sel')].map(e=>e.dataset.skill);
   const bio=document.getElementById('pbio').value.trim();
   const linkedin=document.getElementById('plink').value.trim();
+  const wpRaw=(document.getElementById('pwhatsapp')?.value||'').replace(/\D/g,'');
 
   if(!fn){showToast('Enter your first name','error');btn.innerHTML='💾 Save Changes';btn.disabled=false;return;}
+  if(wpRaw && wpRaw.length!==10){showToast('Enter a valid 10-digit WhatsApp number','error');btn.innerHTML='💾 Save Changes';btn.disabled=false;return;}
   try{
     const res=await fetch('/api/profile',{
       method:'PUT',
       headers:{'Content-Type':'application/json','Authorization':'Bearer '+_tk},
-      body:JSON.stringify({firstName:fn,lastName:ln,headline,college,collegeId,year,skills,bio,linkedin,avatar:profileAvatarData})
+      body:JSON.stringify({firstName:fn,lastName:ln,headline,college,collegeId,year,skills,bio,linkedin,whatsapp:wpRaw,avatar:profileAvatarData})
     });
     const data=await res.json();
     if(data.success){
       // ✅ Save everything to localStorage
-      const updated={..._u,...data.user,bio:bio,linkedin:linkedin};
+      const updated={..._u,...data.user,bio:bio,linkedin:linkedin,whatsapp:data.user?.whatsapp||wpRaw,phone:data.user?.phone||wpRaw};
       localStorage.setItem('ngg_user',JSON.stringify(updated));
       Object.assign(_u,updated);
       userSkills=skills;
@@ -2740,7 +2789,7 @@ async function saveProfile(){
       showToast('Profile saved! ✅','success');
     }else showToast(data.message||'Save failed','error');
   }catch{
-    const updated={..._u,firstName:fn,lastName:ln,name:`${fn} ${ln}`,headline,college,collegeId,skills,bio,linkedin,avatar:profileAvatarData};
+    const updated={..._u,firstName:fn,lastName:ln,name:`${fn} ${ln}`,headline,college,collegeId,skills,bio,linkedin,whatsapp:wpRaw,phone:wpRaw,avatar:profileAvatarData};
     localStorage.setItem('ngg_user',JSON.stringify(updated));
     Object.assign(_u,updated);userSkills=skills;
     loadUserData(updated);
@@ -2933,8 +2982,12 @@ window.addEventListener('DOMContentLoaded',()=>{
     if (!_u.college || !_u.skills || _u.skills.length === 0) {
       document.getElementById('welcomeOverlay').classList.add('show');
       document.getElementById('welcomePopup').style.display = 'block';
+    } else {
+      checkWhatsappRequirement(_u);
     }
   }
+
+  fetchCommunityLink();
 
   gsap.timeline({defaults:{ease:'power3.out'}})
     .fromTo('.sidebar',{x:-20,opacity:0},{x:0,opacity:1,duration:.5})
@@ -2948,6 +3001,91 @@ function closeWelcomePopup() {
   document.getElementById('welcomePopup').style.display = 'none';
   goTo('profile', document.getElementById('bn-profile') || null);
   showToast('Please fill out your details to continue!', 'info');
+}
+
+// ════ WHATSAPP COMMUNITY & MOBILE LOGIC ════
+let _communityLink = "https://chat.whatsapp.com/HMHMu2g5viG8nBQNbjLXkQ";
+
+async function fetchCommunityLink() {
+  try {
+    const r = await fetch('/api/community-link');
+    const d = await r.json();
+    if (d.success && d.communityLink) _communityLink = d.communityLink;
+  } catch (e) {}
+}
+
+function openCommunityWhatsApp() {
+  if (_communityLink) {
+    window.open(_communityLink, '_blank');
+  } else {
+    showToast('Loading WhatsApp link...', 'info');
+  }
+}
+
+function checkWhatsappRequirement(user) {
+  const u = user || _u;
+  if (!u || u.role !== 'student') return;
+  const rawWp = (u.whatsapp || u.phone || '').replace(/\D/g, '');
+  if (!rawWp || rawWp.length < 10) {
+    setTimeout(() => {
+      const modal = document.getElementById('whatsappPromptModal');
+      const overlay = document.getElementById('whatsappOverlay');
+      if (modal && overlay) {
+        overlay.style.display = 'block';
+        modal.style.display = 'block';
+      }
+    }, 1200);
+  }
+}
+
+function closeWhatsappModal() {
+  const modal = document.getElementById('whatsappPromptModal');
+  const overlay = document.getElementById('whatsappOverlay');
+  if (modal) modal.style.display = 'none';
+  if (overlay) overlay.style.display = 'none';
+}
+
+async function submitWhatsappModal() {
+  const inp = document.getElementById('modalWhatsappInput');
+  const err = document.getElementById('modalWhatsappErr');
+  const btn = document.getElementById('modalWhatsappSubmitBtn');
+  const val = (inp?.value || '').replace(/\D/g, '');
+  if (!val || val.length !== 10) {
+    err.style.display = 'block';
+    return;
+  }
+  err.style.display = 'none';
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin"></span> Saving...';
+  try {
+    const res = await fetch('/api/profile/whatsapp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + _tk },
+      body: JSON.stringify({ whatsapp: val })
+    });
+    const data = await res.json();
+    if (data.success) {
+      const updated = { ..._u, ...data.user, whatsapp: data.user?.whatsapp || val, phone: data.user?.phone || val };
+      localStorage.setItem('ngg_user', JSON.stringify(updated));
+      Object.assign(_u, updated);
+      loadUserData(updated);
+      showToast('WhatsApp number saved! Opening Community... 🎉', 'success');
+      closeWhatsappModal();
+      const targetLink = data.communityLink || _communityLink;
+      if (targetLink) {
+        window.open(targetLink, '_blank');
+      }
+    } else {
+      err.textContent = data.message || 'Could not save number';
+      err.style.display = 'block';
+    }
+  } catch (e) {
+    err.textContent = 'Server error. Please try again.';
+    err.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fab fa-whatsapp"></i> Save & Join WhatsApp Community →';
+  }
 }
 </script>
 <!-- ══ FLOATING AI CHAT WIDGET ══ -->

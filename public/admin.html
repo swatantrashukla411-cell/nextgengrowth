@@ -722,12 +722,13 @@ select.fi option{background:var(--bg2)}
             <button class="ftab active" onclick="filterUserRole('all',this)">All</button>
             <button class="ftab" onclick="filterUserRole('student',this)">Students</button>
             <button class="ftab" onclick="filterUserRole('brand',this)">Brands</button>
+            <a href="/api/admin/export-students-csv" class="btn bsec bsm" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px;margin-left:auto;font-size:0.78rem;">📥 Export Students CSV</a>
           </div>
         </div>
         <div class="tbl-wrap">
           <table>
-            <thead><tr><th>User</th><th>Role</th><th>College / Skills</th><th>Joined</th><th>Actions</th></tr></thead>
-            <tbody id="usersTable"><tr><td colspan="5" style="text-align:center;padding:30px;color:var(--muted)">Loading users...</td></tr></tbody>
+            <thead><tr><th>User</th><th>Role</th><th>College / Skills</th><th>WhatsApp / Contact</th><th>Joined</th><th>Actions</th></tr></thead>
+            <tbody id="usersTable"><tr><td colspan="6" style="text-align:center;padding:30px;color:var(--muted)">Loading users...</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -1323,9 +1324,9 @@ function renderDashUsers(users){
 function renderUsers(){
   let list=allUsers;
   if(curUserRole!=='all')list=list.filter(u=>u.role===curUserRole);
-  if(curUserSearch)list=list.filter(u=>[u.firstName,u.lastName,u.email,u.college||''].join(' ').toLowerCase().includes(curUserSearch));
+  if(curUserSearch)list=list.filter(u=>[u.firstName,u.lastName,u.email,u.college||'',u.whatsapp||'',u.phone||''].join(' ').toLowerCase().includes(curUserSearch));
   const el=document.getElementById('usersTable');
-  if(!list.length){el.innerHTML='<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--muted)">No users found</td></tr>';return;}
+  if(!list.length){el.innerHTML='<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--muted)">No users found</td></tr>';return;}
   el.innerHTML=list.map(u=>{
     const displayName=`${u.firstName||''} ${u.lastName||''}`.trim()||'User';
     const avatar=avatarMarkup(u,displayName);
@@ -1333,10 +1334,15 @@ function renderUsers(){
     const safeName=String(displayName).replace(/["'\\]/g,'`');
     const userId=String(u._id||u.id||'');
     const profileBtn=u.role==='student'?`<button class="btn bsec bsm" onclick="openStudentProfile('${userId}')">View Profile</button>`:'';
+    const rawDigits=(u.whatsapp||u.phone||'').replace(/\D/g,'');
+    const wpNum=rawDigits.length>=10?rawDigits.slice(-10):'';
+    const wpDisplay=u.whatsapp||u.phone||'—';
+    const wpBtn=wpNum?`<a class="btn bsm" style="background:#25d366;color:#fff;text-decoration:none;display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:6px;font-size:0.74rem;font-weight:700;" href="https://wa.me/91${wpNum}" target="_blank">💬 Chat</a>`:'';
     return`<tr>
       <td><div class="user-cell"><div class="u-av">${avatar}</div><div><div class="u-name">${esc(displayName)}</div><div class="u-email">${esc(u.email||'')}</div></div></div></td>
       <td><span class="tag ${u.role==='student'?'tg':'tb2'}">${u.role==='student'?'🎓 Student':'🏢 Brand'}</span>${u.role==='student'?`<div style="margin-top:6px">${badgeTag(u.studentBadge||'beginner')}</div>`:''}</td>
       <td>${u.role==='student'?`<div style="font-size:.8rem">${esc(u.college||'Not set')}</div><div style="margin-top:4px">${skills}</div>`:`<span style="font-size:.8rem;color:var(--muted)">${esc(u.companyName||'—')}</span>`}</td>
+      <td><div style="font-family:monospace;font-size:0.8rem;color:var(--white);font-weight:600">${esc(wpDisplay)}</div><div style="margin-top:4px">${wpBtn}</div></td>
       <td style="font-size:.78rem;color:var(--muted)">${u.createdAt ? new Date(u.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}) : '—'}</td>
       <td><div class="inline-actions">${profileBtn}<button class="btn bdan bsm" onclick="showConfirm('user','${userId}','${esc(safeName)}')">Delete</button></div></td>
     </tr>`;

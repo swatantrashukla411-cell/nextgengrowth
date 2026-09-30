@@ -1067,6 +1067,14 @@
               </select>
             </div>
           </div>
+          <div class="form-group" style="margin-bottom: 1.2rem">
+            <label class="form-label"><i class="fab fa-whatsapp" style="color:#25d366"></i> WhatsApp Number <span class="label-required">*</span></label>
+            <div style="position:relative;display:flex;align-items:center;">
+              <span style="position:absolute;left:14px;color:var(--text-dark);font-weight:700;font-size:0.95rem;pointer-events:none;">+91</span>
+              <input class="form-input" type="tel" id="r_whatsapp" placeholder="9876543210" maxlength="10" style="padding-left:48px;" inputmode="numeric" oninput="this.value=this.value.replace(/\D/g,'').slice(0,10)">
+            </div>
+            <div style="font-size:0.75rem;color:var(--gray-400);margin-top:4px;">Direct client projects aur Skilled Team assignments WhatsApp par bheje jayenge.</div>
+          </div>
           <div class="form-group">
             <label class="form-label"><i class="fas fa-star"></i> Skills</label>
             <div class="skills-grid">
@@ -1283,25 +1291,40 @@
       if (role === 'student') {
         payload.college = document.getElementById('r_college').value; payload.year = document.getElementById('r_year').value;
         payload.skills = [...document.querySelectorAll('.sk-tag.sel')].map(e => e.dataset.sk);
+        const wpVal = (document.getElementById('r_whatsapp')?.value || '').replace(/\D/g, '');
+        if (!wpVal || wpVal.length !== 10) {
+          err.textContent = 'Please enter a valid 10-digit WhatsApp number';
+          err.classList.add('show');
+          return;
+        }
+        payload.whatsapp = wpVal;
         if (!payload.college || !payload.year || !payload.skills.length) { err.textContent = 'Fill academic fields & pick a skill'; err.classList.add('show'); return; }
       } else {
         payload.companyName = document.getElementById('r_company').value; payload.brandLink = document.getElementById('r_brandLink').value; payload.serviceNeeded = document.getElementById('r_service').value;
         if (!payload.companyName || !payload.brandLink || !payload.serviceNeeded) { err.textContent = 'Fill all brand fields'; err.classList.add('show'); return; }
       }
 
-      const btn = document.getElementById('regBtn'); btn.innerHTML = '<span class="btn-spinner"></span>'; btn.disabled = true;
+      const btn = document.getElementById('regBtn'); btn.innerHTML = '<span class="btn-spinner"></span> Creating...'; btn.disabled = true;
       try {
         let r = await fetch('/api/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
         let res = await r.json();
         if (res.success) {
+          localStorage.setItem('ngg_token', res.token);
+          localStorage.setItem('ngg_user', JSON.stringify(res.user));
           if (role === 'brand') {
             document.getElementById('pendingBox').classList.add('show');
             toast('Brand account created!', 'success');
-            localStorage.setItem('ngg_token', res.token);
-            localStorage.setItem('ngg_user', JSON.stringify(res.user));
             setTimeout(() => window.location.href = '/brand-dashboard', 1000);
+          } else {
+            toast('Account created! Joining WhatsApp community...', 'success');
+            const cLink = res.communityLink || '';
+            setTimeout(() => {
+              if (cLink) {
+                window.open(cLink, '_blank');
+              }
+              window.location.href = '/dashboard';
+            }, 1200);
           }
-          else { toast('Account created!', 'success'); localStorage.setItem('ngg_token', res.token); localStorage.setItem('ngg_user', JSON.stringify(res.user)); setTimeout(() => window.location.href = '/dashboard', 1000); }
         } else throw new Error(res.message || 'Registration failed');
       } catch (e) { err.textContent = e.message; err.classList.add('show'); }
       finally { btn.innerHTML = '<i class="fas fa-rocket"></i> Create Account'; btn.disabled = false; }
