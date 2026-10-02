@@ -778,7 +778,7 @@
           <div class="fg"><label>College</label><input class="fi" id="ltCollege" placeholder="Your college"></div>
         </div>
         <div class="fg"><label>Skills *</label><input class="fi" id="ltSkills" placeholder="Canva, Reels, Editing, Web, SEO"></div>
-        <div class="fg"><label>Portfolio Link *</label><input class="fi" id="ltPortfolio" placeholder="Drive, Behance, GitHub, LinkedIn, website"></div>
+        <div class="fg"><label>Portfolio Link (Optional)</label><input class="fi" id="ltPortfolio" placeholder="Drive, Behance, GitHub, LinkedIn, website (optional)"></div>
         <div class="g2">
           <div class="fg"><label>Available Hours per Week *</label><input class="fi" id="ltHours" placeholder="5 / 10 / 20 hours"></div>
           <div class="fg"><label>Expected Monthly Pay *</label><input class="fi" id="ltExpectedPay" inputmode="numeric" placeholder="₹3,000 / ₹5,000 / ₹10,000" oninput="formatStudentMoneyInput(this)"></div>
@@ -1338,7 +1338,7 @@ function getBadgeLevel(user=_u){
   return user?.badge?.level||user?.studentBadge||'beginner';
 }
 function beginnerReady(user=_u){
-  return !!((user?.college||user?.collegeId)&&(user?.portfolioLink)&&(Array.isArray(user?.skills)&&user.skills.length>=3));
+  return true; // Directly open for all students without portfolio/college/skill blocks
 }
 function getProfileChecks(user=_u){
   return [
@@ -2448,7 +2448,6 @@ async function submitLongTermApplication(){
     { id: 'ltName', label: 'Name' },
     { id: 'ltEmail', label: 'Email' },
     { id: 'ltSkills', label: 'Skills' },
-    { id: 'ltPortfolio', label: 'Portfolio Link' },
     { id: 'ltHours', label: 'Available Hours' },
     { id: 'ltExpectedPay', label: 'Expected Pay' },
     { id: 'ltPitch', label: 'Pitch (Why should brand hire you?)' }
@@ -2506,11 +2505,6 @@ async function applyJob(id){
     showToast('Demo project hai. Real brand project aayega to yahan Apply active hoga.','info');
     return;
   }
-  if(!beginnerReady(_u)){
-    showToast('Complete profile first: college/ID, portfolio link and 3 skill tags.','error');
-    goTo('profile',null);
-    return;
-  }
   if(appliedJobIds.has(jobId)||j.hasApplied){
     markJobApplied(jobId);
     refreshApplicationViews();
@@ -2523,9 +2517,9 @@ async function applyJob(id){
     const applicationAnswers=[];
     for(const question of questions){
       const answer=prompt(question);
-      if(answer===null)return;
-      if(!answer.trim()){showToast('Please answer all project questions before applying.','error');return;}
-      applicationAnswers.push({question,answer:answer.trim()});
+      if(answer && answer.trim()){
+        applicationAnswers.push({question,answer:answer.trim()});
+      }
     }
     markJobApplied(jobId);
     refreshApplicationViews();

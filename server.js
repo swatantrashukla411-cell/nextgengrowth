@@ -3092,14 +3092,9 @@ app.post("/api/apply",verifyToken,async(req,res)=>{
     }
     const student=await User.findById(req.user.id);
     if(!student)return res.status(404).json({success:false,message:"Student not found."});
-    if((student.skills||[]).length<3||!student.portfolioLink||!(student.college||student.collegeId)){
-      return res.status(400).json({success:false,message:"Complete your Beginner profile first: college/ID, portfolio link and at least 3 skill tags."});
-    }
+    // Requirement for portfolio/college/skill minimums removed as requested: directly open for students to apply
     const questions=job?.applicationQuestions||[];
     const answers=sanitizeApplicationAnswers(req.body.applicationAnswers,questions);
-    if(questions.length&&answers.length<questions.length){
-      return res.status(400).json({success:false,message:"Please answer all project questions before applying."});
-    }
     const sid=new mongoose.Types.ObjectId(req.user.id);
     const completedWorks=await ProjectWorkspace.countDocuments({studentId:sid,status:{$in:["approved","completed"]}});
     const rating=getStudentRating(student,completedWorks);
