@@ -206,4 +206,9 @@ async function run() {
   }
 }
 
-run();
+run().then(() => {
+  process.exit(0);
+}).catch((err) => {
+  console.error('Fatal error:', err);
+  process.exit(1);
+});

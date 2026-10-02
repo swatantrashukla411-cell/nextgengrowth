@@ -684,7 +684,7 @@
             <div class="gs-step" onclick="goTo('portfolio',null)"><div class="gs-num">4</div><div class="gs-txt"><strong>Add Portfolio Proof</strong><span>Paste links to your best work</span></div></div>
           </div>
           <div class="card" id="matchedJobsCard" style="display:none">
-            <div class="st">🔥 Matched Projects<span class="sa" onclick="goTo('projects',null)">See all →</span></div>
+            <div class="st">⚡ Latest & Matched Projects<span class="sa" onclick="goTo('projects',null)">See all →</span></div>
             <div id="homeMatchedJobs"><div style="color:var(--ts);font-size:.82rem;padding:8px 0">Loading matches...</div></div>
           </div>
           <div class="card" id="recentAppsCard" style="display:none;margin-top:12px">
@@ -1592,7 +1592,11 @@ function shareTwitter(){
 const SKILL_KW={'Video Editing':['video','editing','reel','reels','tiktok','youtube','shorts','capcut','creator'],'Graphic Design':['design','graphic','logo','canva','brand','branding','visual','figma','banner'],'Web Development':['web','website','html','css','wordpress','landing','page','frontend'],'Content Writing':['content','writing','blog','article','seo','copy','copywriting','newsletter','creator','script'],'Social Media':['social','instagram','twitter','linkedin','media','post','reels','creator'],'Photography':['photo','photography','lightroom','product'],'Audio':['audio','music','sound','podcast'],'Data & Excel':['data','excel','spreadsheet'],'AI Tools':['ai','chatgpt','automation'],'Content Creation':['content','creator','video','reels','badminton','sports','internship'],'Sports':['sports','badminton','racquet','fitness','athlete']};
 
 function matchJobs(skills,jobs){
-  if(!skills||!skills.length)return jobs.map(j=>({...j,matchScore:0,isMatch:false,matchedTags:[]}));
+  const getJobTime = (j) => new Date(j.postedAt||j.createdAt||0).getTime();
+  if(!skills||!skills.length){
+    return jobs.map(j=>({...j,matchScore:0,isMatch:false,matchedTags:[]}))
+      .sort((a,b)=> getJobTime(b) - getJobTime(a));
+  }
   const kws=new Set();skills.forEach(sk=>(SKILL_KW[sk]||[]).forEach(k=>kws.add(k)));
   return jobs.map(j=>{
     const txt=[j.title,j.brand,getProjectDescription(j),...(j.tags||[])].join(' ').toLowerCase();
@@ -1600,7 +1604,13 @@ function matchJobs(skills,jobs){
     kws.forEach(k=>{if(txt.includes(k))score+=10;});
     (j.tags||[]).forEach(t=>{if(skills.some(s=>s.toLowerCase()===t.toLowerCase())){score+=25;mt.push(t);}else if([...kws].some(k=>t.toLowerCase().includes(k)))mt.push(t);});
     return{...j,matchScore:score,isMatch:score>=10,matchedTags:mt};
-  }).sort((a,b)=>b.matchScore-a.matchScore);
+  }).sort((a,b)=>{
+    // Always prioritize recent projects first
+    const timeA = getJobTime(a);
+    const timeB = getJobTime(b);
+    if(timeB !== timeA) return timeB - timeA;
+    return b.matchScore - a.matchScore;
+  });
 }
 
 // LOAD STATS FROM SERVER
@@ -1962,19 +1972,36 @@ function runAiMatching(){
   if (wbDesc && userSkills.length>0) {
     wbDesc.textContent = `${matched} projects match your skills! Apply and start earning 💰`;
   }
-  if(userSkills.length>0)renderHomeMatchedJobs(aiJobs.filter(j=>j.isMatch).slice(0,3));
+  // Render home recent & matched projects
+  const homeList = (aiJobs && aiJobs.length) ? aiJobs : ALL_JOBS;
+  renderHomeMatchedJobs(homeList);
+  const matchedCard = document.getElementById('matchedJobsCard');
+  if(matchedCard && ALL_JOBS.length > 0) matchedCard.style.display = 'block';
 }
 
 function renderHomeMatchedJobs(jobs){
   const el=document.getElementById('homeMatchedJobs');
-  if(!el||!jobs.length){if(el)el.innerHTML='<div style="color:var(--ts);font-size:.82rem;padding:6px 0">Add skills in Profile to see matched projects.</div>';return;}
+  if(!el)return;
+  let list = (jobs && jobs.length) ? jobs : ALL_JOBS;
+  if(!list.length){
+    el.innerHTML='<div style="color:var(--ts);font-size:.82rem;padding:6px 0">No projects available right now.</div>';
+    return;
+  }
+  // Recent projects always first
+  list = [...list].sort((a,b)=> new Date(b.postedAt||b.createdAt||0).getTime() - new Date(a.postedAt||a.createdAt||0).getTime()).slice(0,4);
   const bdg={hot:'<span class="tag th">🔥 Hot</span>',new:'<span class="tag tn">✨ New</span>',apply:'<span class="tag trev">📝 Apply</span>',demo:'<span class="tag tdemo">Demo</span>'};
-  el.innerHTML=jobs.map(j=>`<div class="pc" onclick="goTo('projects',null)" style="flex-direction:row;gap:10px;padding:11px;margin-bottom:8px"><div style="font-size:1.1rem;flex-shrink:0">${j.ico}</div><div style="flex:1;min-width:0"><div class="pn" style="font-size:.83rem">${j.title}</div><div class="pm" style="margin-top:2px;font-size:.7rem;color:var(--ts)">🏢 ${j.brand} · ${j.days}</div></div><div style="text-align:right;flex-shrink:0"><div class="pp" style="font-size:.88rem">${j.pay}</div>${bdg[j.badge]}</div></div>`).join('');
+  el.innerHTML=list.map(j=>{
+    const isNew = (Date.now() - new Date(j.postedAt||j.createdAt||0).getTime()) < 4 * 24 * 60 * 60 * 1000;
+    const badgeMarkup = isNew ? bdg.new : (bdg[j.badge]||'');
+    return `<div class="pc" onclick="goTo('projects',null)" style="flex-direction:row;gap:10px;padding:11px;margin-bottom:8px;cursor:pointer"><div style="font-size:1.1rem;flex-shrink:0">${j.ico||'🏢'}</div><div style="flex:1;min-width:0"><div class="pn" style="font-size:.83rem">${esc(j.title)}</div><div class="pm" style="margin-top:2px;font-size:.7rem;color:var(--ts)">🏢 ${esc(j.brand)} · ${esc(j.days)}</div></div><div style="text-align:right;flex-shrink:0"><div class="pp" style="font-size:.88rem">${esc(j.pay)}</div>${badgeMarkup}</div></div>`;
+  }).join('');
 }
 
 /// PROJECTS
 function renderProjects(){
   let jobs=curFilter==='ai'?aiJobs:ALL_JOBS;
+  // Recent projects always first!
+  jobs=[...jobs].sort((a,b)=> new Date(b.postedAt||b.createdAt||0).getTime() - new Date(a.postedAt||a.createdAt||0).getTime());
   if(curCat!=='all'){
     if(curCat==='internship'){
       jobs=jobs.filter(j=>j.cat==='internship'||(j.categoryPath&&j.categoryPath.toLowerCase().includes('internship'))||(j.tags||[]).some(t=>t.toLowerCase().includes('internship'))||(j.roleType&&j.roleType.toLowerCase().includes('internship'))||(j.title&&j.title.toLowerCase().includes('internship')));
@@ -1993,6 +2020,8 @@ function renderProjects(){
     const jobId=getJobId(j);
     const hasApplied=appliedJobIds.has(jobId)||j.hasApplied;
     const isDemo=!!j.isDemo;
+    const isNew = (Date.now() - new Date(j.postedAt||j.createdAt||0).getTime()) < 4 * 24 * 60 * 60 * 1000;
+    const badgeMarkup = isNew ? bdg.new : (bdg[j.badge]||'');
     
     const brandId=String(j.brandId||'');
     const brandBtn=brandId?`<button class="pa" style="background:white" onclick="event.stopPropagation();openBrandProfile('${brandId}')">Brand</button>`:'';
@@ -2021,7 +2050,7 @@ function renderProjects(){
       <div class="pt_"><div class="pi">${j.ico||'🏢'}</div><div style="padding-right:${m?'70px':'0'}"><div class="pb_">${esc(j.brand)}</div><div class="pn">${esc(j.title)}</div></div></div>
       ${prominentHighlightsHtml}
       <div class="ptgs">${(j.tags||[]).map(t=>`<span class="ptg ${mt.includes(t)?'mt':''}">${esc(t)}</span>`).join('')}</div>
-      <div class="pf_"><div class="pf-top"><div class="pp">${esc(j.pay)}</div>${bdg[j.badge]||''}</div><div class="pm">⏱ ${esc(j.days)} &nbsp;·&nbsp; 📍 Remote &nbsp;·&nbsp; 👥 ${j.applicantCount || 0} applied</div><div class="project-actions"><button class="pa" style="background:white" onclick="event.stopPropagation();openProjectDetails('${jobId}')">Details</button>${brandBtn}${btnHtml}</div></div>
+      <div class="pf_"><div class="pf-top"><div class="pp">${esc(j.pay)}</div>${badgeMarkup}</div><div class="pm">⏱ ${esc(j.days)} &nbsp;·&nbsp; 📍 Remote &nbsp;·&nbsp; 👥 ${j.applicantCount || 0} applied</div><div class="project-actions"><button class="pa" style="background:white" onclick="event.stopPropagation();openProjectDetails('${jobId}')">Details</button>${brandBtn}${btnHtml}</div></div>
     </div>`;
   }).join('');
 }
