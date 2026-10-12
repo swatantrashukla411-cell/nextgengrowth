@@ -183,23 +183,23 @@
   /* ---------- Navbar ---------- */
   nav {
     position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
-    width: min(1180px, calc(100% - 40px)); z-index: 100;
+    width: min(1280px, calc(100% - 32px)); z-index: 100;
     background: rgba(255,255,255,0.78);
     backdrop-filter: saturate(190%) blur(30px);
     -webkit-backdrop-filter: saturate(190%) blur(30px);
     border: 1px solid var(--border);
     border-radius: 22px;
-    padding: 10px 10px 10px 16px;
-    display: flex; align-items: center; justify-content: space-between; gap: 18px;
+    padding: 10px 12px 10px 16px;
+    display: flex; align-items: center; justify-content: space-between; gap: 14px;
     box-shadow: 0 4px 16px -4px rgba(6,95,70,0.06), inset 0 0 0 1px rgba(255,255,255,0.6);
     transition: all .4s cubic-bezier(0.22, 1, 0.36, 1);
   }
   nav.scrolled {
     box-shadow: 0 8px 32px -8px rgba(6,95,70,0.12), inset 0 0 0 1px rgba(255,255,255,0.4);
     background: rgba(255,255,255,0.88);
-    padding: 8px 10px 8px 14px;
+    padding: 8px 12px 8px 14px;
   }
-  .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 18px; letter-spacing: -0.02em; color:var(--ink-900); text-decoration:none; min-width:0; flex:0 0 auto; white-space:nowrap; }
+  .logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 18px; letter-spacing: -0.02em; color:var(--ink-900); text-decoration:none; min-width:0; flex-shrink: 0; white-space:nowrap; }
   .logo-mark {
     width: 34px; height: 34px; border-radius: 50%;
     background: transparent;
@@ -212,10 +212,10 @@
     display:none;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
-  .nav-links { display: flex; align-items:center; justify-content:center; gap: 18px; flex:1 1 auto; min-width:0; }
+  .nav-links { display: flex; align-items:center; justify-content:center; gap: clamp(10px, 1.1vw, 15px); flex:0 1 auto; }
   .nav-links a {
-    color: var(--ink-700); text-decoration: none; font-weight: 650; font-size: 13.5px;
-    line-height:1; transition: color .2s; white-space:nowrap; position: relative;
+    color: var(--ink-700); text-decoration: none; font-weight: 650; font-size: 13px;
+    line-height:1; transition: color .2s; white-space:nowrap; position: relative; flex-shrink: 0;
   }
   .nav-links a::after {
     content: ""; position: absolute; bottom: -4px; left: 50%; width: 0; height: 2px;
@@ -225,7 +225,7 @@
   }
   .nav-links a:hover::after { width: 100%; left: 0; }
   .nav-links a:hover { color: var(--green-600); }
-  .nav-cta { display: flex; gap: 8px; align-items: center; flex:0 0 auto; }
+  .nav-cta { display: flex; gap: 8px; align-items: center; flex-shrink: 0; white-space: nowrap; }
   .mobile-login {
     display:none;align-items:center;justify-content:center;height:40px;padding:0 15px;border-radius:999px;
     background:var(--green-50);border:1px solid var(--border);color:var(--green-800);
@@ -928,7 +928,13 @@
   .nav-cta .btn { padding:10px 16px; font-size:13.5px; }
   .nav-cta .btn-primary { padding-right:18px; }
 
-  @media (max-width: 1080px) {
+  @media (min-width: 1181px) and (max-width: 1280px) {
+    .nav-links { gap: 10px; }
+    .nav-links a { font-size: 12.5px; }
+    .nav-cta .btn { padding: 8px 14px; font-size: 12.5px; }
+  }
+
+  @media (max-width: 1180px) {
     nav, nav.scrolled {
       top:0;left:0;right:0;transform:none;width:100%;border-radius:0;border-left:0;border-right:0;border-top:0;
       border-bottom:1px solid rgba(16,185,129,0.12);
@@ -1040,7 +1046,6 @@
     <span>NextGenGrowth</span>
   </a>
   <div class="nav-links">
-    <a href="/">Home</a>
     <a href="/dashboard">Opportunities</a>
     <a href="#for-students">For Students</a>
     <a href="/campus-ambassador">Campus Ambassador</a>
