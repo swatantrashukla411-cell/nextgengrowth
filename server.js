@@ -393,6 +393,55 @@ const CampusInquiry = mongoose.model('CampusInquiry', campusInquirySchema);
 const CampusApplication = mongoose.model('CampusApplication', campusApplicationSchema);
 
 // ═══════════════════════════════════════════
+// CAMPUS AMBASSADOR RECRUITMENT SCHEMA & MODEL
+// ═══════════════════════════════════════════
+const campusAmbassadorSchema = new mongoose.Schema({
+  applicationId: { type: String, required: true, unique: true, index: true },
+  fullName: { type: String, required: true, trim: true },
+  collegeName: { type: String, required: true, trim: true },
+  collegeCityState: { type: String, required: true, trim: true },
+  yearOfStudy: {
+    type: String,
+    enum: ["First Year", "Second Year", "Third Year", "Fourth Year", "Postgraduate", "Other"],
+    required: true,
+  },
+  phone: { type: String, required: true, trim: true },
+  phoneDigits: { type: String, default: "", index: true },
+  instagram: { type: String, required: true, trim: true },
+  instagramClean: { type: String, default: "", index: true },
+  instagramFollowers: {
+    type: String,
+    enum: ["Under 500", "500–1,000", "1,001–5,000", "5,001–10,000", "10,000+"],
+    required: true,
+  },
+  interestedInBrandCampaigns: { type: Boolean, required: true },
+  activities: {
+    type: [String],
+    required: true,
+  },
+  directStudentReach: {
+    type: String,
+    enum: ["Under 25", "25–50", "51–100", "101–250", "250+"],
+    required: true,
+  },
+  linkedin: { type: String, default: "", trim: true },
+  privacyAcknowledged: { type: Boolean, required: true, default: true },
+  marketingConsent: { type: Boolean, default: false },
+  status: {
+    type: String,
+    enum: ["pending", "under_review", "shortlisted", "selected", "rejected"],
+    default: "pending",
+  },
+  adminNotes: { type: String, default: "" },
+  ip: { type: String, default: "" },
+  userAgent: { type: String, default: "" },
+}, { timestamps: true });
+
+campusAmbassadorSchema.index({ status: 1, createdAt: -1 });
+
+const CampusAmbassador = mongoose.model('CampusAmbassador', campusAmbassadorSchema);
+
+// ═══════════════════════════════════════════
 // BELGIUM WAFFLE CO. COUPON SCHEMAS & MODELS
 // ═══════════════════════════════════════════
 const couponSchema = new mongoose.Schema({
@@ -4838,6 +4887,7 @@ app.get("/blog/:slug",async(req,res)=>{
 app.get("/",(req,res)=>res.sendFile(path.join(__dirname,"public","landing.html"))); // ✅ Changed this to landing.html
 app.get("/for-brands",(req,res)=>res.sendFile(path.join(__dirname,"public","for-brands.html")));
 app.get("/campus",(req,res)=>res.sendFile(path.join(__dirname,"public","campus.html")));
+app.get("/campus-ambassador",(req,res)=>res.sendFile(path.join(__dirname,"public","campus-ambassador.html")));
 app.get("/login",(req,res)=>res.sendFile(path.join(__dirname,"public","login.html")));
 app.get("/register",(req,res)=>res.sendFile(path.join(__dirname,"public","register.html")));
 app.get("/skill-compass",(req,res)=>res.sendFile(path.join(__dirname,"public","skill-compass.html")));
@@ -5150,6 +5200,308 @@ app.get('/api/campus/stats', async (req, res) => {
     });
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch stats.' });
+  }
+});
+
+// ═══════════════════════════════════════════
+// CAMPUS AMBASSADOR RECRUITMENT APIS
+// ═══════════════════════════════════════════
+
+function getCommunityInviteUrl() {
+  return String(process.env.COMMUNITY_INVITE_URL || process.env.WHATSAPP_COMMUNITY_LINK || "[COMMUNITY_INVITE_URL]").trim();
+}
+
+const ambassadorLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 15,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { success: false, message: "Too many application attempts. Please try again after 15 minutes." }
+});
+
+// 1. Get community invite URL (configurable via env / settings)
+app.get('/api/campus-ambassador/community-url', (req, res) => {
+  const url = getCommunityInviteUrl();
+  res.json({
+    success: true,
+    communityInviteUrl: url,
+    isConfigured: url !== "[COMMUNITY_INVITE_URL]"
+  });
+});
+
+// 2. Submit Campus Ambassador Application
+app.post('/api/campus-ambassador/apply', ambassadorLimiter, async (req, res) => {
+  try {
+    const {
+      fullName,
+      collegeName,
+      collegeCityState,
+      yearOfStudy,
+      phone,
+      instagram,
+      instagramFollowers,
+      interestedInBrandCampaigns,
+      activities,
+      directStudentReach,
+      linkedin,
+      privacyAcknowledged,
+      marketingConsent,
+      hp_website,
+      hp_title
+    } = req.body;
+
+    // Spam honeypot defense
+    if (hp_website || hp_title) {
+      return res.status(400).json({ success: false, message: "Submission rejected." });
+    }
+
+    // Validation
+    const cleanName = sanitizeText(fullName, 120);
+    const cleanCollege = sanitizeText(collegeName, 180);
+    const cleanCityState = sanitizeText(collegeCityState, 120);
+    const cleanInstagram = sanitizeText(instagram, 140);
+    const cleanLinkedin = sanitizeText(linkedin, 200);
+
+    if (!cleanName || cleanName.length < 2) {
+      return res.status(400).json({ success: false, message: "Please enter your full name." });
+    }
+    if (!cleanCollege || cleanCollege.length < 2) {
+      return res.status(400).json({ success: false, message: "Please enter your college/university name." });
+    }
+    if (!cleanCityState || cleanCityState.length < 2) {
+      return res.status(400).json({ success: false, message: "Please enter your college city and state." });
+    }
+
+    const validYears = ["First Year", "Second Year", "Third Year", "Fourth Year", "Postgraduate", "Other"];
+    if (!yearOfStudy || !validYears.includes(yearOfStudy)) {
+      return res.status(400).json({ success: false, message: "Please select a valid current year of study." });
+    }
+
+    // Phone validation
+    const rawPhone = String(phone || "").trim();
+    const phoneDigits = rawPhone.replace(/\D/g, "").slice(-10);
+    if (!phoneDigits || phoneDigits.length !== 10) {
+      return res.status(400).json({ success: false, message: "Please enter a valid 10-digit WhatsApp/phone number." });
+    }
+    const formattedPhone = `+91 ${phoneDigits}`;
+
+    // Instagram validation & normalization
+    if (!cleanInstagram || cleanInstagram.length < 2) {
+      return res.status(400).json({ success: false, message: "Please provide your Instagram handle or profile link." });
+    }
+    const instagramClean = cleanInstagram
+      .replace(/^https?:\/\/(www\.)?instagram\.com\//i, '')
+      .replace(/[@\/?].*$/g, '')
+      .replace(/[^a-zA-Z0-9._]/g, '')
+      .toLowerCase()
+      .trim();
+
+    const validFollowers = ["Under 500", "500–1,000", "1,001–5,000", "5,001–10,000", "10,000+"];
+    if (!instagramFollowers || !validFollowers.includes(instagramFollowers)) {
+      return res.status(400).json({ success: false, message: "Please select your Instagram followers range." });
+    }
+
+    if (interestedInBrandCampaigns === undefined || interestedInBrandCampaigns === null || interestedInBrandCampaigns === "") {
+      return res.status(400).json({ success: false, message: "Please indicate whether you are interested in brand promotions." });
+    }
+    const isInterested = (interestedInBrandCampaigns === true || interestedInBrandCampaigns === "Yes" || interestedInBrandCampaigns === "yes" || interestedInBrandCampaigns === "true");
+
+    const validActivities = ["Brand Promotions", "Instagram Reels/UGC", "Campus Events", "Product Sampling", "Student Networking"];
+    const activitiesList = Array.isArray(activities) ? activities.filter(a => validActivities.includes(a)) : [];
+    if (activitiesList.length === 0) {
+      return res.status(400).json({ success: false, message: "Please select at least one activity that interests you." });
+    }
+
+    const validReaches = ["Under 25", "25–50", "51–100", "101–250", "250+"];
+    if (!directStudentReach || !validReaches.includes(directStudentReach)) {
+      return res.status(400).json({ success: false, message: "Please select your direct student reach." });
+    }
+
+    if (!privacyAcknowledged) {
+      return res.status(400).json({ success: false, message: "You must acknowledge and agree to the Privacy Policy to apply." });
+    }
+
+    // Accidental Duplicate Submission Prevention
+    const duplicateQuery = {
+      $or: [
+        { phoneDigits: phoneDigits },
+      ]
+    };
+    if (instagramClean && instagramClean.length >= 2) {
+      duplicateQuery.$or.push({ instagramClean: instagramClean });
+    }
+
+    const existingApplication = await CampusAmbassador.findOne(duplicateQuery).lean();
+    if (existingApplication) {
+      return res.status(409).json({
+        success: false,
+        message: "An application with this phone number or Instagram handle has already been submitted. Our team reviews all applications and will be in touch soon!",
+        existingApplicationId: existingApplication.applicationId
+      });
+    }
+
+    // Generate unique Application ID (e.g. NGA-B4X8Q1)
+    const randomHex = crypto.randomBytes(3).toString("hex").toUpperCase();
+    const applicationId = `NGA-${randomHex}`;
+
+    const newApplication = await CampusAmbassador.create({
+      applicationId,
+      fullName: cleanName,
+      collegeName: cleanCollege,
+      collegeCityState: cleanCityState,
+      yearOfStudy,
+      phone: formattedPhone,
+      phoneDigits,
+      instagram: cleanInstagram,
+      instagramClean,
+      instagramFollowers,
+      interestedInBrandCampaigns: isInterested,
+      activities: activitiesList,
+      directStudentReach,
+      linkedin: cleanLinkedin,
+      privacyAcknowledged: true,
+      marketingConsent: Boolean(marketingConsent),
+      status: "pending",
+      ip: req.ip || "",
+      userAgent: sanitizeText(req.get("user-agent") || "", 200),
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Application submitted successfully!",
+      applicationId: newApplication.applicationId,
+      submissionTimestamp: newApplication.createdAt,
+      communityInviteUrl: getCommunityInviteUrl(),
+    });
+  } catch (err) {
+    console.error("Campus ambassador application error:", err);
+    if (err.code === 11000) {
+      return res.status(409).json({
+        success: false,
+        message: "An application with these details already exists. Thank you for your patience while we review."
+      });
+    }
+    res.status(500).json({ success: false, message: "Failed to submit application. Please try again." });
+  }
+});
+
+// ═══════════════════════════════════════════
+// ADMIN CAMPUS AMBASSADOR MANAGEMENT APIS
+// ═══════════════════════════════════════════
+
+app.get('/api/admin/campus-ambassadors', adminOnly, async (req, res) => {
+  try {
+    const { status, search, page = 1, limit = 50 } = req.query;
+    const query = {};
+    if (status && status !== 'all') {
+      query.status = status;
+    }
+    if (search && search.trim()) {
+      const re = new RegExp(search.trim(), 'i');
+      query.$or = [
+        { fullName: re },
+        { collegeName: re },
+        { collegeCityState: re },
+        { phone: re },
+        { instagram: re },
+        { applicationId: re },
+      ];
+    }
+
+    const pageNum = Math.max(1, parseInt(page, 10) || 1);
+    const limitNum = Math.max(1, Math.min(200, parseInt(limit, 10) || 50));
+
+    const [total, pendingCount, underReviewCount, shortlistedCount, selectedCount, rejectedCount, applications] = await Promise.all([
+      CampusAmbassador.countDocuments(query),
+      CampusAmbassador.countDocuments({ status: 'pending' }),
+      CampusAmbassador.countDocuments({ status: 'under_review' }),
+      CampusAmbassador.countDocuments({ status: 'shortlisted' }),
+      CampusAmbassador.countDocuments({ status: 'selected' }),
+      CampusAmbassador.countDocuments({ status: 'rejected' }),
+      CampusAmbassador.find(query)
+        .sort({ createdAt: -1 })
+        .skip((pageNum - 1) * limitNum)
+        .limit(limitNum)
+        .lean(),
+    ]);
+
+    res.json({
+      success: true,
+      total,
+      page: pageNum,
+      limit: limitNum,
+      counts: {
+        pending: pendingCount,
+        under_review: underReviewCount,
+        shortlisted: shortlistedCount,
+        selected: selectedCount,
+        rejected: rejectedCount,
+      },
+      applications,
+    });
+  } catch (err) {
+    console.error('Admin campus ambassadors list error:', err);
+    res.status(500).json({ success: false, message: 'Could not load campus ambassadors.' });
+  }
+});
+
+app.put('/api/admin/campus-ambassador/:id', adminOnly, async (req, res) => {
+  try {
+    const { status, adminNotes } = req.body;
+    const allowed = ['pending', 'under_review', 'shortlisted', 'selected', 'rejected'];
+    const update = {};
+    if (status) {
+      if (!allowed.includes(status)) {
+        return res.status(400).json({ success: false, message: 'Invalid status.' });
+      }
+      update.status = status;
+    }
+    if (adminNotes !== undefined) {
+      update.adminNotes = sanitizeText(adminNotes, 800);
+    }
+
+    const appDoc = await CampusAmbassador.findByIdAndUpdate(req.params.id, { $set: update }, { new: true });
+    if (!appDoc) {
+      return res.status(404).json({ success: false, message: 'Ambassador application not found.' });
+    }
+    res.json({ success: true, message: 'Application updated.', application: appDoc });
+  } catch (err) {
+    console.error('Admin ambassador update error:', err);
+    res.status(500).json({ success: false, message: 'Server error updating application.' });
+  }
+});
+
+app.get('/api/admin/campus-ambassadors/export-csv', adminOnly, async (req, res) => {
+  try {
+    const list = await CampusAmbassador.find().sort({ createdAt: -1 }).lean();
+    let csv = "Application ID,Full Name,College,City & State,Year,Phone,Instagram,Followers,Interested in Brands,Activities,Direct Reach,LinkedIn,Marketing Consent,Status,Admin Notes,Submitted Date\n";
+    for (const a of list) {
+      const q = (v) => `"${String(v || "").replace(/"/g, '""')}"`;
+      csv += [
+        q(a.applicationId),
+        q(a.fullName),
+        q(a.collegeName),
+        q(a.collegeCityState),
+        q(a.yearOfStudy),
+        q(a.phone),
+        q(a.instagram),
+        q(a.instagramFollowers),
+        q(a.interestedInBrandCampaigns ? "Yes" : "No"),
+        q((a.activities || []).join("; ")),
+        q(a.directStudentReach),
+        q(a.linkedin),
+        q(a.marketingConsent ? "Yes" : "No"),
+        q(a.status),
+        q(a.adminNotes),
+        q(a.createdAt ? new Date(a.createdAt).toISOString() : "")
+      ].join(",") + "\n";
+    }
+    res.setHeader("Content-Type", "text/csv; charset=utf-8");
+    res.setHeader("Content-Disposition", 'attachment; filename="campus_ambassadors.csv"');
+    res.send(csv);
+  } catch (err) {
+    console.error("Export campus ambassadors CSV error:", err);
+    res.status(500).send("Export failed.");
   }
 });
 

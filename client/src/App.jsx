@@ -10,6 +10,13 @@ import { BrandDashboard } from './pages/BrandDashboard';
 import LandingPage from './pages/LandingPage';
 import CampusPage from './pages/CampusPage';
 
+function CampusAmbassadorRoute() {
+  React.useEffect(() => {
+    window.location.href = '/campus-ambassador';
+  }, []);
+  return null;
+}
+
 function App() {
   return (
     <AuthProvider>
@@ -18,6 +25,7 @@ function App() {
           {/* Public Auth routes */}
           <Route path="/" element={<LandingPage />} />
           <Route path="/campus" element={<CampusPage />} />
+          <Route path="/campus-ambassador" element={<CampusAmbassadorRoute />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
