@@ -2372,7 +2372,7 @@ function renderCampusAmbassadors() {
         <td style="font-family:monospace;font-size:0.8rem;color:var(--gb);">${esc(a.applicationId)}</td>
         <td>
           <div style="font-weight:700;color:var(--white);">${esc(a.fullName)}</div>
-          <div style="font-size:0.75rem;color:var(--muted);">${esc(a.phone)}</div>
+          <div style="font-size:0.75rem;color:var(--muted);">${esc(a.email ? a.email + ' • ' : '')}${esc(a.phone)}</div>
         </td>
         <td style="font-size:0.82rem;">
           <div>${esc(a.collegeName)}</div>
@@ -2420,6 +2420,12 @@ function openAmbassadorModal(id) {
         </div>
       </div>
       <div>
+        <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:3px;">Email Address</div>
+        <div style="font-size:0.9rem;font-weight:600;">
+          <a href="mailto:${esc(a.email || '')}" style="color:var(--gb);text-decoration:underline;">${esc(a.email || '—')}</a>
+        </div>
+      </div>
+      <div>
         <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:3px;">Instagram</div>
         <div style="font-size:0.9rem;font-weight:600;">
           <a href="${esc(instaUrl)}" target="_blank" rel="noopener noreferrer" style="color:var(--gb);text-decoration:underline;">${esc(a.instagram)}</a>
@@ -2430,7 +2436,7 @@ function openAmbassadorModal(id) {
         <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:3px;">Direct Student Reach</div>
         <div style="font-size:0.9rem;font-weight:600;color:var(--white);">${esc(a.directStudentReach)} students</div>
       </div>
-      <div>
+      <div style="grid-column: span 2;">
         <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:3px;">Brand Campaigns Interest</div>
         <div style="font-size:0.9rem;font-weight:600;color:${a.interestedInBrandCampaigns ? 'var(--gb)' : 'var(--muted)'};">${a.interestedInBrandCampaigns ? 'Yes, interested' : 'No'}</div>
       </div>
@@ -2457,9 +2463,9 @@ function openAmbassadorModal(id) {
     </div>
 
     <div style="display:flex;flex-direction:column;gap:12px;border-top:1px solid var(--border);padding-top:16px;">
-      <div style="display:flex;align-items:center;gap:12px;">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
         <label style="font-size:0.8rem;font-weight:600;color:var(--muted);text-transform:uppercase;">Status:</label>
-        <select id="modalAmbStatus" class="fi" style="width:auto;flex:1;">
+        <select id="modalAmbStatus" class="fi" style="width:auto;flex:1;min-width:140px;">
           <option value="pending" ${a.status === 'pending' ? 'selected' : ''}>Pending</option>
           <option value="under_review" ${a.status === 'under_review' ? 'selected' : ''}>Under Review</option>
           <option value="shortlisted" ${a.status === 'shortlisted' ? 'selected' : ''}>Shortlisted</option>
@@ -2467,6 +2473,9 @@ function openAmbassadorModal(id) {
           <option value="rejected" ${a.status === 'rejected' ? 'selected' : ''}>Rejected</option>
         </select>
         <button class="btn bpri bsm" onclick="saveAmbassadorStatus('${a._id}')">Update Status</button>
+        <div style="width:100%;font-size:0.72rem;color:var(--gb);margin-top:2px;">
+          💡 Selecting <strong>Shortlisted</strong> triggers an automatic congratulation email to the student (${esc(a.email || 'no email')}).
+        </div>
       </div>
 
       <div>

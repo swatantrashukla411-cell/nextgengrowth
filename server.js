@@ -398,6 +398,7 @@ const CampusApplication = mongoose.model('CampusApplication', campusApplicationS
 const campusAmbassadorSchema = new mongoose.Schema({
   applicationId: { type: String, required: true, unique: true, index: true },
   fullName: { type: String, required: true, trim: true },
+  email: { type: String, required: true, trim: true, lowercase: true, index: true },
   collegeName: { type: String, required: true, trim: true },
   collegeCityState: { type: String, required: true, trim: true },
   yearOfStudy: {
@@ -2145,6 +2146,109 @@ function rejectedEmail(studentName,jobTitle){
     <a href="${BASE_URL}/dashboard" style="display:inline-block;background:linear-gradient(135deg,#0a7c44,#064e2b);color:white;padding:14px 28px;border-radius:10px;text-decoration:none;font-weight:bold">Browse More Projects →</a>
   </div>
 </div>`;
+}
+
+function getAmbassadorCommunityUrl() {
+  return String(process.env.COMMUNITY_INVITE_URL || process.env.WHATSAPP_COMMUNITY_LINK || "https://chat.whatsapp.com/HMHMu2g5viG8nBQNbjLXkQ").trim();
+}
+
+function campusAmbassadorReceivedTemplate(app) {
+  const commUrl = getAmbassadorCommunityUrl();
+  return `<div style="font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;max-width:560px;margin:0 auto;background:#f6fbf8;padding:24px;color:#0a1f17;line-height:1.6">
+  <div style="background:linear-gradient(135deg,#065f46,#047857);border-radius:18px;padding:32px 24px;text-align:center;color:white;box-shadow:0 8px 24px -6px rgba(6,95,70,0.25)">
+    <div style="display:inline-block;padding:6px 14px;background:rgba(255,255,255,0.18);border-radius:999px;font-size:12px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:12px">Campus Ambassador Program</div>
+    <h1 style="margin:0;font-size:24px;font-weight:800;color:#ffffff">Application Received! 🎓</h1>
+    <p style="margin:8px 0 0;color:rgba(255,255,255,0.85);font-size:14px">NextGenGrowth • Student Opportunity Platform</p>
+  </div>
+
+  <div style="background:#ffffff;border-radius:18px;padding:28px 24px;margin-top:20px;border:1px solid rgba(16,185,129,0.12);box-shadow:0 4px 16px -4px rgba(6,95,70,0.06)">
+    <h2 style="color:#0a1f17;font-size:18px;margin-top:0">Hi ${app.fullName}! 👋</h2>
+    <p style="color:#4b6358;font-size:15px;margin:8px 0 16px">Thank you for applying to represent <strong>${app.collegeName}</strong> (${app.collegeCityState}) as a NextGenGrowth Campus Ambassador.</p>
+
+    <div style="background:#ecfdf5;border:1px solid rgba(16,185,129,0.22);border-radius:14px;padding:16px 20px;margin:20px 0">
+      <div style="margin-bottom:8px;font-size:13px"><strong style="color:#065f46">Application Reference ID:</strong> <span style="font-family:monospace;font-weight:800;color:#047857;background:#ffffff;padding:2px 8px;border-radius:6px;border:1px solid rgba(16,185,129,0.2)">${app.applicationId}</span></div>
+      <div style="margin-bottom:8px;font-size:13px"><strong style="color:#065f46">Institution:</strong> ${app.collegeName}</div>
+      <div style="margin-bottom:8px;font-size:13px"><strong style="color:#065f46">Year of Study:</strong> ${app.yearOfStudy}</div>
+      <div style="font-size:13px"><strong style="color:#065f46">Review Status:</strong> <span style="background:#10b981;color:#ffffff;font-size:11px;font-weight:800;padding:2px 8px;border-radius:999px;text-transform:uppercase">Under Review</span></div>
+    </div>
+
+    <h3 style="color:#0a1f17;font-size:15px;margin:20px 0 8px">What Happens Next?</h3>
+    <ul style="color:#4b6358;font-size:14px;padding-left:20px;margin:0 0 20px">
+      <li style="margin-bottom:8px">Our Campus Relations team is reviewing your profile against upcoming brand partner activations and student creator opportunities.</li>
+      <li style="margin-bottom:8px">If your profile matches upcoming campaigns, we will reach out directly on WhatsApp at <strong>${app.phone}</strong> and via email.</li>
+    </ul>
+
+    <div style="background:#f6fbf8;border-radius:14px;padding:20px;border:1px dashed rgba(16,185,129,0.3);text-align:center;margin:24px 0">
+      <h4 style="margin:0 0 6px;color:#065f46;font-size:15px">Join the Student & Creator Community 🚀</h4>
+      <p style="margin:0 0 16px;color:#4b6358;font-size:13px">Stay ahead with early campaign drops, networking with ambassadors across colleges, and exclusive briefs.</p>
+      <a href="${commUrl}" target="_blank" style="display:inline-block;background:linear-gradient(135deg,#059669,#10b981);color:#ffffff;font-weight:700;font-size:14px;text-decoration:none;padding:12px 24px;border-radius:999px;box-shadow:0 4px 14px -3px rgba(16,185,129,0.4)">Join Our Community →</a>
+      <p style="margin:10px 0 0;color:#8aa39a;font-size:11.5px">Joining the community is optional and does not affect your evaluation status.</p>
+    </div>
+
+    <p style="color:#8aa39a;font-size:12.5px;margin-bottom:0">If you have any questions, feel free to reply to this email or write to <a href="mailto:hello@nextgengrowth.in" style="color:#059669;text-decoration:none">hello@nextgengrowth.in</a>.</p>
+  </div>
+
+  <div style="text-align:center;color:#8aa39a;font-size:12px;margin-top:20px">
+    © 2026 NextGenGrowth • Where Student Potential Meets Opportunity<br>
+    nextgengrowth.in
+  </div>
+</div>`;
+}
+
+function campusAmbassadorShortlistTemplate(app) {
+  const commUrl = getAmbassadorCommunityUrl();
+  return `<div style="font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;max-width:560px;margin:0 auto;background:#f6fbf8;padding:24px;color:#0a1f17;line-height:1.6">
+  <div style="background:linear-gradient(135deg,#047857,#10b981);border-radius:18px;padding:34px 24px;text-align:center;color:white;box-shadow:0 8px 24px -6px rgba(16,185,129,0.3)">
+    <div style="display:inline-block;padding:6px 14px;background:rgba(255,255,255,0.22);border-radius:999px;font-size:12px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;margin-bottom:12px">🎉 Congratulations!</div>
+    <h1 style="margin:0;font-size:26px;font-weight:800;color:#ffffff">You are Shortlisted! 🚀</h1>
+    <p style="margin:8px 0 0;color:rgba(255,255,255,0.9);font-size:14px">NextGenGrowth Campus Ambassador Program</p>
+  </div>
+
+  <div style="background:#ffffff;border-radius:18px;padding:28px 24px;margin-top:20px;border:1px solid rgba(16,185,129,0.12);box-shadow:0 4px 16px -4px rgba(6,95,70,0.06)">
+    <h2 style="color:#0a1f17;font-size:19px;margin-top:0">Dear ${app.fullName},</h2>
+    <p style="color:#2d5a3d;font-size:15px;line-height:1.6">We are delighted to share that your application for the <strong>NextGenGrowth Campus Ambassador Program</strong> representing <strong>${app.collegeName}</strong> has been <span style="background:#d1fae5;color:#065f46;padding:2px 8px;border-radius:6px;font-weight:800">Shortlisted!</span></p>
+
+    <div style="background:#ecfdf5;border:1px solid rgba(16,185,129,0.22);border-radius:14px;padding:16px 20px;margin:20px 0">
+      <div style="margin-bottom:8px;font-size:13px"><strong style="color:#065f46">Application ID:</strong> <span style="font-family:monospace;font-weight:700">${app.applicationId}</span></div>
+      <div style="margin-bottom:8px;font-size:13px"><strong style="color:#065f46">Institution:</strong> ${app.collegeName} (${app.collegeCityState})</div>
+      <div style="margin-bottom:8px;font-size:13px"><strong style="color:#065f46">Campus Direct Reach:</strong> ${app.directStudentReach} students</div>
+      <div style="font-size:13px"><strong style="color:#065f46">Areas of Interest:</strong> ${Array.isArray(app.activities) ? app.activities.join(", ") : app.activities}</div>
+    </div>
+
+    <h3 style="color:#0a1f17;font-size:16px;margin:22px 0 10px">What Happens Next?</h3>
+    <ol style="color:#4b6358;font-size:14px;padding-left:20px;margin:0 0 22px">
+      <li style="margin-bottom:10px"><strong>Campaign Mapping:</strong> Our brand partnerships team is aligning upcoming campaign launches and activation briefs with your campus demographic.</li>
+      <li style="margin-bottom:10px"><strong>WhatsApp Briefing:</strong> A campus manager from our team will reach out to you on <strong>${app.phone}</strong> with next onboarding steps, creative briefs, and coordination details.</li>
+      <li style="margin-bottom:10px"><strong>Ambassador Community:</strong> Join our verified ambassador circle to collaborate directly with creators and student heads from top colleges.</li>
+    </ol>
+
+    <div style="text-align:center;margin:28px 0">
+      <a href="${commUrl}" target="_blank" style="display:inline-block;background:linear-gradient(135deg,#059669,#10b981);color:#ffffff;font-weight:800;font-size:15px;text-decoration:none;padding:14px 30px;border-radius:999px;box-shadow:0 6px 20px -4px rgba(16,185,129,0.45)">Join Verified Ambassador Group →</a>
+    </div>
+
+    <p style="color:#4b6358;font-size:14px;margin-bottom:4px">We look forward to collaborating with you and building impactful campus growth together!</p>
+    <p style="color:#065f46;font-weight:700;font-size:14px;margin-top:14px">Best regards,<br>The NextGenGrowth Team</p>
+  </div>
+
+  <div style="text-align:center;color:#8aa39a;font-size:12px;margin-top:20px">
+    © 2026 NextGenGrowth • India's Student Opportunity Platform<br>
+    nextgengrowth.in
+  </div>
+</div>`;
+}
+
+async function sendApplicationReceivedEmail(app) {
+  if (!app.email) return;
+  const subject = `Application Received: NextGenGrowth Campus Ambassador Program [${app.applicationId}]`;
+  const html = campusAmbassadorReceivedTemplate(app);
+  return sendEmail(app.email, subject, html);
+}
+
+async function sendShortlistEmail(app) {
+  if (!app.email) return;
+  const subject = `Congratulations! You've been Shortlisted for the NextGenGrowth Campus Ambassador Program 🎉`;
+  const html = campusAmbassadorShortlistTemplate(app);
+  return sendEmail(app.email, subject, html);
 }
 
 // ═══════════════════════════════════════════
@@ -5272,6 +5376,7 @@ app.post('/api/campus-ambassador/apply', ambassadorLimiter, async (req, res) => 
   try {
     const {
       fullName,
+      email,
       collegeName,
       collegeCityState,
       yearOfStudy,
@@ -5296,6 +5401,7 @@ app.post('/api/campus-ambassador/apply', ambassadorLimiter, async (req, res) => 
 
     // Validation
     const cleanName = sanitizeText(fullName, 120);
+    const cleanEmail = sanitizeText(email || "", 140).toLowerCase().trim();
     const cleanCollege = sanitizeText(collegeName, 180);
     const cleanCityState = sanitizeText(collegeCityState, 120);
     const cleanInstagram = sanitizeText(instagram, 140);
@@ -5312,6 +5418,12 @@ app.post('/api/campus-ambassador/apply', ambassadorLimiter, async (req, res) => 
     if (!cleanName || cleanName.length < 2) {
       return res.status(400).json({ success: false, message: "Please enter your full name." });
     }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!cleanEmail || !emailRegex.test(cleanEmail)) {
+      return res.status(400).json({ success: false, message: "Please enter a valid email address." });
+    }
+
     if (!cleanCollege || cleanCollege.length < 2) {
       return res.status(400).json({ success: false, message: "Please enter your college/university name." });
     }
@@ -5380,7 +5492,17 @@ app.post('/api/campus-ambassador/apply', ambassadorLimiter, async (req, res) => 
       }
     }
 
-    // 2. Phone duplicate check
+    // 2. Email duplicate check
+    const existingEmail = await CampusAmbassador.findOne({ email: cleanEmail }).lean();
+    if (existingEmail) {
+      return res.status(409).json({
+        success: false,
+        message: `An application with this email address has already been submitted (Application ID: ${existingEmail.applicationId}). Our team reviews all applications and will be in touch soon!`,
+        existingApplicationId: existingEmail.applicationId
+      });
+    }
+
+    // 3. Phone duplicate check
     const existingPhone = await CampusAmbassador.findOne({ phoneDigits }).lean();
     if (existingPhone) {
       return res.status(409).json({
@@ -5390,7 +5512,7 @@ app.post('/api/campus-ambassador/apply', ambassadorLimiter, async (req, res) => 
       });
     }
 
-    // 3. Instagram handle duplicate check
+    // 4. Instagram handle duplicate check
     if (instagramClean && instagramClean.length >= 2) {
       const existingInsta = await CampusAmbassador.findOne({ instagramClean }).lean();
       if (existingInsta) {
@@ -5402,7 +5524,7 @@ app.post('/api/campus-ambassador/apply', ambassadorLimiter, async (req, res) => 
       }
     }
 
-    // 4. IP address duplicate check (prevent repeat spam from same network / IP address)
+    // 5. IP address duplicate check (prevent repeat spam from same network / IP address)
     if (clientIp && clientIp !== "127.0.0.1" && clientIp !== "::1") {
       const existingIp = await CampusAmbassador.findOne({ ip: clientIp }).sort({ createdAt: -1 }).lean();
       if (existingIp) {
@@ -5421,6 +5543,7 @@ app.post('/api/campus-ambassador/apply', ambassadorLimiter, async (req, res) => 
     const newApplication = await CampusAmbassador.create({
       applicationId,
       fullName: cleanName,
+      email: cleanEmail,
       collegeName: cleanCollege,
       collegeCityState: cleanCityState,
       yearOfStudy,
@@ -5439,6 +5562,11 @@ app.post('/api/campus-ambassador/apply', ambassadorLimiter, async (req, res) => 
       browserId,
       ip: clientIp,
       userAgent: sanitizeText(req.get("user-agent") || "", 200),
+    });
+
+    // Send confirmation email asynchronously (never blocks response)
+    sendApplicationReceivedEmail(newApplication).catch(err => {
+      console.error("Failed to send application confirmation email:", err.message);
     });
 
     res.status(201).json({
@@ -5535,10 +5663,21 @@ app.put('/api/admin/campus-ambassador/:id', adminOnly, async (req, res) => {
       update.adminNotes = sanitizeText(adminNotes, 800);
     }
 
-    const appDoc = await CampusAmbassador.findByIdAndUpdate(req.params.id, { $set: update }, { new: true });
-    if (!appDoc) {
+    const prevDoc = await CampusAmbassador.findById(req.params.id);
+    if (!prevDoc) {
       return res.status(404).json({ success: false, message: 'Ambassador application not found.' });
     }
+    const wasShortlisted = prevDoc.status === 'shortlisted';
+
+    const appDoc = await CampusAmbassador.findByIdAndUpdate(req.params.id, { $set: update }, { new: true });
+
+    // Send shortlist congratulation email when newly shortlisted
+    if (status === 'shortlisted' && !wasShortlisted && appDoc.email) {
+      sendShortlistEmail(appDoc).catch(err => {
+        console.error('Shortlist email notification error:', err.message);
+      });
+    }
+
     res.json({ success: true, message: 'Application updated.', application: appDoc });
   } catch (err) {
     console.error('Admin ambassador update error:', err);
@@ -5549,12 +5688,13 @@ app.put('/api/admin/campus-ambassador/:id', adminOnly, async (req, res) => {
 app.get('/api/admin/campus-ambassadors/export-csv', adminOnly, async (req, res) => {
   try {
     const list = await CampusAmbassador.find().sort({ createdAt: -1 }).lean();
-    let csv = "Application ID,Full Name,College,City & State,Year,Phone,Instagram,Followers,Interested in Brands,Activities,Direct Reach,LinkedIn,Marketing Consent,Status,Admin Notes,Submitted Date\n";
+    let csv = "Application ID,Full Name,Email,College,City & State,Year,Phone,Instagram,Followers,Interested in Brands,Activities,Direct Reach,LinkedIn,Marketing Consent,Status,Admin Notes,Submitted Date\n";
     for (const a of list) {
       const q = (v) => `"${String(v || "").replace(/"/g, '""')}"`;
       csv += [
         q(a.applicationId),
         q(a.fullName),
+        q(a.email),
         q(a.collegeName),
         q(a.collegeCityState),
         q(a.yearOfStudy),
