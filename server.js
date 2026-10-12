@@ -433,11 +433,14 @@ const campusAmbassadorSchema = new mongoose.Schema({
     default: "pending",
   },
   adminNotes: { type: String, default: "" },
+  browserId: { type: String, default: "" },
   ip: { type: String, default: "" },
   userAgent: { type: String, default: "" },
 }, { timestamps: true });
 
 campusAmbassadorSchema.index({ status: 1, createdAt: -1 });
+campusAmbassadorSchema.index({ browserId: 1 });
+campusAmbassadorSchema.index({ ip: 1 });
 
 const CampusAmbassador = mongoose.model('CampusAmbassador', campusAmbassadorSchema);
 
@@ -5229,7 +5232,42 @@ app.get('/api/campus-ambassador/community-url', (req, res) => {
   });
 });
 
-// 2. Submit Campus Ambassador Application
+// 2. Check if user/browser/IP has already submitted an application
+app.get('/api/campus-ambassador/check-status', async (req, res) => {
+  try {
+    const clientIp = (
+      req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
+      req.ip ||
+      req.socket?.remoteAddress ||
+      ""
+    ).trim();
+    const browserId = String(req.query.browserId || "").trim();
+
+    let existing = null;
+    if (browserId && browserId.length >= 8) {
+      existing = await CampusAmbassador.findOne({ browserId }).sort({ createdAt: -1 }).lean();
+    }
+    if (!existing && clientIp && clientIp !== "127.0.0.1" && clientIp !== "::1") {
+      existing = await CampusAmbassador.findOne({ ip: clientIp }).sort({ createdAt: -1 }).lean();
+    }
+
+    if (existing) {
+      return res.json({
+        alreadySubmitted: true,
+        applicationId: existing.applicationId,
+        submittedAt: existing.createdAt,
+        message: "An application has already been submitted from this device or network connection."
+      });
+    }
+
+    return res.json({ alreadySubmitted: false });
+  } catch (err) {
+    console.error("Check ambassador status error:", err);
+    return res.json({ alreadySubmitted: false });
+  }
+});
+
+// 3. Submit Campus Ambassador Application
 app.post('/api/campus-ambassador/apply', ambassadorLimiter, async (req, res) => {
   try {
     const {
@@ -5246,6 +5284,7 @@ app.post('/api/campus-ambassador/apply', ambassadorLimiter, async (req, res) => 
       linkedin,
       privacyAcknowledged,
       marketingConsent,
+      browserId: rawBrowserId,
       hp_website,
       hp_title
     } = req.body;
@@ -5261,6 +5300,14 @@ app.post('/api/campus-ambassador/apply', ambassadorLimiter, async (req, res) => 
     const cleanCityState = sanitizeText(collegeCityState, 120);
     const cleanInstagram = sanitizeText(instagram, 140);
     const cleanLinkedin = sanitizeText(linkedin, 200);
+    const browserId = sanitizeText(rawBrowserId || "", 100);
+
+    const clientIp = (
+      req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
+      req.ip ||
+      req.socket?.remoteAddress ||
+      ""
+    ).trim();
 
     if (!cleanName || cleanName.length < 2) {
       return res.status(400).json({ success: false, message: "Please enter your full name." });
@@ -5321,23 +5368,50 @@ app.post('/api/campus-ambassador/apply', ambassadorLimiter, async (req, res) => 
       return res.status(400).json({ success: false, message: "You must acknowledge and agree to the Privacy Policy to apply." });
     }
 
-    // Accidental Duplicate Submission Prevention
-    const duplicateQuery = {
-      $or: [
-        { phoneDigits: phoneDigits },
-      ]
-    };
-    if (instagramClean && instagramClean.length >= 2) {
-      duplicateQuery.$or.push({ instagramClean: instagramClean });
+    // 1. Browser ID duplicate check
+    if (browserId && browserId.length >= 8) {
+      const existingBrowser = await CampusAmbassador.findOne({ browserId }).lean();
+      if (existingBrowser) {
+        return res.status(409).json({
+          success: false,
+          message: `An application has already been submitted from this browser (Application ID: ${existingBrowser.applicationId}). Our team reviews all applications and will be in touch soon!`,
+          existingApplicationId: existingBrowser.applicationId
+        });
+      }
     }
 
-    const existingApplication = await CampusAmbassador.findOne(duplicateQuery).lean();
-    if (existingApplication) {
+    // 2. Phone duplicate check
+    const existingPhone = await CampusAmbassador.findOne({ phoneDigits }).lean();
+    if (existingPhone) {
       return res.status(409).json({
         success: false,
-        message: "An application with this phone number or Instagram handle has already been submitted. Our team reviews all applications and will be in touch soon!",
-        existingApplicationId: existingApplication.applicationId
+        message: `An application with this phone number has already been submitted (Application ID: ${existingPhone.applicationId}). Our team reviews all applications and will be in touch soon!`,
+        existingApplicationId: existingPhone.applicationId
       });
+    }
+
+    // 3. Instagram handle duplicate check
+    if (instagramClean && instagramClean.length >= 2) {
+      const existingInsta = await CampusAmbassador.findOne({ instagramClean }).lean();
+      if (existingInsta) {
+        return res.status(409).json({
+          success: false,
+          message: `An application with this Instagram handle has already been submitted (Application ID: ${existingInsta.applicationId}). Our team reviews all applications and will be in touch soon!`,
+          existingApplicationId: existingInsta.applicationId
+        });
+      }
+    }
+
+    // 4. IP address duplicate check (prevent repeat spam from same network / IP address)
+    if (clientIp && clientIp !== "127.0.0.1" && clientIp !== "::1") {
+      const existingIp = await CampusAmbassador.findOne({ ip: clientIp }).sort({ createdAt: -1 }).lean();
+      if (existingIp) {
+        return res.status(409).json({
+          success: false,
+          message: `An application has already been submitted from this IP address / network connection (Application ID: ${existingIp.applicationId}). To prevent duplicate submissions, repeat entries from the same connection are blocked.`,
+          existingApplicationId: existingIp.applicationId
+        });
+      }
     }
 
     // Generate unique Application ID (e.g. NGA-B4X8Q1)
@@ -5362,7 +5436,8 @@ app.post('/api/campus-ambassador/apply', ambassadorLimiter, async (req, res) => 
       privacyAcknowledged: true,
       marketingConsent: Boolean(marketingConsent),
       status: "pending",
-      ip: req.ip || "",
+      browserId,
+      ip: clientIp,
       userAgent: sanitizeText(req.get("user-agent") || "", 200),
     });
 

@@ -1328,11 +1328,102 @@
     }
   }
 
+  // Unique Browser ID tracking to prevent repeat submissions
+  function getOrCreateBrowserId() {
+    let bid = localStorage.getItem('nga_ambassador_bid');
+    if (!bid) {
+      if (window.crypto && window.crypto.getRandomValues) {
+        const arr = new Uint8Array(16);
+        window.crypto.getRandomValues(arr);
+        bid = 'bid_' + Array.from(arr, b => b.toString(16).padStart(2, '0')).join('');
+      } else {
+        bid = 'bid_' + Math.random().toString(36).substring(2, 15) + Date.now().toString(36);
+      }
+      localStorage.setItem('nga_ambassador_bid', bid);
+    }
+    document.cookie = `nng_browser_id=${encodeURIComponent(bid)}; path=/; max-age=31536000; SameSite=Lax`;
+    return bid;
+  }
+
+  function showAlreadySubmittedView(appId, customMessage) {
+    const formWrap = document.getElementById('formContainer');
+    if (formWrap) formWrap.style.display = 'none';
+
+    const confirmScreen = document.getElementById('confirmationScreen');
+    if (confirmScreen) {
+      confirmScreen.classList.add('show');
+      const titleEl = confirmScreen.querySelector('.confirmation-title');
+      if (titleEl) titleEl.textContent = 'Application Already Submitted!';
+      const msgEl = confirmScreen.querySelector('.confirmation-message');
+      if (msgEl) {
+        msgEl.innerHTML = (customMessage || 'An application from this browser or device is already on file with NextGenGrowth and is actively under review.') + '<br>To prevent duplicate spam, repeat submissions from this connection are locked.';
+      }
+      const codeEl = document.getElementById('submittedAppId');
+      if (codeEl && appId) codeEl.textContent = appId;
+    }
+  }
+
+  async function checkPriorSubmission() {
+    const bid = getOrCreateBrowserId();
+
+    // 1. Check browser LocalStorage
+    const saved = localStorage.getItem('nga_ambassador_submitted');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.applicationId) {
+          showAlreadySubmittedView(parsed.applicationId, 'An application from this browser is already safely stored with NextGenGrowth.');
+          return;
+        }
+      } catch (e) {}
+    }
+
+    // 2. Check Cookie
+    const match = document.cookie.match(/nga_amb_sub=([^;]+)/);
+    if (match) {
+      const appId = decodeURIComponent(match[1]);
+      if (appId) {
+        showAlreadySubmittedView(appId, 'An application from this browser is already safely stored with NextGenGrowth.');
+        return;
+      }
+    }
+
+    // 3. Check with server (verifies Browser ID and Network IP address)
+    try {
+      const res = await fetch('/api/campus-ambassador/check-status?browserId=' + encodeURIComponent(bid));
+      const data = await res.json();
+      if (data && data.alreadySubmitted) {
+        localStorage.setItem('nga_ambassador_submitted', JSON.stringify({
+          applicationId: data.applicationId,
+          submittedAt: data.submittedAt || Date.now()
+        }));
+        document.cookie = `nga_amb_sub=${encodeURIComponent(data.applicationId)}; path=/; max-age=31536000; SameSite=Lax`;
+        showAlreadySubmittedView(data.applicationId, data.message);
+      }
+    } catch (e) {
+      // Ignore background check errors
+    }
+  }
+
   loadCommunityUrl();
+  checkPriorSubmission();
 
   // Form submission handler
   async function handleFormSubmit(event) {
     event.preventDefault();
+
+    // Check if browser already submitted
+    const saved = localStorage.getItem('nga_ambassador_submitted');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.applicationId) {
+          showAlreadySubmittedView(parsed.applicationId, 'An application from this browser is already on file.');
+          return false;
+        }
+      } catch (e) {}
+    }
+
     const alertEl = document.getElementById('serverAlert');
     alertEl.className = 'server-alert';
     alertEl.textContent = '';
@@ -1468,6 +1559,7 @@
       linkedin,
       privacyAcknowledged,
       marketingConsent,
+      browserId: getOrCreateBrowserId(),
       hp_website: hpWebsite,
       hp_title: hpTitle
     };
@@ -1484,6 +1576,16 @@
       const result = await response.json();
 
       if (response.ok && result.success) {
+        // Store submission in browser storage & cookie to prevent any further fill
+        if (result.applicationId) {
+          localStorage.setItem('nga_ambassador_submitted', JSON.stringify({
+            applicationId: result.applicationId,
+            fullName,
+            submittedAt: Date.now()
+          }));
+          document.cookie = `nga_amb_sub=${encodeURIComponent(result.applicationId)}; path=/; max-age=31536000; SameSite=Lax`;
+        }
+
         // Success: Transition to confirmation view
         document.getElementById('formContainer').style.display = 'none';
         const confirmScreen = document.getElementById('confirmationScreen');
@@ -1502,6 +1604,23 @@
         // Smooth scroll to confirmation screen
         document.getElementById('apply').scrollIntoView({ behavior: 'smooth' });
       } else {
+        // If server detected existing duplicate application (409)
+        if (response.status === 409 && result.existingApplicationId) {
+          localStorage.setItem('nga_ambassador_submitted', JSON.stringify({
+            applicationId: result.existingApplicationId,
+            submittedAt: Date.now()
+          }));
+          document.cookie = `nga_amb_sub=${encodeURIComponent(result.existingApplicationId)}; path=/; max-age=31536000; SameSite=Lax`;
+          alertEl.classList.add('error');
+          alertEl.textContent = result.message || 'An application from your browser or connection has already been submitted.';
+          alertEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          setTimeout(() => {
+            showAlreadySubmittedView(result.existingApplicationId, result.message);
+            document.getElementById('apply').scrollIntoView({ behavior: 'smooth' });
+          }, 1500);
+          return;
+        }
+
         // Error from server (duplicate, validation, rate limit)
         alertEl.classList.add('error');
         alertEl.textContent = result.message || 'We could not submit your application. Please check your inputs and try again.';
