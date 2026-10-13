@@ -2149,7 +2149,11 @@ function rejectedEmail(studentName,jobTitle){
 }
 
 function getAmbassadorCommunityUrl() {
-  return String(process.env.COMMUNITY_INVITE_URL || process.env.WHATSAPP_COMMUNITY_LINK || "https://chat.whatsapp.com/HMHMu2g5viG8nBQNbjLXkQ").trim();
+  const envUrl = process.env.COMMUNITY_INVITE_URL || process.env.WHATSAPP_COMMUNITY_LINK;
+  if (envUrl && envUrl.trim() && envUrl.trim() !== "[COMMUNITY_INVITE_URL]") {
+    return envUrl.trim();
+  }
+  return "https://chat.whatsapp.com/HMHMu2g5viG8nBQNbjLXkQ";
 }
 
 function campusAmbassadorReceivedTemplate(app) {
@@ -2179,10 +2183,10 @@ function campusAmbassadorReceivedTemplate(app) {
     </ul>
 
     <div style="background:#f6fbf8;border-radius:14px;padding:20px;border:1px dashed rgba(16,185,129,0.3);text-align:center;margin:24px 0">
-      <h4 style="margin:0 0 6px;color:#065f46;font-size:15px">Join the Student & Creator Community 🚀</h4>
+      <h4 style="margin:0 0 6px;color:#065f46;font-size:15px">Join the Student & Creator Community on WhatsApp 🚀</h4>
       <p style="margin:0 0 16px;color:#4b6358;font-size:13px">Stay ahead with early campaign drops, networking with ambassadors across colleges, and exclusive briefs.</p>
-      <a href="${commUrl}" target="_blank" style="display:inline-block;background:linear-gradient(135deg,#059669,#10b981);color:#ffffff;font-weight:700;font-size:14px;text-decoration:none;padding:12px 24px;border-radius:999px;box-shadow:0 4px 14px -3px rgba(16,185,129,0.4)">Join Our Community →</a>
-      <p style="margin:10px 0 0;color:#8aa39a;font-size:11.5px">Joining the community is optional and does not affect your evaluation status.</p>
+      <a href="${commUrl}" target="_blank" style="display:inline-block;background:linear-gradient(135deg,#25D366,#128C7E);color:#ffffff;font-weight:800;font-size:14px;text-decoration:none;padding:13px 26px;border-radius:999px;box-shadow:0 4px 14px -3px rgba(37,211,102,0.45)">Join WhatsApp Community →</a>
+      <p style="margin:10px 0 0;color:#8aa39a;font-size:11.5px">Joining the community is open to all applicants and connects you with upcoming gigs.</p>
     </div>
 
     <p style="color:#8aa39a;font-size:12.5px;margin-bottom:0">If you have any questions, feel free to reply to this email or write to <a href="mailto:hello@nextgengrowth.in" style="color:#059669;text-decoration:none">hello@nextgengrowth.in</a>.</p>
@@ -5315,7 +5319,11 @@ app.get('/api/campus/stats', async (req, res) => {
 // ═══════════════════════════════════════════
 
 function getCommunityInviteUrl() {
-  return String(process.env.COMMUNITY_INVITE_URL || process.env.WHATSAPP_COMMUNITY_LINK || "[COMMUNITY_INVITE_URL]").trim();
+  const envUrl = process.env.COMMUNITY_INVITE_URL || process.env.WHATSAPP_COMMUNITY_LINK;
+  if (envUrl && envUrl.trim() && envUrl.trim() !== "[COMMUNITY_INVITE_URL]") {
+    return envUrl.trim();
+  }
+  return "https://chat.whatsapp.com/HMHMu2g5viG8nBQNbjLXkQ";
 }
 
 const ambassadorLimiter = rateLimit({
@@ -5332,7 +5340,7 @@ app.get('/api/campus-ambassador/community-url', (req, res) => {
   res.json({
     success: true,
     communityInviteUrl: url,
-    isConfigured: url !== "[COMMUNITY_INVITE_URL]"
+    isConfigured: true
   });
 });
 
@@ -5360,14 +5368,15 @@ app.get('/api/campus-ambassador/check-status', async (req, res) => {
         alreadySubmitted: true,
         applicationId: existing.applicationId,
         submittedAt: existing.createdAt,
+        communityInviteUrl: getCommunityInviteUrl(),
         message: "An application has already been submitted from this device or network connection."
       });
     }
 
-    return res.json({ alreadySubmitted: false });
+    return res.json({ alreadySubmitted: false, communityInviteUrl: getCommunityInviteUrl() });
   } catch (err) {
     console.error("Check ambassador status error:", err);
-    return res.json({ alreadySubmitted: false });
+    return res.json({ alreadySubmitted: false, communityInviteUrl: getCommunityInviteUrl() });
   }
 });
 
@@ -5487,7 +5496,8 @@ app.post('/api/campus-ambassador/apply', ambassadorLimiter, async (req, res) => 
         return res.status(409).json({
           success: false,
           message: `An application has already been submitted from this browser (Application ID: ${existingBrowser.applicationId}). Our team reviews all applications and will be in touch soon!`,
-          existingApplicationId: existingBrowser.applicationId
+          existingApplicationId: existingBrowser.applicationId,
+          communityInviteUrl: getCommunityInviteUrl()
         });
       }
     }
@@ -5498,7 +5508,8 @@ app.post('/api/campus-ambassador/apply', ambassadorLimiter, async (req, res) => 
       return res.status(409).json({
         success: false,
         message: `An application with this email address has already been submitted (Application ID: ${existingEmail.applicationId}). Our team reviews all applications and will be in touch soon!`,
-        existingApplicationId: existingEmail.applicationId
+        existingApplicationId: existingEmail.applicationId,
+        communityInviteUrl: getCommunityInviteUrl()
       });
     }
 
@@ -5508,7 +5519,8 @@ app.post('/api/campus-ambassador/apply', ambassadorLimiter, async (req, res) => 
       return res.status(409).json({
         success: false,
         message: `An application with this phone number has already been submitted (Application ID: ${existingPhone.applicationId}). Our team reviews all applications and will be in touch soon!`,
-        existingApplicationId: existingPhone.applicationId
+        existingApplicationId: existingPhone.applicationId,
+        communityInviteUrl: getCommunityInviteUrl()
       });
     }
 
@@ -5519,7 +5531,8 @@ app.post('/api/campus-ambassador/apply', ambassadorLimiter, async (req, res) => 
         return res.status(409).json({
           success: false,
           message: `An application with this Instagram handle has already been submitted (Application ID: ${existingInsta.applicationId}). Our team reviews all applications and will be in touch soon!`,
-          existingApplicationId: existingInsta.applicationId
+          existingApplicationId: existingInsta.applicationId,
+          communityInviteUrl: getCommunityInviteUrl()
         });
       }
     }
@@ -5531,7 +5544,8 @@ app.post('/api/campus-ambassador/apply', ambassadorLimiter, async (req, res) => 
         return res.status(409).json({
           success: false,
           message: `An application has already been submitted from this IP address / network connection (Application ID: ${existingIp.applicationId}). To prevent duplicate submissions, repeat entries from the same connection are blocked.`,
-          existingApplicationId: existingIp.applicationId
+          existingApplicationId: existingIp.applicationId,
+          communityInviteUrl: getCommunityInviteUrl()
         });
       }
     }
