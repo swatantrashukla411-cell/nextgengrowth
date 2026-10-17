@@ -527,10 +527,12 @@
       to{opacity:1;transform:scale(1) translateY(0)}
     }
     .apply-modal-header{
+      flex-shrink:0;
       padding:22px 24px 18px;
       background:linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
       border-bottom:1px solid #d1fae5;
       position:relative;
+      z-index:2;
     }
     .apply-modal-close{
       position:absolute;
@@ -604,12 +606,30 @@
     }
     .apply-modal-body{
       padding:22px 24px;
-      overflow-y:auto;
-      flex:1;
+      overflow-y:auto !important;
+      -webkit-overflow-scrolling:touch !important;
+      overscroll-behavior:contain;
+      touch-action:pan-y !important;
+      flex:1 1 auto;
+      min-height:0;
+      max-height:100%;
       display:flex;
       flex-direction:column;
       gap:16px;
       background:#ffffff;
+    }
+    .apply-modal-body::-webkit-scrollbar{
+      width:6px;
+    }
+    .apply-modal-body::-webkit-scrollbar-track{
+      background:#f8fafc;
+    }
+    .apply-modal-body::-webkit-scrollbar-thumb{
+      background:#cbd5e1;
+      border-radius:10px;
+    }
+    .apply-modal-body::-webkit-scrollbar-thumb:hover{
+      background:#94a3b8;
     }
     .apply-intro-banner{
       display:flex;
@@ -727,6 +747,7 @@
     .apply-alert-msg.error{background:#fef2f2;border:1px solid #fecaca;color:#dc2626;display:flex}
     .apply-alert-msg.success{background:#ecfdf5;border:1px solid #a7f3d0;color:#047857;display:flex}
     .apply-modal-footer{
+      flex-shrink:0;
       padding:14px 24px;
       background:#f8fafc;
       border-top:1px solid #e2e8f0;
@@ -734,6 +755,8 @@
       justify-content:space-between;
       align-items:center;
       gap:12px;
+      position:relative;
+      z-index:2;
     }
     .apply-footer-hint{font-size:.74rem;color:#64748b;display:flex;align-items:center;gap:6px}
     .apply-footer-btns{display:flex;gap:10px;align-items:center}
@@ -802,9 +825,10 @@
       border:1px solid #bbf7d0;
     }
     @media(max-width:640px){
-      .project-apply-modal-card{margin:0;max-height:94vh;border-radius:16px}
-      .apply-modal-header{padding:16px}
-      .apply-modal-body{padding:16px}
+      .brand-profile-modal{padding:8px}
+      .project-apply-modal-card{margin:0;max-height:94vh;height:94vh;border-radius:16px}
+      .apply-modal-header{padding:14px 16px}
+      .apply-modal-body{padding:14px 16px}
       .apply-modal-footer{padding:12px 16px;flex-direction:column-reverse;align-items:stretch}
       .apply-footer-btns{width:100%}
       .apply-btn-cancel{flex:1;text-align:center}
@@ -1150,6 +1174,8 @@
       <div class="atabs">
         <button class="atab active" onclick="filterApps('all',this)">All</button>
         <button class="atab" onclick="filterApps('review',this)">Under Review</button>
+        <button class="atab" onclick="filterApps('interviewing',this)">💬 Interviewing</button>
+        <button class="atab" onclick="filterApps('hired',this)">🎉 Hired</button>
         <button class="atab" onclick="filterApps('accepted',this)">Accepted</button>
         <button class="atab" onclick="filterApps('rejected',this)">Rejected</button>
       </div>
@@ -1573,9 +1599,7 @@
   </div>
 </div>
 <div class="brand-profile-modal" id="projectApplyModal" aria-hidden="true" onclick="if(event.target===this)closeApplyModal()">
-  <div class="brand-profile-card project-apply-modal-card" onclick="event.stopPropagation()">
-    <div id="projectApplyContent"></div>
-  </div>
+  <div class="brand-profile-card project-apply-modal-card" id="projectApplyContent" onclick="event.stopPropagation()"></div>
 </div>
 <div class="toast" id="toast"></div>
 
@@ -1761,12 +1785,23 @@ function projectFlow(app,ws){
       note:'This one was not selected. Keep improving your profile and apply to more matching projects.',
     };
   }
+  if(status==='hired'){
+    return {
+      steps:[
+        {label:'Applied',done:true},
+        {label:'Interviewing',done:true},
+        {label:'Hired 🎉',done:true,active:false}
+      ],
+      note:projectNextStep(app,ws),
+    };
+  }
+  const isInterviewing = status==='interviewing' || !!app?.contactInitiated;
   return {
     steps:[
       {label:'Applied',done:true},
-      {label:'Accepted',done:status==='accepted',active:status==='review'},
-      {label:'Payment',done:paid,active:status==='accepted'&&!paid},
-      {label:'Work',done:['submitted','approved','completed'].includes(wsStatus),active:paid&&(!wsStatus||['resources_pending','in_progress','revision_requested'].includes(wsStatus))},
+      {label:isInterviewing?'Interviewing 💬':'Review',done:['interviewing','accepted','hired'].includes(status)||!!app?.contactInitiated,active:status==='review'||status==='interviewing'},
+      {label:'Accepted',done:['accepted','hired'].includes(status),active:status==='accepted'},
+      {label:'Payment / Work',done:paid||['submitted','approved','completed'].includes(wsStatus),active:status==='accepted'&&!paid},
       {label:'Approved',done:['approved','completed'].includes(wsStatus),active:wsStatus==='submitted'},
     ],
     note:projectNextStep(app,ws),
@@ -1774,6 +1809,8 @@ function projectFlow(app,ws){
 }
 
 function projectNextStep(app,ws){
+  if(app?.status==='hired')return '🎉 Congratulations! You have been marked as HIRED by the brand. Coordinate via WhatsApp for deliverables!';
+  if(app?.status==='interviewing'||app?.contactInitiated)return '💬 Brand has initiated WhatsApp contact for interview and screening. Please check your WhatsApp messages!';
   if((app?.status||'review')==='review')return 'Brand is reviewing your application. Strong profiles with portfolio links get faster responses.';
   if(app?.status==='accepted'&&!(app.paymentStatus==='paid'||Number(app.paidAmount)>0))return 'You are selected. Brand payment and project resources are pending.';
   if(ws?.status==='resources_pending')return 'Brand will add the brief, resources, and deadline before work starts.';
@@ -2181,7 +2218,13 @@ function closeNotifications(){
 function renderHomeRecentApps(apps){
   const card=document.getElementById('recentAppsCard');const el=document.getElementById('homeRecentApps');
   if(!apps.length)return;card.style.display='block';
-  const stMap={review:'<span class="tag trev">Under Review</span>',accepted:'<span class="tag tacc">✓ Accepted</span>',rejected:'<span class="tag trej">✗ Rejected</span>'};
+  const stMap={
+    review:'<span class="tag trev">Under Review</span>',
+    interviewing:'<span class="tag tint" style="background:#e0f2fe;color:#0284c7;border:1px solid #bae6fd">💬 Interviewing</span>',
+    accepted:'<span class="tag tacc">✓ Accepted</span>',
+    hired:'<span class="tag thir" style="background:#ecfdf5;color:#059669;border:1px solid #a7f3d0">🎉 Hired</span>',
+    rejected:'<span class="tag trej">✗ Rejected</span>'
+  };
   el.innerHTML=apps.slice(0,3).map(a=>`<div class="ac"><div class="a-ic">📋</div><div class="a-in"><div class="a-ti">${a.jobTitle}</div><div class="a-mt"><span>🏢 ${a.brandName}</span></div></div><div class="a-ri"><span class="a-py">${a.pay}</span>${stMap[a.status]||''}</div></div>`).join('');
 }
 
@@ -2189,22 +2232,80 @@ function renderAppList(apps,filter){
   const el=document.getElementById('appList');
   let list=filter==='all'?apps:apps.filter(a=>a.status===filter);
   if(!list.length){el.innerHTML=`<div class="empty-s"><div class="ei">📋</div><h3>No applications</h3><p>Apply to projects to track them here.</p><button class="btn bpri" style="font-size:.79rem" onclick="goTo('projects',null)">Browse Projects →</button></div>`;return;}
-  const stMap={review:'<span class="tag trev">🔍 Under Review</span>',accepted:'<span class="tag tacc">✓ Accepted</span>',rejected:'<span class="tag trej">✗ Rejected</span>'};
+  const stMap={
+    review:'<span class="tag trev">🔍 Under Review</span>',
+    interviewing:'<span class="tag tint" style="background:#e0f2fe;color:#0284c7;border:1px solid #bae6fd">💬 Interviewing</span>',
+    accepted:'<span class="tag tacc">✓ Accepted</span>',
+    hired:'<span class="tag thir" style="background:#ecfdf5;color:#059669;border:1px solid #a7f3d0">🎉 Hired</span>',
+    rejected:'<span class="tag trej">✗ Rejected</span>'
+  };
   const workspaceByApp=new Map((studentWorkspaces||[]).map(ws=>[String(ws.applicationId?._id||ws.applicationId||''),ws]));
   el.innerHTML=list.map(a=>{
-    const ws=workspaceByApp.get(String(a._id||a.id||''));
+    const appId=String(a._id||a.id||'');
+    const ws=workspaceByApp.get(appId);
     const flow=projectFlow(a,ws);
-    return`<div class="ac">
+    const fb=a.studentFeedback||{};
+    const needsFeedback=a.contactInitiated&&(!fb.status||fb.status==='pending')&&a.status!=='hired';
+    return`<div class="ac" id="appCard_${appId}">
       <div class="a-ic">📋</div>
       <div class="a-in">
         <div class="a-ti">${esc(a.jobTitle||'Project application')}</div>
-        <div class="a-mt"><span>🏢 ${esc(a.brandName||'Brand')}</span><span>📅 ${new Date(a.createdAt||a.appliedAt||Date.now()).toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</span></div>
+        <div class="a-mt">
+          <span>🏢 ${esc(a.brandName||'Brand')}</span>
+          <span>📅 ${new Date(a.createdAt||a.appliedAt||Date.now()).toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</span>
+          ${a.contactInitiated?`<span style="color:#059669;font-weight:600">💬 Contacted on WhatsApp</span>`:''}
+        </div>
         ${renderUxFlow(flow.steps)}
         <div class="ux-note">${esc(flow.note)}</div>
+        ${needsFeedback?`
+          <div class="stu-feedback-box" style="margin-top:10px;padding:11px 14px;background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;font-size:0.8rem">
+            <div style="font-weight:700;color:#166534;margin-bottom:6px">💬 Did the brand reach out to you on WhatsApp?</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn bsm" style="background:#16a34a;color:white;padding:5px 12px;font-size:0.75rem;border-radius:6px;font-weight:600" onclick="submitStudentFeedback('${appId}','hired',this)">🎉 Yes, I am Hired!</button>
+              <button class="btn bsm" style="background:#e0f2fe;color:#0369a1;padding:5px 12px;font-size:0.75rem;border-radius:6px;border:1px solid #bae6fd;font-weight:600" onclick="submitStudentFeedback('${appId}','in_discussion',this)">💬 Still In Discussion</button>
+              <button class="btn bsm" style="background:#fef2f2;color:#b91c1c;padding:5px 12px;font-size:0.75rem;border-radius:6px;border:1px solid #fecaca;font-weight:600" onclick="submitStudentFeedback('${appId}','no_response',this)">❌ No Response</button>
+            </div>
+          </div>
+        `:fb.status&&fb.status!=='pending'?`
+          <div style="margin-top:8px;font-size:0.77rem;font-weight:600;color:${fb.status==='hired'?'#16a34a':fb.status==='in_discussion'?'#0284c7':'#94a3b8'}">
+            ${fb.status==='hired'?'🎉 You confirmed: Hired by Brand!':fb.status==='in_discussion'?'💬 Status: In Discussion on WhatsApp':fb.status==='no_response'?'⚠️ Status: Brand has not messaged yet':''}
+          </div>
+        `:''}
       </div>
       <div class="a-ri"><span class="a-py">${esc(a.pay||'Budget')}</span>${stMap[a.status]||''}</div>
     </div>`;
   }).join('');
+}
+
+async function submitStudentFeedback(appId, feedbackStatus, btn){
+  const orig = btn.innerHTML;
+  btn.innerHTML = '<span class="spin"></span> Saving...';
+  btn.disabled = true;
+  try{
+    const res = await fetch(`/api/student/application/${appId}/feedback`, {
+      method: 'POST',
+      headers: { 'Authorization': 'Bearer ' + _tk, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: feedbackStatus })
+    });
+    const data = await res.json();
+    if(data.success){
+      showToast(feedbackStatus === 'hired' ? '🎉 Marked as Hired! Congratulations!' : 'Thanks for updating your status!', 'success');
+      const app = (realApps || []).find(a => String(a._id || a.id) === String(appId));
+      if(app){
+        if(feedbackStatus === 'hired') app.status = 'hired';
+        app.studentFeedback = { status: feedbackStatus, updatedAt: new Date().toISOString() };
+      }
+      renderAppList(realApps, 'all');
+    } else {
+      showToast(data.message || 'Could not update feedback.', 'error');
+      btn.innerHTML = orig;
+      btn.disabled = false;
+    }
+  }catch(e){
+    showToast('Failed to update status. Check internet.', 'error');
+    btn.innerHTML = orig;
+    btn.disabled = false;
+  }
 }
 
 function filterApps(f,btn){document.querySelectorAll('.atab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderAppList(realApps,f);}
@@ -2988,6 +3089,34 @@ function openApplyModal(id){
     <div class="apply-modal-body" id="applyModalBody">
       ${questionsHtml}
 
+      <!-- Direct WhatsApp Verification Card -->
+      <div class="apply-whatsapp-card" style="background:#f0fdf4;border:1.5px solid #86efac;border-radius:14px;padding:16px 18px;margin-top:16px;margin-bottom:18px;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+          <span style="font-size:1.35rem">💬</span>
+          <div>
+            <div style="font-weight:700;color:#15803d;font-size:0.92rem">Direct WhatsApp Number <span style="color:#dc2626">*</span></div>
+            <div style="font-size:0.77rem;color:#166534">Brand will contact you directly on WhatsApp for screening, interview, and selection.</div>
+          </div>
+        </div>
+        <div style="position:relative;margin-top:10px">
+          <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-weight:700;color:#15803d;font-size:0.92rem">+91</span>
+          <input 
+            type="tel" 
+            id="applyWhatsApp" 
+            class="apply-textarea" 
+            style="padding-left:52px;height:44px;font-size:0.95rem;font-weight:600;letter-spacing:0.5px;border:1.5px solid #86efac;border-radius:10px;background:white;color:#0f172a" 
+            placeholder="10-digit WhatsApp number" 
+            value="${esc((_u?.whatsapp||_u?.phone||'').replace(/\D/g,'').slice(-10))}" 
+            maxlength="10"
+            oninput="this.value=this.value.replace(/\D/g,'')"
+          >
+        </div>
+        <div style="font-size:0.72rem;color:#4b5563;margin-top:6px;display:flex;justify-content:space-between">
+          <span>🔒 Kept confidential, shared only with the brand of this project.</span>
+          <span id="applyWhatsAppErr" style="color:#dc2626;font-weight:600"></span>
+        </div>
+      </div>
+
       <div class="apply-student-summary">
         <div class="apply-student-av">
           ${studentAvatar?`<img src="${esc(studentAvatar)}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;" alt="">`:esc(studentName.slice(0,2).toUpperCase())}
@@ -3077,8 +3206,38 @@ async function submitProjectApplication(jobId){
     }
   }
 
-  if(hasError){
+  const waInput=document.getElementById('applyWhatsApp');
+  const waErr=document.getElementById('applyWhatsAppErr');
+  const rawWa=waInput?waInput.value.trim():'';
+  const cleanWaDigits=rawWa.replace(/\D/g,'').slice(-10);
+
+  if(!cleanWaDigits || cleanWaDigits.length < 10){
+    hasError=true;
+    if(waInput){
+      waInput.style.borderColor='#dc2626';
+      waInput.style.background='#fef2f2';
+      if(!firstErrorEl) firstErrorEl=waInput;
+    }
+    if(waErr) waErr.textContent='10-digit number required';
     if(alertBox){
+      alertBox.className='apply-alert-msg error';
+      alertBox.innerHTML='⚠️ <span>Please enter a valid 10-digit WhatsApp number so the brand can contact you.</span>';
+      alertBox.style.display='flex';
+    }
+  } else {
+    if(waInput){
+      waInput.style.borderColor='#86efac';
+      waInput.style.background='#ffffff';
+    }
+    if(waErr) waErr.textContent='';
+  }
+
+  if(hasError){
+    if(alertBox && !cleanWaDigits){
+      alertBox.className='apply-alert-msg error';
+      alertBox.innerHTML='⚠️ <span>Please enter a valid WhatsApp number and answer all questions before submitting.</span>';
+      alertBox.style.display='flex';
+    } else if(alertBox && !alertBox.innerHTML) {
       alertBox.className='apply-alert-msg error';
       alertBox.innerHTML='⚠️ <span>Please answer all required screening questions before submitting.</span>';
       alertBox.style.display='flex';
@@ -3111,12 +3270,18 @@ async function submitProjectApplication(jobId){
         brandName:j.brand||j.brandName,
         brandId:j.brandId||'',
         pay:j.pay||j.budget,
+        whatsapp:'+91 ' + cleanWaDigits,
         applicationAnswers
       })
     });
     const data=await res.json().catch(()=>({success:false,message:'Server returned an invalid response.'}));
 
     if(data.success){
+      if(_u){
+        _u.whatsapp='+91 ' + cleanWaDigits;
+        _u.phone='+91 ' + cleanWaDigits;
+        try{localStorage.setItem('ngg_user',JSON.stringify(_u));}catch(e){}
+      }
       markJobApplied(jobId);
       addLocalApplication(j);
       syncAppliedState();
