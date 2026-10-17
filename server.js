@@ -143,10 +143,17 @@ const applicationSchema = new mongoose.Schema({
   brandName:{type:String,required:true},
   brandId:{type:mongoose.Schema.Types.ObjectId,ref:"User"},
   pay:{type:String,required:true},
-  status:{type:String,enum:["review","accepted","rejected"],default:"review"},
+  status:{type:String,enum:["review","interviewing","accepted","hired","rejected"],default:"review"},
   paymentStatus:{type:String,enum:["unpaid","paid"],default:"unpaid"},
   paidAmount:{type:Number,default:0},
   studentBadgeAtApply:{type:String,enum:["beginner","verified","top-rated"],default:"beginner"},
+  contactInitiated:{type:Boolean,default:false},
+  contactInitiatedAt:{type:Date},
+  hiredAt:{type:Date},
+  studentFeedback:{
+    status:{type:String,enum:["pending","hired","in_discussion","no_response"],default:"pending"},
+    updatedAt:{type:Date}
+  },
   applicationAnswers:{type:[{
     question:{type:String,default:""},
     answer:{type:String,default:""},
@@ -3252,9 +3259,30 @@ app.post("/api/apply",verifyToken,async(req,res)=>{
     }
     const student=await User.findById(req.user.id);
     if(!student)return res.status(404).json({success:false,message:"Student not found."});
-    // Requirement for portfolio/college/skill minimums removed as requested: directly open for students to apply
+
+    // 1. Mandatory WhatsApp Number Check
+    const rawWhatsapp = String(req.body.whatsapp || student.whatsapp || student.phone || "").trim();
+    const cleanWhatsapp = formatIndianPhoneText(rawWhatsapp);
+    const digitsOnly = cleanWhatsapp.replace(/\D/g,"");
+    if(!cleanWhatsapp || digitsOnly.length < 10){
+      return res.status(400).json({success:false,message:"A valid 10-digit WhatsApp number is required so the brand can contact you for interview and hiring."});
+    }
+    if(!student.whatsapp || !student.phone || student.whatsapp !== cleanWhatsapp){
+      student.whatsapp = cleanWhatsapp;
+      student.phone = cleanWhatsapp;
+      await student.save().catch(()=>{});
+    }
+
+    // 2. Mandatory Screening Questions Check
     const questions=job?.applicationQuestions||[];
     const answers=sanitizeApplicationAnswers(req.body.applicationAnswers,questions);
+    if(questions.length>0){
+      const validAnswers=answers.filter(a=>a&&typeof a.answer==="string"&&a.answer.trim().length>=3);
+      if(validAnswers.length<questions.length){
+        return res.status(400).json({success:false,message:"Please answer all required screening questions before submitting your application."});
+      }
+    }
+
     const sid=new mongoose.Types.ObjectId(req.user.id);
     const completedWorks=await ProjectWorkspace.countDocuments({studentId:sid,status:{$in:["approved","completed"]}});
     const rating=getStudentRating(student,completedWorks);
@@ -3270,9 +3298,11 @@ app.post("/api/apply",verifyToken,async(req,res)=>{
       applicationAnswers:answers,
     });
     const activeCount=await Application.countDocuments({studentId:req.user.id,status:"review"});
-    // Email brand
+    // Email brand with student direct WhatsApp link
     const brand=await User.findById(job.brandId);
     if(brand?.email){
+      const studentDigits = cleanWhatsapp.replace(/\D/g,"").slice(-10);
+      const waLink = `https://wa.me/91${studentDigits}?text=Hi%20${encodeURIComponent(student.firstName||'there')},%20I%20reviewed%20your%20application%20for%20'${encodeURIComponent(job.title)}'%20on%20NextGenGrowth.%20Let's%20connect!`;
       sendConfiguredEmail("application",brand.email,`📥 New Application for "${job.title}"!`,
         `<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;padding:20px">
         <div style="background:linear-gradient(135deg,#0a7c44,#064e2b);border-radius:16px;padding:24px;text-align:center;color:white;margin-bottom:20px">
@@ -3281,10 +3311,14 @@ app.post("/api/apply",verifyToken,async(req,res)=>{
         <div style="background:white;border-radius:16px;padding:24px;border:1px solid #d1ead9">
           <p><strong>Student:</strong> ${student.firstName} ${student.lastName}</p>
           <p><strong>Email:</strong> ${student.email}</p>
+          <p><strong>WhatsApp:</strong> ${cleanWhatsapp}</p>
           <p><strong>Badge:</strong> ${badgeInfo.label}</p>
           <p><strong>Skills:</strong> ${student.skills.join(", ")||"Not listed"}</p>
           <p><strong>Project:</strong> ${job.title}</p>
-          <a href="${BASE_URL}/brand-dashboard" style="display:inline-block;background:#0a7c44;color:white;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:bold">Review Application →</a>
+          <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+            <a href="${waLink}" style="display:inline-block;background:#25d366;color:white;padding:12px 20px;border-radius:10px;text-decoration:none;font-weight:bold">💬 Chat on WhatsApp →</a>
+            <a href="${BASE_URL}/brand-dashboard" style="display:inline-block;background:#0a7c44;color:white;padding:12px 20px;border-radius:10px;text-decoration:none;font-weight:bold">View Application →</a>
+          </div>
         </div></div>`).catch(err=>console.error("Application alert email error:",err.message));
     }
     res.json({success:true,message:`Applied for "${job.title}"! 🎉`,activeApplications:activeCount});
@@ -3317,9 +3351,18 @@ app.post("/api/brand/project",verifyToken,async(req,res)=>{
     
     const brand=await User.findById(req.user.id);
 
-    const{title,description,budget,category,deadline,tags,applicationQuestions}=req.body;
+    const{title,description,budget,category,deadline,tags,applicationQuestions,whatsapp}=req.body;
     const cleanDescription=String(description||"").trim();
     if(!title||!cleanDescription||!budget||!category)return res.status(400).json({success:false,message:"Title, description, budget and category required."});
+
+    if(whatsapp && (!brand.whatsapp || !brand.phone)){
+      const cleanPhone=formatIndianPhoneText(whatsapp);
+      if(cleanPhone){
+        brand.whatsapp=cleanPhone;
+        brand.phone=cleanPhone;
+        await brand.save().catch(()=>{});
+      }
+    }
 
     const brandName=brand.companyName||`${brand.firstName} ${brand.lastName}`;
     const job=await Job.create({
@@ -3342,22 +3385,28 @@ app.get("/api/brand/applications",verifyToken,async(req,res)=>{
     const jobIds=brandJobs.map(j=>j._id.toString());
     const jobTitles=brandJobs.map(j=>j.title);
     const apps=await Application.find({$or:[{brandId:req.user.id},{jobId:{$in:jobIds}},{brandName:brandName}]})
-      .populate("studentId","firstName lastName email college year skills headline bio linkedin portfolioLink avatar workSamples studentBadge verificationStatus complaintsCount ratingAverage ratingCount") // ✅ Added fields
+      .populate("studentId","firstName lastName email phone whatsapp college year skills headline bio linkedin portfolioLink avatar workSamples studentBadge verificationStatus complaintsCount ratingAverage ratingCount")
       .sort({createdAt:-1});
     const result=apps.map(a=>({
       ...a.toObject(),
+      contactInitiated:!!a.contactInitiated,
+      contactInitiatedAt:a.contactInitiatedAt||null,
+      hiredAt:a.hiredAt||null,
+      studentFeedback:a.studentFeedback||{status:"pending"},
       student:{
         id:a.studentId?._id,
         name:`${a.studentId?.firstName||""} ${a.studentId?.lastName||""}`.trim(),
         email:a.studentId?.email||"",
+        phone:a.studentId?.phone||"",
+        whatsapp:a.studentId?.whatsapp||a.studentId?.phone||"",
         college:a.studentId?.college||"",
         year:a.studentId?.year||"",
         skills:a.studentId?.skills||[],
         headline:a.studentId?.headline||"",
         bio:a.studentId?.bio||"",
         linkedin:a.studentId?.linkedin||"",
-        portfolioLink:a.studentId?.portfolioLink||"", // ✅ Added field
-        avatar:a.studentId?.avatar||"",               // ✅ Added field
+        portfolioLink:a.studentId?.portfolioLink||"",
+        avatar:a.studentId?.avatar||"",
         workSamples:a.studentId?.workSamples||[],
         badge:getStudentBadgeInfo(a.studentId||{},{}),
       }
@@ -4875,6 +4924,34 @@ app.get("/api/admin/student/:id/profile",adminOnly,async(req,res)=>{
     });
   }catch(err){
     console.error("Admin student profile error:",err);
+    res.status(err.statusCode||500).json({success:false,message:err.message||"Server error."});
+  }
+});
+
+app.get("/api/admin/brand/:id/profile",adminOnly,async(req,res)=>{
+  try{
+    requireObjectId(req.params.id,"brand ID");
+    const brand=await User.findOne({_id:req.params.id,role:"brand"}).select("-password").lean();
+    if(!brand)return res.status(404).json({success:false,message:"Brand not found."});
+    const bid=new mongoose.Types.ObjectId(req.params.id);
+    const[jobs,totalJobs,openJobs,closedJobs,applications,workspaces]=await Promise.all([
+      Job.find({brandId:bid}).sort({createdAt:-1}).limit(12).lean(),
+      Job.countDocuments({brandId:bid}),
+      Job.countDocuments({brandId:bid,status:"open"}),
+      Job.countDocuments({brandId:bid,status:"closed"}),
+      Application.find({brandId:bid}).sort({createdAt:-1}).limit(12).lean(),
+      ProjectWorkspace.find({brandId:bid}).populate("studentId","firstName lastName email").sort({updatedAt:-1}).limit(8).lean(),
+    ]);
+    res.json({
+      success:true,
+      brand:safeUser(brand),
+      stats:{totalJobs,openJobs,closedJobs,totalApplications:applications.length,workspacesCount:workspaces.length},
+      jobs,
+      recentApplications:applications,
+      workspaces
+    });
+  }catch(err){
+    console.error("Admin brand profile error:",err);
     res.status(err.statusCode||500).json({success:false,message:err.message||"Server error."});
   }
 });

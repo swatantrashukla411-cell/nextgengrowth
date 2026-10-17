@@ -506,6 +506,312 @@
     .brand-about{font-size:.86rem;color:var(--tm);line-height:1.55;margin-bottom:14px;background:white;border:1px solid var(--br);border-radius:12px;padding:12px}
     @media(max-width:640px){.brand-grid,.brand-detail-grid{grid-template-columns:1fr}.brand-hero{padding-right:38px}.brand-profile-card{padding:16px}.pf_{align-items:stretch;gap:8px}.project-actions{align-items:stretch;width:100%}.project-actions .pa{width:100%;text-align:center}.project-detail-actions .pa{width:100%;text-align:center}}
 
+    /* ══ TAGDA PROJECT APPLICATION MODAL ══ */
+    .project-apply-modal-card{
+      max-width:660px;
+      width:100%;
+      padding:0;
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+      max-height:min(90vh,780px);
+      border-radius:20px;
+      background:white;
+      border:1px solid rgba(16,185,129,0.22);
+      box-shadow:0 25px 60px -15px rgba(2,44,34,.32), 0 0 0 1px rgba(16,185,129,.12);
+      position:relative;
+      animation:applyModalIn .26s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+    @keyframes applyModalIn{
+      from{opacity:0;transform:scale(0.96) translateY(10px)}
+      to{opacity:1;transform:scale(1) translateY(0)}
+    }
+    .apply-modal-header{
+      padding:22px 24px 18px;
+      background:linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%);
+      border-bottom:1px solid #d1fae5;
+      position:relative;
+    }
+    .apply-modal-close{
+      position:absolute;
+      top:16px;
+      right:16px;
+      width:34px;
+      height:34px;
+      border-radius:10px;
+      background:white;
+      border:1px solid #cbd5e1;
+      color:#64748b;
+      font-size:1.25rem;
+      font-weight:600;
+      cursor:pointer;
+      display:grid;
+      place-items:center;
+      transition:all .2s ease;
+      line-height:1;
+    }
+    .apply-modal-close:hover{
+      background:#fee2e2;
+      border-color:#fca5a5;
+      color:#ef4444;
+      transform:rotate(90deg);
+    }
+    .apply-badge-top{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding:4px 10px;
+      background:white;
+      border:1px solid #a7f3d0;
+      border-radius:999px;
+      font-size:.72rem;
+      font-weight:700;
+      color:#047857;
+      margin-bottom:8px;
+    }
+    .apply-modal-title{
+      font-family:'Clash Display',sans-serif;
+      font-size:1.26rem;
+      font-weight:700;
+      color:#0f172a;
+      line-height:1.25;
+      margin-bottom:8px;
+      padding-right:36px;
+    }
+    .apply-modal-meta{
+      display:flex;
+      flex-wrap:wrap;
+      gap:7px;
+      font-size:.78rem;
+    }
+    .apply-meta-pill{
+      display:inline-flex;
+      align-items:center;
+      gap:4px;
+      padding:3px 9px;
+      background:rgba(255,255,255,.9);
+      border:1px solid #cbd5e1;
+      border-radius:6px;
+      font-weight:600;
+      color:#334155;
+      font-size:.74rem;
+    }
+    .apply-meta-pill.pay{
+      background:#dcfce7;
+      color:#15803d;
+      border-color:#86efac;
+      font-weight:700;
+    }
+    .apply-modal-body{
+      padding:22px 24px;
+      overflow-y:auto;
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      gap:16px;
+      background:#ffffff;
+    }
+    .apply-intro-banner{
+      display:flex;
+      gap:12px;
+      align-items:flex-start;
+      padding:12px 14px;
+      background:#f8fafc;
+      border:1px solid #e2e8f0;
+      border-left:4px solid #10b981;
+      border-radius:10px;
+    }
+    .apply-intro-icon{font-size:1.3rem;line-height:1;flex-shrink:0;margin-top:2px}
+    .apply-intro-title{font-size:.85rem;font-weight:700;color:#0f172a;margin-bottom:2px}
+    .apply-intro-desc{font-size:.78rem;color:#64748b;line-height:1.45}
+    .apply-questions-list{display:flex;flex-direction:column;gap:14px}
+    .apply-q-card{
+      background:#ffffff;
+      border:1.5px solid #e2e8f0;
+      border-radius:14px;
+      padding:14px 16px;
+      transition:all .2s ease;
+    }
+    .apply-q-card:focus-within{
+      border-color:#10b981;
+      box-shadow:0 0 0 3px rgba(16,185,129,.12);
+    }
+    .apply-q-card.has-error{
+      border-color:#ef4444 !important;
+      background:#fffbfb;
+      animation:shakeErr .4s ease;
+    }
+    @keyframes shakeErr{
+      0%,100%{transform:translateX(0)}
+      20%,60%{transform:translateX(-5px)}
+      40%,80%{transform:translateX(5px)}
+    }
+    .apply-q-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+    .apply-q-num{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#047857;background:#ecfdf5;padding:2px 8px;border-radius:6px}
+    .apply-q-req{font-size:.72rem;font-weight:600;color:#dc2626}
+    .apply-q-title{font-size:.92rem;font-weight:600;color:#1e293b;line-height:1.45;margin-bottom:10px;word-break:break-word}
+    .apply-textarea{
+      width:100%;
+      min-height:90px;
+      border:1.5px solid #cbd5e1;
+      border-radius:10px;
+      padding:10px 12px;
+      font-family:'Outfit',sans-serif;
+      font-size:.88rem;
+      color:#0f172a;
+      resize:vertical;
+      line-height:1.5;
+      outline:none;
+      transition:all .2s;
+      background:#f8fafc;
+      box-sizing:border-box;
+    }
+    .apply-textarea:focus{
+      background:#ffffff;
+      border-color:#10b981;
+      box-shadow:0 0 0 3px rgba(16,185,129,.15);
+    }
+    .apply-textarea.error{
+      border-color:#ef4444 !important;
+      background:#fff5f5 !important;
+    }
+    .apply-q-footer{display:flex;justify-content:space-between;align-items:center;margin-top:6px;font-size:.74rem}
+    .apply-q-err{color:#dc2626;font-weight:600;min-height:16px}
+    .apply-q-count{color:#94a3b8;font-family:'JetBrains Mono',monospace;font-size:.72rem}
+    .apply-direct-card{
+      text-align:center;
+      padding:26px 18px;
+      background:linear-gradient(135deg,#f0fdf4 0%,#ecfdf5 100%);
+      border:1.5px dashed #a7f3d0;
+      border-radius:14px;
+    }
+    .apply-direct-icon{font-size:2rem;margin-bottom:8px}
+    .apply-direct-title{font-family:'Clash Display',sans-serif;font-size:1.15rem;font-weight:700;color:#047857;margin-bottom:4px}
+    .apply-direct-desc{font-size:.82rem;color:#475569;line-height:1.5;max-width:440px;margin:0 auto}
+    .apply-student-summary{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:12px 14px;
+      background:#f1f5f9;
+      border-radius:12px;
+      border:1px solid #e2e8f0;
+    }
+    .apply-student-av{
+      width:40px;
+      height:40px;
+      border-radius:10px;
+      background:linear-gradient(135deg,#047857,#022c22);
+      color:white;
+      display:grid;
+      place-items:center;
+      font-weight:700;
+      font-size:.92rem;
+      overflow:hidden;
+      flex-shrink:0;
+    }
+    .apply-student-info{flex:1;min-width:0}
+    .apply-student-name{display:flex;align-items:center;gap:8px;font-size:.85rem;color:#0f172a;flex-wrap:wrap}
+    .apply-badge-pill{font-size:.68rem;padding:1px 7px;background:#ecfdf5;color:#047857;border:1px solid #a7f3d0;border-radius:100px;font-weight:700}
+    .apply-student-meta{font-size:.75rem;color:#64748b;margin-top:2px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+    .apply-alert-msg{
+      padding:10px 14px;
+      border-radius:10px;
+      font-size:.82rem;
+      font-weight:600;
+      line-height:1.4;
+      display:none;
+      align-items:center;
+      gap:8px;
+    }
+    .apply-alert-msg.error{background:#fef2f2;border:1px solid #fecaca;color:#dc2626;display:flex}
+    .apply-alert-msg.success{background:#ecfdf5;border:1px solid #a7f3d0;color:#047857;display:flex}
+    .apply-modal-footer{
+      padding:14px 24px;
+      background:#f8fafc;
+      border-top:1px solid #e2e8f0;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+    }
+    .apply-footer-hint{font-size:.74rem;color:#64748b;display:flex;align-items:center;gap:6px}
+    .apply-footer-btns{display:flex;gap:10px;align-items:center}
+    .apply-btn-cancel{
+      background:white;
+      border:1.5px solid #cbd5e1;
+      color:#475569;
+      padding:9px 18px;
+      border-radius:10px;
+      font-size:.84rem;
+      font-weight:600;
+      cursor:pointer;
+      transition:all .2s;
+    }
+    .apply-btn-cancel:hover{background:#f1f5f9;color:#0f172a}
+    .apply-btn-submit{
+      background:linear-gradient(135deg,#047857,#064e2b);
+      color:white;
+      border:none;
+      padding:10px 22px;
+      border-radius:10px;
+      font-size:.86rem;
+      font-weight:700;
+      cursor:pointer;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      box-shadow:0 4px 14px rgba(4,120,87,.28);
+      transition:all .2s;
+    }
+    .apply-btn-submit:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(4,120,87,.38)}
+    .apply-btn-submit:disabled{opacity:.6;cursor:not-allowed;transform:none;box-shadow:none}
+    .apply-success-wrap{
+      padding:36px 20px;
+      text-align:center;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+    }
+    .apply-success-icon-box{
+      width:76px;
+      height:76px;
+      border-radius:50%;
+      background:#ecfdf5;
+      border:2px solid #86efac;
+      display:grid;
+      place-items:center;
+      margin-bottom:16px;
+      animation:popSuccess .4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes popSuccess{0%{transform:scale(0.5);opacity:0}100%{transform:scale(1);opacity:1}}
+    .apply-success-title{font-family:'Clash Display',sans-serif;font-size:1.35rem;color:#047857;margin-bottom:8px}
+    .apply-success-sub{font-size:.88rem;color:#334155;line-height:1.55;max-width:440px;margin-bottom:16px}
+    .apply-success-note{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:center;
+      font-size:.78rem;
+      color:#15803d;
+      font-weight:600;
+      background:#f0fdf4;
+      padding:8px 16px;
+      border-radius:100px;
+      border:1px solid #bbf7d0;
+    }
+    @media(max-width:640px){
+      .project-apply-modal-card{margin:0;max-height:94vh;border-radius:16px}
+      .apply-modal-header{padding:16px}
+      .apply-modal-body{padding:16px}
+      .apply-modal-footer{padding:12px 16px;flex-direction:column-reverse;align-items:stretch}
+      .apply-footer-btns{width:100%}
+      .apply-btn-cancel{flex:1;text-align:center}
+      .apply-btn-submit{flex:2;justify-content:center}
+      .apply-textarea{font-size:16px}
+    }
+
     /* ══ MISC ══ */
     .spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:white;border-radius:50%;animation:sp .6s linear infinite;vertical-align:middle;margin-right:5px}
     @keyframes sp{to{transform:rotate(360deg)}}
@@ -1264,6 +1570,11 @@
   <div class="brand-profile-card project-detail-card">
     <button class="brand-profile-close" onclick="closeProjectDetails()" aria-label="Close project details">×</button>
     <div id="projectDetailContent"><div class="empty-s"><div class="ei">📋</div><h3>Loading project details...</h3></div></div>
+  </div>
+</div>
+<div class="brand-profile-modal" id="projectApplyModal" aria-hidden="true" onclick="if(event.target===this)closeApplyModal()">
+  <div class="brand-profile-card project-apply-modal-card" onclick="event.stopPropagation()">
+    <div id="projectApplyContent"></div>
   </div>
 </div>
 <div class="toast" id="toast"></div>
@@ -2559,7 +2870,35 @@ async function submitLongTermApplication(){
   }
 }
 
-async function applyJob(id){
+function applyJob(id){
+  openApplyModal(id);
+}
+
+function closeApplyModal(){
+  const modal=document.getElementById('projectApplyModal');
+  if(!modal)return;
+  modal.classList.remove('show');
+  modal.setAttribute('aria-hidden','true');
+}
+
+function handleApplyInput(idx){
+  const el=document.getElementById('applyAns_'+idx);
+  const counter=document.getElementById('applyCount_'+idx);
+  const card=document.getElementById('applyQCard_'+idx);
+  const err=document.getElementById('applyErr_'+idx);
+  const alertBox=document.getElementById('applyModalAlert');
+  if(!el)return;
+  const len=el.value.length;
+  if(counter)counter.textContent=`${len} / 800`;
+  if(el.value.trim().length>0){
+    if(card)card.classList.remove('has-error');
+    if(el)el.classList.remove('error');
+    if(err)err.textContent='';
+    if(alertBox)alertBox.style.display='none';
+  }
+}
+
+function openApplyModal(id){
   const jobId=String(id);
   const j=[...ALL_JOBS,...aiJobs].find(x=>getJobId(x)===jobId);
   if(!j){showToast('Project not found. Please refresh once.','error');return;}
@@ -2574,48 +2913,284 @@ async function applyJob(id){
     return;
   }
 
-  try{
-    const questions=Array.isArray(j.applicationQuestions)?j.applicationQuestions:[];
-    const applicationAnswers=[];
-    for(const question of questions){
-      const answer=prompt(question);
-      if(answer && answer.trim()){
-        applicationAnswers.push({question,answer:answer.trim()});
-      }
+  // Ensure details modal is closed if opened from there
+  closeProjectDetails();
+
+  const modal=document.getElementById('projectApplyModal');
+  const content=document.getElementById('projectApplyContent');
+  if(!modal||!content)return;
+
+  const questions=Array.isArray(j.applicationQuestions)?j.applicationQuestions:[];
+  const brandName=j.brand||j.brandName||'Brand Partner';
+  const pay=j.pay||j.budget||'Stipend as listed';
+  const studentName=_u?.name||`${_u?.firstName||''} ${_u?.lastName||''}`.trim()||'Student';
+  const studentEmail=_u?.email||'';
+  const studentAvatar=_u?.avatar||'';
+  const badgeLevel=getBadgeLevel(_u);
+  const badgeObj=BADGE_TEXT[badgeLevel]||BADGE_TEXT.beginner;
+  const studentBadge=badgeObj.label||'Verified Talent';
+  const portfolioLink=_u?.portfolioLink?safeHref(_u.portfolioLink):'';
+
+  const questionsHtml=questions.length?`
+    <div class="apply-intro-banner">
+      <div class="apply-intro-icon">💡</div>
+      <div>
+        <div class="apply-intro-title">Brand Screening Questions (${questions.length})</div>
+        <div class="apply-intro-desc">We care more about how you think than your resume! Please answer all questions thoroughly to stand out.</div>
+      </div>
+    </div>
+    <div class="apply-questions-list">
+      ${questions.map((q,idx)=>`
+        <div class="apply-q-card" id="applyQCard_${idx}">
+          <div class="apply-q-top">
+            <span class="apply-q-num">Question ${idx+1} of ${questions.length}</span>
+            <span class="apply-q-req">* Required</span>
+          </div>
+          <div class="apply-q-title">${esc(q)}</div>
+          <div class="apply-input-wrap">
+            <textarea 
+              id="applyAns_${idx}" 
+              class="apply-textarea" 
+              rows="3" 
+              placeholder="Write your answer here... Be clear, direct, and share links if relevant." 
+              maxlength="800"
+              oninput="handleApplyInput(${idx})"
+            ></textarea>
+            <div class="apply-q-footer">
+              <span class="apply-q-err" id="applyErr_${idx}"></span>
+              <span class="apply-q-count" id="applyCount_${idx}">0 / 800</span>
+            </div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `:`
+    <div class="apply-direct-card">
+      <div class="apply-direct-icon">⚡</div>
+      <div class="apply-direct-title">One-Click Direct Application</div>
+      <div class="apply-direct-desc">This project has no custom screening questions. Your verified profile, skill badge, and portfolio will be submitted directly to <strong>${esc(brandName)}</strong>.</div>
+    </div>
+  `;
+
+  content.innerHTML=`
+    <div class="apply-modal-header">
+      <button class="apply-modal-close" onclick="closeApplyModal()" aria-label="Close modal">×</button>
+      <div class="apply-badge-top">🎯 Application Submission</div>
+      <h2 class="apply-modal-title">${esc(j.title||'Project Application')}</h2>
+      <div class="apply-modal-meta">
+        <span class="apply-meta-pill">🏢 ${esc(brandName)}</span>
+        <span class="apply-meta-pill pay">💰 ${esc(pay)}</span>
+        <span class="apply-meta-pill">📍 Remote</span>
+        ${j.timeCommitment?`<span class="apply-meta-pill">⏱ ${esc(j.timeCommitment)}</span>`:''}
+      </div>
+    </div>
+
+    <div class="apply-modal-body" id="applyModalBody">
+      ${questionsHtml}
+
+      <div class="apply-student-summary">
+        <div class="apply-student-av">
+          ${studentAvatar?`<img src="${esc(studentAvatar)}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;" alt="">`:esc(studentName.slice(0,2).toUpperCase())}
+        </div>
+        <div class="apply-student-info">
+          <div class="apply-student-name">
+            <strong>${esc(studentName)}</strong>
+            <span class="apply-badge-pill">${esc(studentBadge)}</span>
+          </div>
+          <div class="apply-student-meta">
+            <span>📧 ${esc(studentEmail)}</span>
+            ${portfolioLink?`<span>• 🔗 <a href="${portfolioLink}" target="_blank" rel="noopener noreferrer" style="color:var(--gm);font-weight:600;text-decoration:underline;">View Portfolio</a></span>`:`<span>• <em>No portfolio link added</em></span>`}
+          </div>
+        </div>
+      </div>
+
+      <div class="apply-alert-msg" id="applyModalAlert"></div>
+    </div>
+
+    <div class="apply-modal-footer">
+      <div class="apply-footer-hint">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        <span>Submitted directly to ${esc(brandName)}</span>
+      </div>
+      <div class="apply-footer-btns">
+        <button type="button" class="apply-btn-cancel" onclick="closeApplyModal()">Cancel</button>
+        <button type="button" class="apply-btn-submit" id="applySubmitBtn" onclick="submitProjectApplication('${jobId}')">
+          <span>Submit Application</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+        </button>
+      </div>
+    </div>
+  `;
+
+  modal.classList.add('show');
+  modal.setAttribute('aria-hidden','false');
+
+  const card=modal.querySelector('.project-apply-modal-card');
+  if(window.gsap&&card){
+    gsap.fromTo(card,{scale:0.95,opacity:0,y:12},{scale:1,opacity:1,y:0,duration:0.26,ease:'back.out(1.5)'});
+  }
+
+  if(questions.length){
+    setTimeout(()=>{
+      const firstInput=document.getElementById('applyAns_0');
+      if(firstInput)firstInput.focus();
+    },120);
+  }
+}
+
+async function submitProjectApplication(jobId){
+  const j=[...ALL_JOBS,...aiJobs].find(x=>getJobId(x)===String(jobId));
+  if(!j){showToast('Project not found. Please refresh once.','error');return;}
+  const questions=Array.isArray(j.applicationQuestions)?j.applicationQuestions:[];
+  const alertBox=document.getElementById('applyModalAlert');
+  const btn=document.getElementById('applySubmitBtn');
+  const content=document.getElementById('projectApplyContent');
+
+  let hasError=false;
+  let firstErrorEl=null;
+  const applicationAnswers=[];
+
+  for(let idx=0;idx<questions.length;idx++){
+    const q=questions[idx];
+    const el=document.getElementById('applyAns_'+idx);
+    const card=document.getElementById('applyQCard_'+idx);
+    const err=document.getElementById('applyErr_'+idx);
+    const val=el?el.value.trim():'';
+
+    if(!val){
+      hasError=true;
+      if(card)card.classList.add('has-error');
+      if(el)el.classList.add('error');
+      if(err)err.textContent='This question is required. Please write your answer.';
+      if(!firstErrorEl&&el)firstErrorEl=el;
+    }else if(val.length<3){
+      hasError=true;
+      if(card)card.classList.add('has-error');
+      if(el)el.classList.add('error');
+      if(err)err.textContent='Please provide a valid answer (min 3 characters).';
+      if(!firstErrorEl&&el)firstErrorEl=el;
+    }else{
+      if(card)card.classList.remove('has-error');
+      if(el)el.classList.remove('error');
+      if(err)err.textContent='';
+      applicationAnswers.push({question:q,answer:val});
     }
-    markJobApplied(jobId);
-    refreshApplicationViews();
-    const res=await fetch('/api/apply',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+_tk},body:JSON.stringify({jobId,jobTitle:j.title,brandName:j.brand||j.brandName,brandId:j.brandId||'',pay:j.pay||j.budget,applicationAnswers})});
-    const data=await res.json();
+  }
+
+  if(hasError){
+    if(alertBox){
+      alertBox.className='apply-alert-msg error';
+      alertBox.innerHTML='⚠️ <span>Please answer all required screening questions before submitting.</span>';
+      alertBox.style.display='flex';
+    }
+    if(firstErrorEl){
+      firstErrorEl.focus();
+      firstErrorEl.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+    return;
+  }
+
+  if(alertBox)alertBox.style.display='none';
+
+  const origBtnContent=btn?btn.innerHTML:'';
+  if(btn){
+    btn.disabled=true;
+    btn.innerHTML='<span class="spin"></span> Submitting Application...';
+  }
+
+  try{
+    const res=await fetch('/api/apply',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':'Bearer '+_tk
+      },
+      body:JSON.stringify({
+        jobId:String(jobId),
+        jobTitle:j.title,
+        brandName:j.brand||j.brandName,
+        brandId:j.brandId||'',
+        pay:j.pay||j.budget,
+        applicationAnswers
+      })
+    });
+    const data=await res.json().catch(()=>({success:false,message:'Server returned an invalid response.'}));
+
     if(data.success){
+      markJobApplied(jobId);
       addLocalApplication(j);
       syncAppliedState();
       refreshApplicationViews();
-      showToast(`Applied for "${j.title}"! 🎉`,'success');
       await loadStats();
-    }
-    else if(res.status===409){
+
+      if(content){
+        content.innerHTML=`
+          <div class="apply-success-wrap">
+            <div class="apply-success-icon-box">
+              <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#047857" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+            </div>
+            <h3 class="apply-success-title">Application Submitted! 🎉</h3>
+            <p class="apply-success-sub">Your application and screening answers have been delivered to <strong>${esc(j.brand||j.brandName||'Brand')}</strong>.</p>
+            <div class="apply-success-note">
+              <span>📋 Answers delivered</span>
+              <span>⚡ Status: Under Review</span>
+            </div>
+            <button type="button" class="apply-btn-submit" style="margin-top:20px;padding:10px 28px" onclick="closeApplyModal()">View Applications</button>
+          </div>
+        `;
+        if(window.gsap){
+          gsap.fromTo('.apply-success-wrap',{scale:0.92,opacity:0},{scale:1,opacity:1,duration:0.3,ease:'back.out(1.8)'});
+        }
+      }
+      showToast(`Applied for "${j.title}"! 🎉`,'success');
+      setTimeout(closeApplyModal,1600);
+    }else if(res.status===409){
       addLocalApplication(j);
       markJobApplied(jobId);
       refreshApplicationViews();
-      showToast(data.message||'Already applied for this project.','info');
       await loadStats();
-    }
-    else{
-      appliedJobIds.delete(jobId);
-      ALL_JOBS=ALL_JOBS.map(x=>getJobId(x)===jobId?{...x,hasApplied:false}:x);
-      aiJobs=aiJobs.map(x=>getJobId(x)===jobId?{...x,hasApplied:false}:x);
-      refreshApplicationViews();
+      showToast(data.message||'Already applied for this project.','info');
+      closeApplyModal();
+    }else{
+      if(alertBox){
+        alertBox.className='apply-alert-msg error';
+        alertBox.innerHTML=`⚠️ <span>${esc(data.message||'Could not submit application. Please try again.')}</span>`;
+        alertBox.style.display='flex';
+      }
       showToast(data.message||'Could not apply. Try again.','error');
+      if(btn){
+        btn.disabled=false;
+        btn.innerHTML=origBtnContent;
+      }
     }
-  }catch{
-    appliedJobIds.delete(jobId);
-    ALL_JOBS=ALL_JOBS.map(x=>getJobId(x)===jobId?{...x,hasApplied:false}:x);
-    aiJobs=aiJobs.map(x=>getJobId(x)===jobId?{...x,hasApplied:false}:x);
-    refreshApplicationViews();
+  }catch(err){
+    if(alertBox){
+      alertBox.className='apply-alert-msg error';
+      alertBox.innerHTML='⚠️ <span>Connection error. Please check your network and try again.</span>';
+      alertBox.style.display='flex';
+    }
     showToast('Could not apply. Check connection.','error');
+    if(btn){
+      btn.disabled=false;
+      btn.innerHTML=origBtnContent;
+    }
   }
 }
+
+// Global modal keydown listener (Escape closes modals)
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape'){
+    const applyModal=document.getElementById('projectApplyModal');
+    if(applyModal&&applyModal.classList.contains('show'))closeApplyModal();
+    const detailModal=document.getElementById('projectDetailModal');
+    if(detailModal&&detailModal.classList.contains('show'))closeProjectDetails();
+    const brandModal=document.getElementById('brandProfileModal');
+    if(brandModal&&brandModal.classList.contains('show'))closeBrandProfile();
+  }
+});
 
 // PROFILE SAVE
 function toggleSk(el){el.classList.toggle('sel');gsap.fromTo(el,{scale:.92},{scale:1,duration:.25,ease:'back.out(2)'});}

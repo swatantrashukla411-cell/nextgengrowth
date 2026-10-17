@@ -487,7 +487,26 @@
 
     <!-- POST PROJECT -->
     <div class="page" id="page-post">
-      <div class="ph"><h2>Post a Project ✍️</h2><p>Tell students what you need. We'll match the right talent automatically.</p></div>
+      <div class="ph"><h2>Post a Project ✍️</h2><p>Choose between short-term gigs (1-2 reels, quick edits) or monthly long-term roles.</p></div>
+
+      <!-- Switching banner -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-bottom:20px">
+        <div style="background:#e8fdf2;border:2px solid #00c96b;border-radius:14px;padding:16px">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <span style="font-weight:800;font-size:.92rem;color:#064e2b">⚡ Short-Term Project (One-Off Task)</span>
+            <span style="background:#00c96b;color:white;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:100px">ACTIVE</span>
+          </div>
+          <p style="font-size:.8rem;color:#2d5a3d;margin:6px 0 0;line-height:1.4"><b>Best for:</b> 1–2 Reels, 1 Video Edit, Logo design, Thumbnail, Single Blog. Instant escrow, direct workspace & fast delivery.</p>
+        </div>
+        <div onclick="goTo('longterm',null)" style="background:#f8fafc;border:1.5px solid #cbd5e1;border-radius:14px;padding:16px;cursor:pointer;transition:all .2s">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <span style="font-weight:700;font-size:.92rem;color:#1e293b">💼 Long-Term Role / Internship</span>
+            <span style="background:#0a7c44;color:white;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:100px">SWITCH →</span>
+          </div>
+          <p style="font-size:.8rem;color:#64748b;margin:6px 0 0;line-height:1.4"><b>Best for:</b> 1–3 Month Interns, Monthly Creators, dedicated help. NextGenGrowth curates top 3 talent, 15-min intro call, 7-day paid trial & WhatsApp sync.</p>
+        </div>
+      </div>
+
       <div class="g2">
         <div class="pf">
           <div class="brief-ai">
@@ -525,6 +544,10 @@
           </div>
           <div class="fg"><label>Deadline</label><input class="fi" type="text" id="pjDeadline" placeholder="e.g. 3-5 days, 1 week, flexible"/></div>
           <div class="fg"><label>Application Questions</label><textarea class="fi" id="pjQuestions" rows="3" placeholder="Optional: one question per line. Students must answer these before applying."></textarea></div>
+          <div class="fg">
+            <label>Founder / Manager WhatsApp Number</label>
+            <input class="fi" type="tel" id="pjWhatsapp" placeholder="+91 98765 43210 (For candidate alerts & interview coordination)" onfocus="ensureIndianPhonePrefix(this)" oninput="formatIndianPhoneInput(this)"/>
+          </div>
           <button class="btn bgre" id="postBtn" onclick="postProject()" style="width:100%;justify-content:center">🚀 Post Project</button>
         </div>
         <div>
@@ -604,7 +627,57 @@
 
     <!-- LONG-TERM HIRING -->
     <div class="page" id="page-longterm">
-      <div class="ph"><h2>Hire Long-Term Student Talent 💼</h2><p>Hire skilled student creators for monthly work. Start with a 7-day paid trial, then continue long-term if satisfied.</p></div>
+      <div class="ph"><h2>Hire Long-Term Student Talent 💼</h2><p>Hire skilled student creators for monthly roles & internships. Curated matching, 15-min intro interview, and managed WhatsApp sync.</p></div>
+
+      <!-- Switching banner -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-bottom:20px">
+        <div onclick="goTo('post',null)" style="background:#f8fafc;border:1.5px solid #cbd5e1;border-radius:14px;padding:16px;cursor:pointer;transition:all .2s">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <span style="font-weight:700;font-size:.92rem;color:#1e293b">⚡ Short-Term Project (One-Off Task)</span>
+            <span style="background:#0a7c44;color:white;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:100px">SWITCH →</span>
+          </div>
+          <p style="font-size:.8rem;color:#64748b;margin:6px 0 0;line-height:1.4"><b>Best for:</b> 1–2 Reels, 1 Video Edit, Logo design, Thumbnail, Single Blog. Instant escrow & fast delivery.</p>
+        </div>
+        <div style="background:#e8fdf2;border:2px solid #00c96b;border-radius:14px;padding:16px">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <span style="font-weight:800;font-size:.92rem;color:#064e2b">💼 Long-Term Role / Internship</span>
+            <span style="background:#00c96b;color:white;font-size:.68rem;font-weight:700;padding:2px 8px;border-radius:100px">ACTIVE</span>
+          </div>
+          <p style="font-size:.8rem;color:#2d5a3d;margin:6px 0 0;line-height:1.4"><b>Best for:</b> 1–3 Month Interns, Monthly Creators, dedicated help. Curated top 3 shortlist, 15-min intro call, 7-day trial & WhatsApp sync.</p>
+        </div>
+      </div>
+
+      <!-- Detailed 5-Step Visual Banner -->
+      <div style="background:linear-gradient(135deg,#064e2b,#0a7c44);color:white;border-radius:16px;padding:18px 20px;margin-bottom:20px;box-shadow:0 8px 24px rgba(6,78,43,.15)">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <span style="background:rgba(255,255,255,.2);padding:2px 8px;border-radius:6px;font-size:.72rem;font-weight:800;letter-spacing:.04em">HOW IT WORKS</span>
+          <h3 style="font-family:'Clash Display',sans-serif;margin:0;font-size:1.05rem;color:white">Seamless 5-Step Long-Term Hiring</h3>
+        </div>
+        <p style="margin:0 0 14px;font-size:.8rem;color:#d1fae5;line-height:1.4">No spam, no random applicants. NextGenGrowth manually screens student creators, hosts the intro interview, and unlocks direct WhatsApp sync after paid trial confirmation.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px">
+          <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:10px;border:1px solid rgba(255,255,255,.12)">
+            <div style="font-size:.68rem;font-weight:800;color:#6ee7b7">01 • SUBMIT ROLE</div>
+            <div style="font-size:.78rem;font-weight:600;margin-top:3px;color:white">Tell us role & budget</div>
+          </div>
+          <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:10px;border:1px solid rgba(255,255,255,.12)">
+            <div style="font-size:.68rem;font-weight:800;color:#6ee7b7">02 • TOP 3 SHORTLIST</div>
+            <div style="font-size:.78rem;font-weight:600;margin-top:3px;color:white">Curated portfolio match</div>
+          </div>
+          <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:10px;border:1px solid rgba(255,255,255,.12)">
+            <div style="font-size:.68rem;font-weight:800;color:#6ee7b7">03 • 15-MIN INTRO</div>
+            <div style="font-size:.78rem;font-weight:600;margin-top:3px;color:white">Google Meet interview</div>
+          </div>
+          <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:10px;border:1px solid rgba(255,255,255,.12)">
+            <div style="font-size:.68rem;font-weight:800;color:#6ee7b7">04 • 7-DAY TRIAL</div>
+            <div style="font-size:.78rem;font-weight:600;margin-top:3px;color:white">Protected trial task</div>
+          </div>
+          <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:10px;border:1px solid rgba(255,255,255,.12)">
+            <div style="font-size:.68rem;font-weight:800;color:#6ee7b7">05 • WHATSAPP SYNC</div>
+            <div style="font-size:.78rem;font-weight:600;margin-top:3px;color:white">3-Way group for daily work</div>
+          </div>
+        </div>
+      </div>
+
       <div class="g2">
         <div class="card">
           <div class="st" style="margin-bottom:14px">Monthly Hiring Request</div>
@@ -1066,7 +1139,9 @@ function loadBrandData(){
     bpbio:_u.bio||'',
     ltBrandName:_u.companyName||company||'',
     ltManager:name,
-    ltEmail:email
+    ltEmail:email,
+    ltWhatsapp:_u.whatsapp||_u.phone||'',
+    pjWhatsapp:_u.whatsapp||_u.phone||''
   };
   Object.entries(fields).forEach(([id,val])=>{const e=document.getElementById(id);if(e)e.value=val||'';});
   initLongTermDefaults();
@@ -1877,6 +1952,7 @@ async function postProject(){
   const desc=document.getElementById('pjDesc').value.trim();
   const budget=document.getElementById('pjBudget').value.trim();
   const deadline=document.getElementById('pjDeadline').value.trim();
+  const whatsapp=document.getElementById('pjWhatsapp')?.value.trim()||'';
   const applicationQuestions=document.getElementById('pjQuestions').value.split(/\n+/).map(q=>q.trim()).filter(Boolean).slice(0,5);
   if(!title){showToast('Enter a project title','error');return;}
   if(!category){showToast('Select a category','error');return;}
@@ -1885,7 +1961,7 @@ async function postProject(){
   const btn=document.getElementById('postBtn');
   btn.innerHTML='<span class="spin"></span>Posting...';btn.disabled=true;
   try{
-    const res=await fetch('/api/brand/project',{method:'POST',headers:{'Authorization':'Bearer '+_tk,'Content-Type':'application/json'},body:JSON.stringify({title,description:desc,budget,category,deadline,applicationQuestions})});
+    const res=await fetch('/api/brand/project',{method:'POST',headers:{'Authorization':'Bearer '+_tk,'Content-Type':'application/json'},body:JSON.stringify({title,description:desc,budget,category,deadline,applicationQuestions,whatsapp})});
     const data=await res.json();
     if(data.success){
       showToast('Project posted! Students will see it now 🚀','success');
