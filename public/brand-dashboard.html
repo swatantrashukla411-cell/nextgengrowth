@@ -577,8 +577,23 @@
 
     <!-- MY PROJECTS -->
     <div class="page" id="page-projects">
-      <div class="ph"><h2>My Projects 📋</h2><p>Open projects stay here. Approved projects move into the approved section with the selected student.</p></div>
-      <div style="display:flex;gap:10px;margin-bottom:16px"><button class="btn bpri" onclick="goTo('post',null)">+ Post New Project</button></div>
+      <div class="ph" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
+        <div>
+          <h2>My Projects 📋</h2>
+          <p>Track your posted projects, review applications, and hire students.</p>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn bout bsm" onclick="loadBrandStats()"><span class="nicon">↻</span> Refresh</button>
+          <button class="btn bpri bsm" onclick="goTo('post',null)">+ Post New Project</button>
+        </div>
+      </div>
+
+      <div class="ftabs" style="margin-bottom:14px">
+        <button class="ftab active" id="ptab-all" onclick="filterBrandProjects('all',this)">All Projects (<span id="cntAllProj">0</span>)</button>
+        <button class="ftab" id="ptab-open" onclick="filterBrandProjects('open',this)">🟢 Open (<span id="cntOpenProj">0</span>)</button>
+        <button class="ftab" id="ptab-closed" onclick="filterBrandProjects('closed',this)">🔴 Closed (<span id="cntClosedProj">0</span>)</button>
+      </div>
+
       <div class="card" id="brandApprovedProjectsCard" style="display:none;margin-bottom:14px">
         <div class="st">Approved Projects</div>
         <div class="pj-list" id="brandApprovedProjectsList"></div>
@@ -589,7 +604,7 @@
           <div class="empty-s"><div class="ei">💼</div><h3>No long-term projects yet</h3><p>Use a sample template below or create a monthly hiring request.</p></div>
         </div>
       </div>
-      <div class="st">Open Projects</div>
+      <div class="st" id="projListHeader">Active Projects</div>
       <div class="pj-list" id="projListFull">
         <div class="empty-s"><div class="ei">📋</div><h3>No projects yet</h3><p>Post your first project!</p><button class="btn bpri" onclick="goTo('post',null)">+ Post First Project</button></div>
       </div>
@@ -597,14 +612,22 @@
 
     <!-- ✅ APPLICATIONS — Brand accept/reject kare -->
     <div class="page" id="page-applications">
-      <div class="ph"><h2>Applications 📥</h2><p>Students who applied to your projects — YOU decide who to hire!</p></div>
+      <div class="ph" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
+        <div>
+          <h2>Applications 📥</h2>
+          <p>Students who applied to your projects — YOU decide who to interview or hire!</p>
+        </div>
+        <button class="btn bout bsm" onclick="loadBrandApplications()"><span class="nicon">↻</span> Refresh</button>
+      </div>
 
       <!-- Tab filter -->
-      <div class="ftabs">
-        <button class="ftab active" onclick="filterBrandApps('all',this)">All Applications</button>
-        <button class="ftab" onclick="filterBrandApps('review',this)">🔍 Under Review</button>
-        <button class="ftab" onclick="filterBrandApps('accepted',this)">✅ Accepted</button>
-        <button class="ftab" onclick="filterBrandApps('rejected',this)">❌ Rejected</button>
+      <div class="ftabs" style="overflow-x:auto">
+        <button class="ftab active" id="atab-all" onclick="filterBrandApps('all',this)">All (<span id="cntAppAll">0</span>)</button>
+        <button class="ftab" id="atab-review" onclick="filterBrandApps('review',this)">🔍 Under Review (<span id="cntAppRev">0</span>)</button>
+        <button class="ftab" id="atab-interviewing" onclick="filterBrandApps('interviewing',this)">💬 Interviewing (<span id="cntAppInt">0</span>)</button>
+        <button class="ftab" id="atab-hired" onclick="filterBrandApps('hired',this)">🎉 Hired (<span id="cntAppHir">0</span>)</button>
+        <button class="ftab" id="atab-accepted" onclick="filterBrandApps('accepted',this)">✅ Accepted (<span id="cntAppAcc">0</span>)</button>
+        <button class="ftab" id="atab-rejected" onclick="filterBrandApps('rejected',this)">❌ Rejected (<span id="cntAppRej">0</span>)</button>
       </div>
 
       <div id="brandAppList">
@@ -619,7 +642,25 @@
 
     <!-- BROWSE STUDENTS -->
     <div class="page" id="page-students">
-      <div class="ph"><h2>Browse Students 🎓</h2><p>Live student profiles from your NextGenGrowth community.</p></div>
+      <div class="ph" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px">
+        <div>
+          <h2>Browse Students 🎓</h2>
+          <p>Verified and active student creators from the NextGenGrowth community.</p>
+        </div>
+        <button class="btn bout bsm" onclick="loadBrandStudents()"><span class="nicon">↻</span> Refresh</button>
+      </div>
+
+      <!-- Skill filter pills -->
+      <div class="ftabs" style="margin-bottom:16px;overflow-x:auto">
+        <button class="ftab active" id="sktab-all" onclick="filterStudentsBySkill('all',this)">All Students</button>
+        <button class="ftab" id="sktab-video" onclick="filterStudentsBySkill('video',this)">🎬 Video Editing</button>
+        <button class="ftab" id="sktab-design" onclick="filterStudentsBySkill('design',this)">🎨 Graphic Design</button>
+        <button class="ftab" id="sktab-web" onclick="filterStudentsBySkill('web',this)">💻 Web Dev</button>
+        <button class="ftab" id="sktab-writing" onclick="filterStudentsBySkill('writing',this)">✍️ Content Writing</button>
+        <button class="ftab" id="sktab-social" onclick="filterStudentsBySkill('social',this)">📱 Social Media</button>
+        <button class="ftab" id="sktab-ai" onclick="filterStudentsBySkill('ai',this)">🤖 AI Tools</button>
+      </div>
+
       <div class="std-grid" id="studentGrid">
         <div class="empty-s" style="grid-column:1/-1"><div class="ei">🎓</div><h3>Loading students...</h3><p>Fetching live student profiles.</p></div>
       </div>
@@ -895,7 +936,7 @@ if(_u){
 }
 
 // STATE
-let myProjects=[], brandApps=[], brandWorkspaces=[], brandStudents=[], longTermRoles=[], curAppFilter='all', latestBriefDraft=null;
+let myProjects=[], brandApps=[], brandWorkspaces=[], brandStudents=[], longTermRoles=[], curAppFilter='all', curProjFilter='all', curStudentSkillFilter='all', latestBriefDraft=null;
 const studentProfileCache=new Map();
 const LONG_TERM_SAMPLE_ROLES={
   video:{
@@ -1067,12 +1108,23 @@ function brandAppFlow(app,isPaid,ws){
       note:'Application is closed. Keep the project focused on shortlisted or accepted students.',
     };
   }
+  if(status==='hired'){
+    return {
+      steps:[
+        {label:'Reviewed',done:true},
+        {label:'Interviewed',done:true},
+        {label:'Hired 🎉',done:true,active:false}
+      ],
+      note:brandNextStep(app,isPaid,ws),
+    };
+  }
+  const isInterviewing=status==='interviewing'||!!app?.contactInitiated;
   return {
     steps:[
       {label:'Review',done:status!=='review',active:status==='review'},
-      {label:'Accept 1 Student',done:status==='accepted',active:false},
-      {label:'Payment',done:isPaid,active:status==='accepted'&&!isPaid},
-      {label:'Resources',done:!!ws&&ws.status!=='resources_pending',active:isPaid&&(!ws||ws.status==='resources_pending')},
+      {label:isInterviewing?'Interviewing 💬':'Screening',done:['interviewing','accepted','hired'].includes(status)||!!app?.contactInitiated,active:status==='interviewing'},
+      {label:'Accept / Hire',done:['accepted','hired'].includes(status),active:false},
+      {label:'Payment / Work',done:isPaid,active:status==='accepted'&&!isPaid},
       {label:'Approve Work',done:['approved','completed'].includes(ws?.status),active:ws?.status==='submitted'},
     ],
     note:brandNextStep(app,isPaid,ws),
@@ -1080,7 +1132,9 @@ function brandAppFlow(app,isPaid,ws){
 }
 
 function brandNextStep(app,isPaid,ws){
-  if(app?.status==='review')return 'Review profile, portfolio, answers, and select only one student for this project.';
+  if(app?.status==='hired')return '🎉 Student is officially HIRED for this project! Coordinate on WhatsApp for milestones and delivery.';
+  if(app?.status==='interviewing'||app?.contactInitiated)return '💬 Direct WhatsApp interview in progress! Once satisfied, click "Mark as Hired" to finalize.';
+  if(app?.status==='review')return 'Review profile, answers, and portfolio. Click "Chat on WhatsApp" to connect directly, or Accept/Reject.';
   if(app?.status==='accepted'&&!isPaid)return 'Next step: pay through NextGenGrowth to start the protected workspace.';
   if(isPaid&&(!ws||ws.status==='resources_pending'))return 'Next step: add brief, resources, deadline, and acceptance criteria for the student.';
   if(ws?.status==='in_progress')return 'Student is working. Wait for submission or update resources if needed.';
@@ -1159,18 +1213,21 @@ async function loadBrandStats(){
     document.getElementById('bpProj').textContent=s.totalProjects;
     myProjects=data.projects||[];
     if(myProjects.length>0){
-      document.getElementById('brandGS').style.display='none';
+      const brandGS = document.getElementById('brandGS');
+      if(brandGS) brandGS.style.display='none';
     }
     const openProjects=myProjects.filter(p=>p.status==='open');
-    document.getElementById('brandProjectsCard').style.display=openProjects.length?'block':'none';
+    const brandProjCard = document.getElementById('brandProjectsCard');
+    if(brandProjCard) brandProjCard.style.display=openProjects.length?'block':'none';
     if(openProjects.length)renderHomeProjList(openProjects.slice(0,3));
-    renderFullProjList(openProjects);
+    renderFullProjList(myProjects);
     renderApprovedBrandProjects();
   }catch(e){console.log('Brand stats error:',e);}
 }
 
 // ✅ LOAD BRAND APPLICATIONS — Real API
 async function loadBrandApplications(){
+  const appListEl = document.getElementById('brandAppList');
   try{
     const [data,workspaceData]=await Promise.all([
       fetch('/api/brand/applications',{headers:{'Authorization':'Bearer '+_tk}}).then(r=>r.json()),
@@ -1189,7 +1246,21 @@ async function loadBrandApplications(){
     }
     renderBrandApps();
     renderApprovedBrandProjects();
-  }catch(e){console.log('Brand apps error:',e);}
+  }catch(e){
+    console.log('Brand apps error:',e);
+    if(appListEl) appListEl.innerHTML='<div class="empty-s"><div class="ei">⚠️</div><h3>Could not load applications</h3><p>Please check your connection and try again.</p><button class="btn bpri" onclick="loadBrandApplications()">↻ Retry</button></div>';
+  }
+}
+
+function filterStudentsBySkill(skill, btn){
+  curStudentSkillFilter = skill;
+  document.querySelectorAll('#page-students .ftab').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  else {
+    const tab = document.getElementById('sktab-' + skill);
+    if(tab) tab.classList.add('active');
+  }
+  renderBrowseStudents();
 }
 
 async function loadBrandStudents(){
@@ -1214,10 +1285,45 @@ function renderBrowseStudents(){
     el.innerHTML='<div class="empty-s" style="grid-column:1/-1"><div class="ei">🎓</div><h3>No students yet</h3><p>Students will appear here after they create profiles.</p></div>';
     return;
   }
+  let filtered = brandStudents;
+  if(curStudentSkillFilter !== 'all'){
+    const kwMap = {
+      video: ['video', 'editing', 'reels', 'youtube', 'capcut'],
+      design: ['design', 'graphic', 'canva', 'figma', 'logo', 'ui/ux'],
+      web: ['web', 'frontend', 'developer', 'react', 'html', 'css'],
+      writing: ['writing', 'content', 'seo', 'copywriting', 'blog'],
+      social: ['social', 'instagram', 'media', 'marketing'],
+      ai: ['ai', 'prompt', 'automation']
+    };
+    const kws = kwMap[curStudentSkillFilter] || [curStudentSkillFilter.toLowerCase()];
+    filtered = brandStudents.filter(s => {
+      const skillsStr = (s.skills||[]).join(' ').toLowerCase();
+      const headlineStr = (s.headline||'').toLowerCase();
+      const bioStr = (s.bio||'').toLowerCase();
+      const combined = `${skillsStr} ${headlineStr} ${bioStr}`;
+      return kws.some(kw => combined.includes(kw));
+    });
+  }
+
+  if(!filtered.length){
+    el.innerHTML=`<div class="empty-s" style="grid-column:1/-1"><div class="ei">🔍</div><h3>No students found for this skill</h3><p>Try switching skill filters above or view all students.</p><button class="btn bout bsm" onclick="filterStudentsBySkill('all',document.getElementById('sktab-all'))">View All Students</button></div>`;
+    return;
+  }
+
   const emojiMap={'Video Editing':'🎬','Graphic Design':'🎨','Web Development':'💻','Content Writing':'✍️','Social Media':'📱','Photography':'📸','Audio':'🎵','Data & Excel':'📊','AI Tools':'🤖'};
-  el.innerHTML=brandStudents.map(s=>{
+  el.innerHTML=filtered.map(s=>{
     const name=s.name||'Student';
-    const skills=(s.skills||[]).slice(0,4).map(sk=>`<span class="std-sk">${emojiMap[sk]||'•'} ${esc(sk)}</span>`).join('')||'<span style="color:var(--ts);font-size:.76rem">No skills added yet</span>';
+    const skills=(s.skills||[]).slice(0,4).map(sk=>{
+      const rawSk = esc(sk);
+      let cat = 'all';
+      if(/video|reel/i.test(sk)) cat='video';
+      else if(/design|canva|figma/i.test(sk)) cat='design';
+      else if(/web|code|html|react/i.test(sk)) cat='web';
+      else if(/writ|copy|seo/i.test(sk)) cat='writing';
+      else if(/social|insta/i.test(sk)) cat='social';
+      else if(/ai/i.test(sk)) cat='ai';
+      return `<span class="std-sk" style="cursor:pointer" title="Click to filter by this skill" onclick="event.stopPropagation();filterStudentsBySkill('${cat}',null)">${emojiMap[sk]||'•'} ${rawSk}</span>`;
+    }).join('')||'<span style="color:var(--ts);font-size:.76rem">No skills added yet</span>';
     const stats=s.stats||{};
     const level=s.badge?.level||s.studentBadge||'beginner';
     return`
@@ -1414,10 +1520,66 @@ function renderHomeProjList(projs){
   el.innerHTML=projs.map(p=>`<div class="pj-card"><div class="pj-ico">📋</div><div class="pj-info"><div class="pj-title">${esc(p.title)}</div><div class="pj-meta"><span>📂 ${esc(p.category)}</span><span>📅 ${new Date(p.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</span></div>${p.description?`<div class="pj-desc">${esc(shortenText(p.description))}</div>`:''}</div><div class="pj-right"><div class="pj-budget">${esc(p.budget)}</div><span class="tag ${p.status==='open'?'topen':'tclosed'}">${p.status==='open'?'🟢 Open':'✓ Closed'}</span></div></div>`).join('');
 }
 
+function filterBrandProjects(filter, btn){
+  curProjFilter = filter;
+  document.querySelectorAll('#page-projects .ftab').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  else {
+    const tab = document.getElementById('ptab-' + filter);
+    if(tab) tab.classList.add('active');
+  }
+  renderFullProjList(myProjects);
+}
+
 function renderFullProjList(projs){
   const el=document.getElementById('projListFull');
-  if(!projs.length){el.innerHTML='<div class="empty-s"><div class="ei">📋</div><h3>No open projects</h3><p>Post a new project, or check approved projects above.</p><button class="btn bpri" onclick="goTo(\'post\',null)">+ Post Project</button></div>';return;}
-  el.innerHTML=projs.map(p=>`<div class="pj-card"><div class="pj-ico">📋</div><div class="pj-info"><div class="pj-title">${esc(p.title)}</div><div class="pj-meta"><span>📂 ${esc(p.category)}</span><span>📅 Posted ${new Date(p.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</span>${p.deadline?`<span>⏱ ${esc(p.deadline)}</span>`:''}</div>${p.description?`<div class="pj-desc">${esc(p.description)}</div>`:''}</div><div class="pj-right"><div class="pj-budget">${esc(p.budget)}</div><span class="tag ${p.status==='open'?'topen':'tclosed'}">${p.status==='open'?'🟢 Open':'✓ Closed'}</span></div></div>`).join('');
+  if(!el)return;
+  const allList = Array.isArray(projs) ? projs : myProjects;
+  const openCount = allList.filter(p=>p.status==='open').length;
+  const closedCount = allList.filter(p=>p.status!=='open').length;
+
+  const cntAll = document.getElementById('cntAllProj');
+  const cntOpen = document.getElementById('cntOpenProj');
+  const cntClosed = document.getElementById('cntClosedProj');
+  if(cntAll) cntAll.textContent = allList.length;
+  if(cntOpen) cntOpen.textContent = openCount;
+  if(cntClosed) cntClosed.textContent = closedCount;
+
+  let filtered = allList;
+  if(curProjFilter === 'open') filtered = allList.filter(p=>p.status==='open');
+  else if(curProjFilter === 'closed') filtered = allList.filter(p=>p.status!=='open');
+
+  const header = document.getElementById('projListHeader');
+  if(header){
+    header.textContent = curProjFilter === 'open' ? 'Open Projects' : curProjFilter === 'closed' ? 'Closed Projects' : 'All Projects';
+  }
+
+  if(!filtered.length){
+    el.innerHTML=`<div class="empty-s"><div class="ei">📋</div><h3>${curProjFilter==='closed'?'No closed projects':'No projects found'}</h3><p>${curProjFilter==='closed'?'Completed and hired projects will be archived here.':'Post a new project to start hiring student creators.'}</p><button class="btn bpri" onclick="goTo('post',null)">+ Post Project</button></div>`;
+    return;
+  }
+
+  el.innerHTML=filtered.map(p=>{
+    const tagsHtml = (p.tags||[]).map(t=>`<span class="tag" style="background:#f1f5f9;color:#475569;font-size:.7rem;margin-right:4px">${esc(t)}</span>`).join('');
+    return `<div class="pj-card">
+      <div class="pj-ico">📋</div>
+      <div class="pj-info">
+        <div class="pj-title">${esc(p.title)}</div>
+        <div class="pj-meta">
+          <span>📂 ${esc(p.category)}</span>
+          <span>📅 Posted ${new Date(p.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</span>
+          ${p.deadline?`<span>⏱ ${esc(p.deadline)}</span>`:''}
+        </div>
+        ${tagsHtml ? `<div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:4px">${tagsHtml}</div>` : ''}
+        ${p.description?`<div class="pj-desc" style="margin-top:6px">${esc(p.description)}</div>`:''}
+      </div>
+      <div class="pj-right">
+        <div class="pj-budget">${esc(p.budget)}</div>
+        <span class="tag ${p.status==='open'?'topen':'tclosed'}">${p.status==='open'?'🟢 Open':'✓ Closed'}</span>
+        <button class="btn bout bsm" style="margin-top:6px" onclick="goTo('applications',null)">View Applicants</button>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function renderApprovedBrandProjects(){
@@ -1492,16 +1654,38 @@ function renderWorkspaceBox(appId){
   `;
 }
 
-// ✅ RENDER BRAND APPLICATIONS with Accept/Reject
+// ✅ RENDER BRAND APPLICATIONS with Direct WhatsApp Contact, 1-Click Hire & Threshold Logic
 function renderBrandApps(){
   const el=document.getElementById('brandAppList');
-  let list=brandApps;
+  const allApps=brandApps||[];
+
+  // Update badge counts on filter tabs
+  const cntAll = document.getElementById('cntAppAll');
+  const cntRev = document.getElementById('cntAppRev');
+  const cntInt = document.getElementById('cntAppInt');
+  const cntHir = document.getElementById('cntAppHir');
+  const cntAcc = document.getElementById('cntAppAcc');
+  const cntRej = document.getElementById('cntAppRej');
+  if(cntAll) cntAll.textContent = allApps.length;
+  if(cntRev) cntRev.textContent = allApps.filter(a=>a.status==='review').length;
+  if(cntInt) cntInt.textContent = allApps.filter(a=>a.status==='interviewing').length;
+  if(cntHir) cntHir.textContent = allApps.filter(a=>a.status==='hired').length;
+  if(cntAcc) cntAcc.textContent = allApps.filter(a=>a.status==='accepted').length;
+  if(cntRej) cntRej.textContent = allApps.filter(a=>a.status==='rejected').length;
+
+  let list=allApps;
   if(curAppFilter!=='all')list=list.filter(a=>a.status===curAppFilter);
   if(!list.length){
     el.innerHTML=`<div class="empty-s"><div class="ei">📥</div><h3>${curAppFilter==='all'?'No applications yet':'No applications with this status'}</h3><p>${curAppFilter==='all'?'Post a project to start receiving applications from students.':'Try a different filter.'}</p>${curAppFilter==='all'?'<button class="btn bpri" onclick="goTo(\'post\',null)">+ Post a Project</button>':''}</div>`;
     return;
   }
-  const stMap={review:'<span class="tag trev">🔍 Under Review</span>',accepted:'<span class="tag tacc">✅ Accepted</span>',rejected:'<span class="tag trej">❌ Rejected</span>'};
+  const stMap={
+    review:'<span class="tag trev">🔍 Under Review</span>',
+    interviewing:'<span class="tag tint" style="background:#e0f2fe;color:#0284c7;border:1px solid #bae6fd">💬 Interviewing</span>',
+    accepted:'<span class="tag tacc">✅ Accepted</span>',
+    hired:'<span class="tag thir" style="background:#ecfdf5;color:#059669;border:1px solid #a7f3d0">🎉 Hired</span>',
+    rejected:'<span class="tag trej">❌ Rejected</span>'
+  };
   const emojiMap={'Video Editing':'🎬','Graphic Design':'🎨','Web Development':'💻','Content Writing':'✍️','Social Media':'📱','Photography':'📸','Audio':'🎵','Data & Excel':'📊','AI Tools':'🤖'};
   el.innerHTML=list.map(a=>{
     const s=a.student||{};
@@ -1514,10 +1698,19 @@ function renderBrandApps(){
     const projectMinimum=parsePayAmount(a.pay)||1;
     const defaultAmount=Number(a.paidAmount)||projectMinimum;
     const pendingPayment=getPendingPayment(appId);
-    const selectedForProject=brandApps.find(other=>getAppId(other)!==appId&&String(other.jobId||'')===String(a.jobId||'')&&other.status==='accepted');
+    const selectedForProject=brandApps.find(other=>getAppId(other)!==appId&&String(other.jobId||'')===String(a.jobId||'')&&(other.status==='accepted'||other.status==='hired'));
     const selectedName=selectedForProject?.student?.name||'A student';
     const workspace=getWorkspace(appId);
     const flow=brandAppFlow(a,isPaid,workspace);
+
+    const studentPhone=s.whatsapp||s.phone||'';
+    const studentDigits=studentPhone.replace(/\D/g,'').slice(-10);
+    const studentFirstName=s.name?s.name.split(' ')[0]:'there';
+    const waChatLink=studentDigits?`https://wa.me/91${studentDigits}?text=${encodeURIComponent(`Hi ${studentFirstName}, I reviewed your application for '${a.jobTitle}' on NextGenGrowth. Let's connect!`)}`:'';
+    const budgetVal=parsePayAmount(a.pay)||0;
+    const isMicroGig=budgetVal>0&&budgetVal<=1000;
+    const fb=a.studentFeedback||{};
+
     return`
     <div class="app-card">
       <div class="app-top">
@@ -1526,10 +1719,25 @@ function renderBrandApps(){
           <div>
             <div class="app-nm">${s.name||'Unknown Student'}</div>
             <div class="app-cl">🎓 ${s.college||'College not listed'} · ${s.email||''}</div>
+            ${studentDigits?`
+              <div style="font-size:.76rem;color:#15803d;font-weight:600;margin-top:4px;display:flex;align-items:center;gap:6px">
+                <span>💬 WhatsApp: +91 ${studentDigits}</span>
+                ${a.contactInitiated?`<span style="background:#dcfce7;color:#166534;font-size:.7rem;padding:1px 6px;border-radius:4px;font-weight:700">✓ Contacted</span>`:''}
+              </div>
+            `:''}
             <div style="margin-top:5px">${badgeHtml(badgeLevel)}</div>
           </div>
         </div>
-        ${stMap[a.status]||''}
+        <div>
+          ${stMap[a.status]||''}
+          ${fb.status&&fb.status!=='pending'?`
+            <div style="margin-top:6px;text-align:right">
+              <span style="font-size:0.73rem;padding:2px 8px;border-radius:6px;font-weight:700;background:${fb.status==='hired'?'#dcfce7':fb.status==='in_discussion'?'#e0f2fe':'#fee2e2'};color:${fb.status==='hired'?'#166534':fb.status==='in_discussion'?'#0284c7':'#b91c1c'}">
+                ${fb.status==='hired'?'Student: Hired 🎉':fb.status==='in_discussion'?'Student: Discussing 💬':'Student: Waiting'}
+              </span>
+            </div>
+          `:''}
+        </div>
       </div>
       <div class="app-skills">${skills}</div>
       ${s.headline?`<div class="app-bio">⚡ ${esc(s.headline)}</div>`:''}
@@ -1542,16 +1750,42 @@ function renderBrandApps(){
         </div>
         <div class="app-job-p">${a.pay}</div>
       </div>
+
+      <!-- Threshold Guidance Banner -->
+      ${isMicroGig?`
+        <div style="background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:10px 14px;margin:10px 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+          <div>
+            <div style="font-weight:700;color:#1e40af;font-size:.8rem">⚡ Micro-Gig Project (≤ ₹1,000)</div>
+            <div style="font-size:.73rem;color:#1e3a8a">Pay student below for immediate workspace delivery, or chat directly on WhatsApp.</div>
+          </div>
+          ${studentDigits?`<a href="${waChatLink}" target="_blank" onclick="trackContact('${appId}')" class="btn bsm" style="background:#25d366;color:white;font-weight:700;text-decoration:none">💬 Chat on WhatsApp</a>`:''}
+        </div>
+      `:`
+        <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:10px 14px;margin:10px 0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+          <div>
+            <div style="font-weight:700;color:#15803d;font-size:.8rem">🌟 Internship / High-Value Role (${formatINR(budgetVal)})</div>
+            <div style="font-size:.73rem;color:#166534">Chat directly on WhatsApp to interview, align on tasks, and click "Mark as Hired" when finalized.</div>
+          </div>
+          ${studentDigits?`<a href="${waChatLink}" target="_blank" onclick="trackContact('${appId}')" class="btn bsm" style="background:#25d366;color:white;font-weight:700;text-decoration:none">💬 Chat on WhatsApp</a>`:''}
+        </div>
+      `}
+
       ${s.linkedin?`<div style="font-size:.78rem;margin-bottom:12px"><a href="${s.linkedin}" target="_blank" style="color:#1d4ed8;font-weight:600">🔗 View LinkedIn Profile →</a></div>`:''}
       ${renderUxFlow(flow.steps)}
       <div class="ux-note">${esc(flow.note)}</div>
       <div class="app-actions">
-        ${a.status==='review'?`
+        ${a.status==='review'||a.status==='interviewing'?`
           <button class="btn bout bsm" onclick="viewStudentProfile('${appId}')">👤 View Profile</button>
-          ${selectedForProject?`<span class="locked-note">✅ ${selectedName} already selected</span>`:`<button class="btn bgre bsm" onclick="handleApp('${appId}','accepted',this)">✅ Accept</button>`}
+          ${studentDigits?`<a href="${waChatLink}" target="_blank" onclick="trackContact('${appId}')" class="btn bsm" style="background:#25d366;color:white;font-weight:700;text-decoration:none">💬 Chat on WhatsApp</a>`:''}
+          ${selectedForProject?`<span class="locked-note">✅ ${selectedName} already selected</span>`:`
+            <button class="btn bgre bsm" onclick="markHired('${appId}',this)" style="font-weight:700">🎉 Mark as Hired</button>
+            <button class="btn bout bsm" onclick="handleApp('${appId}','accepted',this)">✅ Accept</button>
+          `}
           <button class="btn bdan bsm" onclick="handleApp('${appId}','rejected',this)">❌ Reject</button>
         `:a.status==='accepted'?`
           <button class="btn bout bsm" onclick="viewStudentProfile('${appId}')">👤 View Profile</button>
+          ${studentDigits?`<a href="${waChatLink}" target="_blank" onclick="trackContact('${appId}')" class="btn bsm" style="background:#25d366;color:white;font-weight:700;text-decoration:none">💬 Chat on WhatsApp</a>`:''}
+          <button class="btn bgre bsm" onclick="markHired('${appId}',this)" style="font-weight:700">🎉 Mark as Hired</button>
           <span style="color:var(--gm);font-weight:600;font-size:.83rem">✅ You accepted this application</span>
           ${isPaid?`<span class="paid-note">💳 ${Number(a.paidAmount)>0?`Paid ${formatINR(a.paidAmount)}`:'Paid'}</span>`:pendingPayment?`
             <div class="pay-box">
@@ -1564,6 +1798,25 @@ function renderBrandApps(){
           `:`
             <div class="pay-box">
               <label for="pay-${appId}">Payment Amount (minimum ${formatINR(projectMinimum)})</label>
+              <div class="pay-row">
+                <input class="pay-input" id="pay-${appId}" type="number" min="${projectMinimum}" step="1" value="${defaultAmount||''}" placeholder="Enter amount in ₹">
+                <button class="btn bpay bsm" onclick="startPayment('${appId}',this)">💳 Pay Student</button>
+              </div>
+            </div>
+          `}
+          ${isPaid?renderWorkspaceBox(appId):''}
+        `:a.status==='hired'?`
+          <button class="btn bout bsm" onclick="viewStudentProfile('${appId}')">👤 View Profile</button>
+          ${studentDigits?`<a href="${waChatLink}" target="_blank" class="btn bsm" style="background:#25d366;color:white;font-weight:700;text-decoration:none">💬 Chat on WhatsApp</a>`:''}
+          <span style="color:#059669;font-weight:700;font-size:.83rem">🎉 Officially Hired for this project</span>
+          ${isPaid?`<span class="paid-note">💳 ${Number(a.paidAmount)>0?`Paid ${formatINR(a.paidAmount)}`:'Paid'}</span>`:pendingPayment?`
+            <div class="pay-box">
+              <label>Payment verification pending</label>
+              <div class="pay-row"><button class="btn bpay bsm" onclick="retryPendingPayment('${appId}',this)">↻ Verify Last Payment</button></div>
+            </div>
+          `:`
+            <div class="pay-box">
+              <label for="pay-${appId}">Milestone / Project Payment (${formatINR(projectMinimum)})</label>
               <div class="pay-row">
                 <input class="pay-input" id="pay-${appId}" type="number" min="${projectMinimum}" step="1" value="${defaultAmount||''}" placeholder="Enter amount in ₹">
                 <button class="btn bpay bsm" onclick="startPayment('${appId}',this)">💳 Pay Student</button>
@@ -1712,6 +1965,55 @@ async function handleApp(id, status, btn){
     }else showToast(data.message,'error');
   }catch{showToast('Action failed. Check connection.','error');}
   btn.innerHTML=orig;btn.disabled=false;
+}
+
+// 💬 Track WhatsApp contact initiated by brand
+async function trackContact(appId){
+  try{
+    const res=await fetch(`/api/brand/application/${appId}/track-contact`,{
+      method:'POST',
+      headers:{'Authorization':'Bearer '+_tk,'Content-Type':'application/json'}
+    });
+    const data=await res.json();
+    if(data.success){
+      const app=brandApps.find(a=>getAppId(a)===appId);
+      if(app){
+        app.contactInitiated=true;
+        if(app.status==='review')app.status='interviewing';
+      }
+      renderBrandApps();
+    }
+  }catch(e){console.error('Track contact error:',e);}
+}
+
+// 🎉 1-Click Mark as Hired
+async function markHired(appId, btn){
+  const app=brandApps.find(a=>getAppId(a)===appId);
+  const studentName=app?.student?.name||'this student';
+  if(!confirm(`Are you sure you want to mark ${studentName} as HIRED for this project?\n\nThis will officially record the hire, close the project to other applicants, and notify the student by email.`)) return;
+
+  const orig=btn.innerHTML;
+  btn.innerHTML='<span class="spin"></span> Hiring...';
+  btn.disabled=true;
+  try{
+    const res=await fetch(`/api/brand/application/${appId}/hire`,{
+      method:'POST',
+      headers:{'Authorization':'Bearer '+_tk,'Content-Type':'application/json'}
+    });
+    const data=await res.json();
+    if(data.success){
+      showToast(data.message||'🎉 Student successfully marked as Hired!','success');
+      await Promise.all([loadBrandApplications(),loadBrandStats()]);
+    } else {
+      showToast(data.message||'Could not mark as hired.','error');
+      btn.innerHTML=orig;
+      btn.disabled=false;
+    }
+  }catch(e){
+    showToast('Failed to mark as hired. Check connection.','error');
+    btn.innerHTML=orig;
+    btn.disabled=false;
+  }
 }
 
 async function startPayment(appId, btn){
@@ -2078,7 +2380,7 @@ function setBottomNav(page){
   const el=document.getElementById('bn-'+page);
   if(el)el.classList.add('active');
 }
-function goTo(pg,navBtn){
+function goTo(pg,navBtn,skipHistory=false){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   const el=document.getElementById('page-'+pg);if(el)el.classList.add('active');
   document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
@@ -2087,13 +2389,25 @@ function goTo(pg,navBtn){
   setBottomNav(pg);
   document.getElementById('pgT').textContent=PT[pg]||'Dashboard';
   document.getElementById('mc').scrollTop=0;
-  if(pg==='applications')renderBrandApps();
-  if(pg==='projects'){renderApprovedBrandProjects();loadLongTermRoles();}
-  if(pg==='students')loadBrandStudents();
-  if(pg==='longterm')loadLongTermRoles();
+  if(!skipHistory){
+    try{
+      if(window.location.hash !== '#' + pg){
+        history.pushState({ page: pg }, '', '#' + pg);
+      }
+    }catch(e){}
+  }
+  if(pg==='applications'){ loadBrandApplications(); }
+  if(pg==='projects'){ renderFullProjList(myProjects); loadBrandStats(); renderApprovedBrandProjects(); loadLongTermRoles(); }
+  if(pg==='students'){ loadBrandStudents(); }
+  if(pg==='longterm'){ loadLongTermRoles(); }
   if(window.innerWidth<=860)closeMenu();
   gsap.fromTo('#page-'+pg,{opacity:0,y:10},{opacity:1,y:0,duration:.28,ease:'power2.out'});
 }
+
+window.addEventListener('popstate', (e)=>{
+  const pg = (window.location.hash||'').replace('#','') || 'home';
+  if(PT[pg]) goTo(pg, null, true);
+});
 
 function showToast(msg,type='info'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type+' show';setTimeout(()=>t.className='toast',4000);}
 function logout(){
@@ -2102,7 +2416,7 @@ function logout(){
   const finish=()=>{
     localStorage.removeItem('ngg_token');
     localStorage.removeItem('ngg_user');
-    window.location.href='/';
+    window.location.replace('/');
   };
   const clearServerSession=()=>fetch('/api/logout',{method:'POST',keepalive:true}).catch(()=>{});
   const run=()=>clearServerSession().finally(finish);
@@ -2122,6 +2436,12 @@ window.addEventListener('DOMContentLoaded',()=>{
   loadBrandApplications(); // ✅ Load real applications
   loadLongTermRoles();
   fetchFreshBrandProfile();
+
+  const initialPg = (window.location.hash||'').replace('#','') || 'home';
+  if(initialPg !== 'home' && PT[initialPg]){
+    goTo(initialPg, null, true);
+  }
+
   const intro=gsap.timeline({defaults:{ease:'power3.out'}});
   if(window.innerWidth>860){
     intro.fromTo('.sidebar',{x:-20,opacity:0},{x:0,opacity:1,duration:.5});
@@ -2210,7 +2530,11 @@ function renderStudentProfile(data,opts={}){
     const href=/^https?:\/\//i.test(link)?link:`https://${link}`;
     return `<div class="sp-item"><strong>${esc(w.title||'Work sample')}</strong><span>${esc(w.category||'Portfolio')}${w.description?' · '+esc(w.description):''}</span>${link?`<div style="margin-top:7px"><a class="ws-link" href="${esc(href)}" target="_blank" rel="noopener">Open sample</a></div>`:''}</div>`;
   }).join('')||'<div class="sp-empty-note">No curated work samples added yet.</div>';
-  const links=[linkButton(s.portfolioLink,'Portfolio',true),linkButton(s.linkedin,'LinkedIn')].filter(Boolean).join('');
+  const studentPhone = s.whatsapp || s.phone || '';
+  const studentDigits = studentPhone.replace(/\D/g,'').slice(-10);
+  const waProfileLink = studentDigits ? `https://wa.me/91${studentDigits}?text=${encodeURIComponent(`Hi ${name}, I am reviewing your profile on NextGenGrowth.`)}` : '';
+  const waBtn = waProfileLink ? `<a class="btn bsm" href="${waProfileLink}" target="_blank" rel="noopener" style="background:#25d366;color:white;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;gap:5px">💬 Chat on WhatsApp</a>` : '';
+  const links=[waBtn,linkButton(s.portfolioLink,'Portfolio',true),linkButton(s.linkedin,'LinkedIn')].filter(Boolean).join('');
   const loading=opts.loading?'<span class="sp-loading"><span class="spin"></span>Refreshing live profile...</span>':'<span></span>';
   const error=opts.error?`<div class="sp-empty-note" style="margin-bottom:12px;border-color:#fed7aa;background:#fff7ed;color:#9a3412">${esc(opts.error)}</div>`:'';
   document.getElementById('studentProfileContent').innerHTML=`
@@ -2224,7 +2548,12 @@ function renderStudentProfile(data,opts={}){
       <div style="flex:1;min-width:0">
         <div class="sp-name">${esc(name)}</div>
         <div style="margin:5px 0 8px">${badgeHtml(badgeLevel)}${s.verificationStatus==='pending'?'<span class="badge-pill badge-beginner" style="margin-left:7px">Verification pending</span>':''}</div>
-        <div class="sp-meta"><span>🎓 ${esc(s.college||'College not listed')}</span><span>${esc(s.year||'Year not set')}</span>${s.email?`<span>${esc(s.email)}</span>`:''}</div>
+        <div class="sp-meta">
+          <span>🎓 ${esc(s.college||'College not listed')}</span>
+          <span>${esc(s.year||'Year not set')}</span>
+          ${s.email?`<span>📧 ${esc(s.email)}</span>`:''}
+          ${studentDigits?`<span style="color:#15803d;font-weight:600">💬 WhatsApp: +91 ${studentDigits}</span>`:''}
+        </div>
         ${s.headline?`<div class="sp-bio-preview" style="margin-top:10px;font-weight:800;color:var(--td)">${esc(s.headline)}</div>`:''}
         <div class="sp-bio-preview">${esc(s.bio||'This student has not added a bio yet. Ask for portfolio samples before final acceptance.')}</div>
         <div class="app-skills" style="margin-top:12px">${skills}</div>

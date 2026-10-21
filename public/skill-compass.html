@@ -215,9 +215,9 @@
         <img src="/android-chrome-192x192.png" alt="NextGenGrowth logo"/>
         <span>NextGenGrowth</span>
       </a>
-      <nav class="nav-actions" aria-label="Page navigation">
+      <nav class="nav-actions" id="topNavActions" aria-label="Page navigation">
         <a class="pill" href="/">Home</a>
-        <a class="pill primary" href="/register">Create account</a>
+        <a class="pill primary" id="authNavBtn" href="/register">Create account</a>
       </nav>
     </div>
   </header>
@@ -460,6 +460,63 @@
       return (items || []).map(item => `<li>${escapeHtml(item)}</li>`).join('');
     }
 
+    function initAuthHeader(){
+      const token = localStorage.getItem('ngg_token');
+      const user = JSON.parse(localStorage.getItem('ngg_user') || 'null');
+      const navEl = document.getElementById('topNavActions');
+      if(token && user && navEl){
+        const dashLink = user.role === 'brand' ? '/brand-dashboard' : '/dashboard';
+        const name = user.firstName || user.name || 'Dashboard';
+        navEl.innerHTML = `
+          <a class="pill primary" href="${dashLink}" style="background:#0a7c44;color:white;font-weight:700">← Back to Dashboard</a>
+          <span class="pill" style="border:1px solid #d1fae5;background:#f0fdf4;color:#065f46">👤 ${escapeHtml(name)}</span>
+        `;
+      }
+    }
+    initAuthHeader();
+
+    async function saveCompassSkillToProfile(skill){
+      const token = localStorage.getItem('ngg_token');
+      const user = JSON.parse(localStorage.getItem('ngg_user') || 'null');
+      const btn = document.getElementById('saveSkillBtn');
+      if(!token || !user){
+        window.location.href = '/login';
+        return;
+      }
+      if(!skill) return;
+      const orig = btn ? btn.innerHTML : '';
+      if(btn){ btn.disabled = true; btn.innerHTML = 'Saving to profile...'; }
+      try{
+        const currentSkills = Array.isArray(user.skills) ? [...user.skills] : [];
+        if(!currentSkills.some(s => s.toLowerCase() === skill.toLowerCase())){
+          currentSkills.push(skill);
+        }
+        const res = await fetch('/api/profile', {
+          method: 'PUT',
+          headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ skills: currentSkills })
+        });
+        const data = await res.json();
+        if(data.success){
+          user.skills = currentSkills;
+          localStorage.setItem('ngg_user', JSON.stringify(user));
+          if(btn){
+            btn.innerHTML = '✅ Skill Saved to Profile!';
+            btn.style.background = '#dcfce7';
+            btn.style.color = '#15803d';
+            btn.style.borderColor = '#86efac';
+          }
+          alert(`🎉 "${skill}" has been added to your profile skills!\n\nProjects requiring this skill will now be highlighted in your Student Dashboard.`);
+        } else {
+          if(btn){ btn.disabled = false; btn.innerHTML = orig; }
+          alert(data.message || 'Could not save skill.');
+        }
+      }catch(e){
+        if(btn){ btn.disabled = false; btn.innerHTML = orig; }
+        alert('Check connection and try again.');
+      }
+    }
+
     function renderResult(data){
       const result = data.result;
       const primary = result.primary_path;
@@ -541,12 +598,17 @@
 
         <article class="result-card cta-card" style="margin-top:18px">
           <div>
-            <h3 style="margin-bottom:0">Save this roadmap and start building proof.</h3>
-            <p>Create your student account, add your skill, and upload your first proof link.</p>
+            <h3 style="margin-bottom:0">${localStorage.getItem('ngg_token') ? 'Ready to land projects with this skill?' : 'Save this roadmap and start building proof.'}</h3>
+            <p>${localStorage.getItem('ngg_token') ? `Save <strong>${escapeHtml(primary.skill)}</strong> to your student profile so brands can match projects to you!` : 'Create your student account, add your skill, and upload your first proof link.'}</p>
           </div>
-          <div class="submit-row" style="border:0;padding:0">
-            <a class="btn btn-secondary" href="/register">Create account to save roadmap</a>
-            <a class="btn btn-main" href="${exploreHref}">Explore projects</a>
+          <div class="submit-row" style="border:0;padding:0;gap:10px;flex-wrap:wrap">
+            ${localStorage.getItem('ngg_token') ? `
+              <button class="btn btn-secondary" id="saveSkillBtn" onclick="saveCompassSkillToProfile('${escapeHtml(primary.skill)}')">💾 Save Skill to My Profile</button>
+              <a class="btn btn-main" href="/dashboard#projects">Explore Matching Projects →</a>
+            ` : `
+              <a class="btn btn-secondary" href="/register">Create account to save roadmap</a>
+              <a class="btn btn-main" href="${exploreHref}">Sign in & Explore</a>
+            `}
           </div>
         </article>
       `;

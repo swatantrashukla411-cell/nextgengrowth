@@ -763,17 +763,19 @@ select.fi option{background:var(--bg2)}
       <!-- PROJECTS -->
       <div class="page" id="page-projects">
         <div class="ph"><h2>Projects Management 📋</h2><p>All brand projects posted on the platform.</p></div>
-        <div class="g2" style="margin-bottom:20px">
+        <div class="g3" style="margin-bottom:20px">
           <div class="sc"><div class="sc-top"><div class="sc-ico ico-b">📋</div></div><span class="sc-num" id="pjTotal">—</span><div class="sc-lbl">Total Projects</div></div>
           <div class="sc"><div class="sc-top"><div class="sc-ico ico-g">🟢</div></div><span class="sc-num" id="pjOpen">—</span><div class="sc-lbl">Open Projects</div></div>
+          <div class="sc"><div class="sc-top"><div class="sc-ico" style="background:rgba(255,169,77,.1);color:var(--amber)">⚡</div></div><span class="sc-num" id="pjPendingFollowup">—</span><div class="sc-lbl">Needs Follow-up Nudge</div></div>
         </div>
-        <div class="search-row">
-          <div class="srch"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="M21 21l-4.35-4.35"/></svg><input type="text" placeholder="Search projects..." id="projSearch" oninput="filterProjects(this.value)"/></div>
+        <div class="search-row" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          <div class="srch" style="flex:1"><svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="M21 21l-4.35-4.35"/></svg><input type="text" placeholder="Search projects..." id="projSearch" oninput="filterProjects(this.value)"/></div>
+          <button class="btn bpri" onclick="triggerClientFollowups()" id="btnFollowupAll" style="display:flex;align-items:center;gap:6px;font-size:.85rem;padding:10px 18px">⚡ Send Client Follow-ups Now</button>
         </div>
         <div class="tbl-wrap">
           <table>
-            <thead><tr><th>Project</th><th>Brand</th><th>Category</th><th>Budget</th><th>Status</th><th>Posted</th><th>Action</th></tr></thead>
-            <tbody id="projectsTable"><tr><td colspan="7" style="text-align:center;padding:30px;color:var(--muted)">Loading projects...</td></tr></tbody>
+            <thead><tr><th>Project</th><th>Brand</th><th>Category</th><th>Budget</th><th>Status</th><th>Pending Apps</th><th>Follow-up</th><th>Posted</th><th>Action</th></tr></thead>
+            <tbody id="projectsTable"><tr><td colspan="9" style="text-align:center;padding:30px;color:var(--muted)">Loading projects...</td></tr></tbody>
           </table>
         </div>
       </div>
@@ -1725,7 +1727,11 @@ async function loadProjects(){
   try{
     const data=await fetch('/api/admin/projects',{headers:H()}).then(r=>r.json());
     if(!data.success)return;
-    allProjects=data.projects;renderProjects();
+    allProjects=data.projects;
+    const needFollowup = allProjects.filter(p => p.status==='open' && (p.pendingAppsCount||0) > 0).length;
+    const pendingEl = document.getElementById('pjPendingFollowup');
+    if(pendingEl) pendingEl.textContent = needFollowup;
+    renderProjects();
   }catch(e){}
 }
 
@@ -1734,9 +1740,20 @@ function renderProjects(){
   const s=document.getElementById('projSearch');
   if(s&&s.value)list=list.filter(p=>[p.title,p.firstName+' '+p.lastName,p.brandEmail||''].join(' ').toLowerCase().includes(s.value.toLowerCase()));
   const el=document.getElementById('projectsTable');
-  if(!list.length){el.innerHTML='<tr><td colspan="7" style="text-align:center;padding:30px;color:var(--muted)">No projects posted yet</td></tr>';return;}
+  if(!list.length){el.innerHTML='<tr><td colspan="9" style="text-align:center;padding:30px;color:var(--muted)">No projects posted yet</td></tr>';return;}
   el.innerHTML=list.map(p=>{
     const safeName=String(p.title||'Project').replace(/["'\\]/g,'`');
+    const pending = p.pendingAppsCount || 0;
+    const total = p.totalAppsCount || 0;
+    const followupCount = p.followupCount || 0;
+
+    let followupBadge = `<span class="tag" style="background:rgba(255,255,255,.05);color:var(--muted)">None</span>`;
+    if(followupCount > 0){
+      followupBadge = `<span class="tag tg">Stage ${followupCount} sent</span>`;
+    } else if(pending > 0){
+      followupBadge = `<span class="tag ta">Needs Nudge</span>`;
+    }
+
     return`
     <tr>
       <td style="max-width:220px"><div style="font-weight:600;font-size:.85rem">${esc(p.title||'Untitled')}</div><div style="font-size:.72rem;color:var(--muted);margin-top:2px">${p.description?esc(p.description.slice(0,50))+'...':'—'}</div></td>
@@ -1744,10 +1761,59 @@ function renderProjects(){
       <td><span class="tag tb2">${esc(p.category||'—')}</span></td>
       <td style="font-family:'Syne',sans-serif;font-weight:700;color:var(--gb)">${esc(p.budget)}</td>
       <td><span class="tag ${p.status==='open'?'tg':'ta'}">${p.status==='open'?'🟢 Open':'✓ Closed'}</span></td>
+      <td><span class="tag ${pending > 0 ? 'ta' : 'tg'}">${pending} pending / ${total} total</span></td>
+      <td>${followupBadge}</td>
       <td style="font-size:.76rem;color:var(--muted)">${new Date(p.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</td>
-      <td><button class="btn bdan bsm" onclick="showConfirm('project','${p._id||p.id}','${esc(safeName)}')">🗑 Delete</button></td>
+      <td>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          ${p.status==='open' && pending > 0 ? `<button class="btn bpri bsm" onclick="sendProjectFollowup('${p._id||p.id}')">📧 Nudge</button>` : ''}
+          <button class="btn bdan bsm" onclick="showConfirm('project','${p._id||p.id}','${esc(safeName)}')">🗑 Delete</button>
+        </div>
+      </td>
     </tr>`;
   }).join('');
+}
+
+async function triggerClientFollowups(){
+  const btn = document.getElementById('btnFollowupAll');
+  if(btn){btn.disabled = true; btn.textContent = '⏳ Sending...';}
+  try{
+    const res = await fetch('/api/admin/followup/run', {
+      method: 'POST',
+      headers: H(),
+      body: JSON.stringify({ forceSend: true })
+    });
+    const data = await res.json();
+    if(data.success){
+      showToast(data.message || 'Follow-ups dispatched successfully! ✅', 'success');
+      await loadProjects();
+    } else {
+      showToast(data.message || 'Failed to dispatch follow-ups.', 'error');
+    }
+  }catch(err){
+    showToast('Network error while triggering follow-ups.', 'error');
+  }finally{
+    if(btn){btn.disabled = false; btn.textContent = '⚡ Send Client Follow-ups Now';}
+  }
+}
+
+async function sendProjectFollowup(jobId){
+  try{
+    showToast('Sending follow-up email to client...', 'info');
+    const res = await fetch(`/api/admin/followup/job/${jobId}`, {
+      method: 'POST',
+      headers: H()
+    });
+    const data = await res.json();
+    if(data.success){
+      showToast(data.message || 'Follow-up email sent! ✅', 'success');
+      await loadProjects();
+    } else {
+      showToast(data.message || 'Could not send follow-up.', 'error');
+    }
+  }catch(err){
+    showToast('Error sending follow-up email.', 'error');
+  }
 }
 
 function filterProjects(){renderProjects();}

@@ -1066,9 +1066,9 @@
           showToast('Login successful. Redirecting...');
           const destination = data.user?.role === 'brand' ? '/brand-dashboard' : '/dashboard';
           if (canAnimate()) {
-            gsap.to('#main-container', { opacity: 0, scale: .98, duration: .28, onComplete: () => window.location.href = destination });
+            gsap.to('#main-container', { opacity: 0, scale: .98, duration: .28, onComplete: () => window.location.replace(destination) });
           } else {
-            window.location.href = destination;
+            window.location.replace(destination);
           }
         } else {
           showAlert(data.message || 'Invalid email or password.');

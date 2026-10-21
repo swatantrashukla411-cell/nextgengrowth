@@ -158,6 +158,8 @@ const applicationSchema = new mongoose.Schema({
     question:{type:String,default:""},
     answer:{type:String,default:""},
   }],default:[]},
+  lastReminderSentAt:{type:Date},
+  reminderCount:{type:Number,default:0},
 },{timestamps:true});
 
 const earningSchema = new mongoose.Schema({
@@ -186,6 +188,9 @@ const jobSchema = new mongoose.Schema({
   applicationQuestions:{type:[String],default:[]},
   deadline:{type:String,default:""},
   status:{type:String,enum:["open","closed"],default:"open"},
+  lastFollowupSentAt:{type:Date},
+  followupCount:{type:Number,default:0},
+  lastFollowupType:{type:String,default:""},
 },{timestamps:true});
 
 const paymentSchema = new mongoose.Schema({
@@ -341,6 +346,7 @@ const platformSettingSchema = new mongoose.Schema({
   emails:{
     welcomeEmail:{type:Boolean,default:true},
     applicationAlert:{type:Boolean,default:true},
+    clientFollowupAlert:{type:Boolean,default:true},
     paymentConfirmation:{type:Boolean,default:true},
     adminAlerts:{type:Boolean,default:false},
   },
@@ -1146,6 +1152,7 @@ const DEFAULT_PLATFORM_SETTINGS={
   emails:{
     welcomeEmail:true,
     applicationAlert:true,
+    clientFollowupAlert:true,
     paymentConfirmation:true,
     adminAlerts:false,
   },
@@ -1179,6 +1186,7 @@ function normalizePlatformSettings(raw={}){
     emails:{
       welcomeEmail:boolSetting(settings.emails?.welcomeEmail,DEFAULT_PLATFORM_SETTINGS.emails.welcomeEmail),
       applicationAlert:boolSetting(settings.emails?.applicationAlert,DEFAULT_PLATFORM_SETTINGS.emails.applicationAlert),
+      clientFollowupAlert:boolSetting(settings.emails?.clientFollowupAlert,DEFAULT_PLATFORM_SETTINGS.emails.clientFollowupAlert),
       paymentConfirmation:boolSetting(settings.emails?.paymentConfirmation,DEFAULT_PLATFORM_SETTINGS.emails.paymentConfirmation),
       adminAlerts:boolSetting(settings.emails?.adminAlerts,DEFAULT_PLATFORM_SETTINGS.emails.adminAlerts),
     },
@@ -1210,6 +1218,7 @@ async function savePlatformSettings(payload){
 const EMAIL_SETTING_KEYS={
   welcome:"welcomeEmail",
   application:"applicationAlert",
+  followup:"clientFollowupAlert",
   payment:"paymentConfirmation",
   admin:"adminAlerts",
 };
@@ -2263,6 +2272,191 @@ async function sendShortlistEmail(app) {
 }
 
 // ═══════════════════════════════════════════
+// CLIENT FOLLOW-UP ENGINE (AUTOMATED NUDGES)
+// ═══════════════════════════════════════════
+function generateFollowupEmailHtml(brand, job, pendingApps, stage) {
+  const brandName = brand.firstName || brand.companyName || "Founder";
+  const appCount = pendingApps.length;
+  const sText = appCount === 1 ? "student applicant" : `${appCount} student applicants`;
+
+  let headerTitle = "⏰ Action Required: Pending Applications";
+  let subHeadline = `You have <strong>${sText}</strong> waiting for your review on NextGenGrowth.`;
+  let stageBadge = "Stage 1 Reminder";
+  let urgencyNote = "Top verified students often get hired by other brands within 48 hours. Don't miss out on connecting with them!";
+
+  if (stage === 2) {
+    headerTitle = "⚡ Follow-up Reminder: Top Talent Waiting";
+    subHeadline = `Your job post <strong>"${job.title}"</strong> has ${sText} awaiting your decision.`;
+    stageBadge = "Urgent Follow-up";
+    urgencyNote = "These applicants showed strong enthusiasm for your project. Please review their profiles or connect directly on WhatsApp.";
+  } else if (stage === 3) {
+    headerTitle = "⚠️ Final Check: Still Hiring for this Project?";
+    subHeadline = `It has been over a week since applicants applied to <strong>"${job.title}"</strong>.`;
+    stageBadge = "Final Status Check";
+    urgencyNote = "If you have already found the right candidate, please close this project so waiting students know. If you still need help, our team can personally shortlist the best candidate for you.";
+  }
+
+  const candidateCards = pendingApps.slice(0, 3).map(app => {
+    const s = app.studentId || {};
+    const name = `${s.firstName || "Student"} ${s.lastName || ""}`.trim();
+    const cleanWa = formatIndianPhoneText(s.whatsapp || s.phone || "");
+    const digits = cleanWa.replace(/\D/g, "").slice(-10);
+    const waLink = digits.length >= 10
+      ? `https://wa.me/91${digits}?text=Hi%20${encodeURIComponent(s.firstName || 'there')},%20I%20reviewed%20your%20application%20for%20'${encodeURIComponent(job.title)}'%20on%20NextGenGrowth.%20Let's%20connect!`
+      : null;
+    const skillsText = (s.skills && s.skills.length > 0) ? s.skills.slice(0, 3).join(", ") : "Skills verified";
+    const badge = s.studentBadge === "top-rated" ? "⭐ Top Rated" : (s.verificationStatus === "verified" ? "✅ Verified Student" : "🎓 Student");
+
+    return `
+      <div style="background:#f4fbf6;border:1px solid #cce8d6;border-radius:12px;padding:14px 16px;margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <strong style="color:#0f2214;font-size:15px">${name}</strong>
+          <span style="font-size:11px;background:#0a7c44;color:white;padding:2px 8px;border-radius:100px;font-weight:600">${badge}</span>
+        </div>
+        <p style="margin:2px 0;font-size:13px;color:#4a7a5a">${s.college || "College Student"} • ${skillsText}</p>
+        ${s.portfolioLink ? `<p style="margin:4px 0;font-size:12px"><a href="${s.portfolioLink}" target="_blank" style="color:#00994d;text-decoration:none">🔗 View Portfolio / Samples →</a></p>` : ""}
+        ${waLink ? `
+          <div style="margin-top:8px">
+            <a href="${waLink}" style="display:inline-block;background:#25d366;color:white;font-size:12px;font-weight:bold;padding:6px 14px;border-radius:8px;text-decoration:none">💬 Chat on WhatsApp</a>
+          </div>
+        ` : ""}
+      </div>
+    `;
+  }).join("");
+
+  const extraCount = appCount > 3 ? `<p style="font-size:13px;color:#4a7a5a;text-align:center;margin:10px 0">+ ${appCount - 3} more applicants waiting on your dashboard</p>` : "";
+
+  return `
+    <div style="font-family:'DM Sans',Arial,sans-serif;max-width:560px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;border:1px solid #d1ead9;box-shadow:0 8px 30px rgba(0,0,0,0.05)">
+      <div style="background:linear-gradient(135deg,#0a7c44,#064e2b);padding:28px 24px;text-align:center;color:white">
+        <span style="display:inline-block;background:rgba(255,255,255,0.2);color:white;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;padding:3px 10px;border-radius:100px;margin-bottom:10px">${stageBadge}</span>
+        <h2 style="margin:0;font-size:22px;font-weight:800;letter-spacing:-0.5px">${headerTitle}</h2>
+      </div>
+
+      <div style="padding:24px 24px 20px">
+        <p style="font-size:15px;color:#0f2214;margin-top:0">Hi <strong>${brandName}</strong>,</p>
+        <p style="font-size:14px;color:#2a4a35;line-height:1.5">${subHeadline}</p>
+
+        <div style="background:#eaf8ef;border-left:4px solid #00c96b;padding:12px 14px;border-radius:6px;margin:16px 0;font-size:13px;color:#0a5a31">
+          💡 <em>${urgencyNote}</em>
+        </div>
+
+        <h3 style="font-size:14px;color:#0f2214;text-transform:uppercase;letter-spacing:0.5px;margin:20px 0 10px">Pending Applicants:</h3>
+        ${candidateCards}
+        ${extraCount}
+
+        <div style="text-align:center;margin:24px 0 16px">
+          <a href="${BASE_URL}/brand-dashboard" style="display:inline-block;background:#0a7c44;color:white;font-size:15px;font-weight:bold;padding:14px 28px;border-radius:12px;text-decoration:none;box-shadow:0 4px 15px rgba(10,124,68,0.3)">
+            👉 Open Brand Dashboard & Review →
+          </a>
+        </div>
+
+        <div style="border-top:1px solid #eef5f0;margin-top:24px;padding-top:16px;font-size:12px;color:#6b8a75;line-height:1.6">
+          <p style="margin:4px 0"><strong>Need help handpicking?</strong> Simply reply to this email, and our team will recommend the best fit for your project for free.</p>
+          <p style="margin:4px 0">Already hired someone? You can easily mark them as hired or close the job inside your <a href="${BASE_URL}/brand-dashboard" style="color:#0a7c44">Brand Dashboard</a>.</p>
+        </div>
+      </div>
+
+      <div style="background:#f7fdf9;padding:14px 24px;text-align:center;border-top:1px solid #d1ead9;font-size:11px;color:#85a890">
+        NextGenGrowth — Student Freelance & Growth Platform • <a href="${BASE_URL}" style="color:#0a7c44;text-decoration:none">nextgengrowth.in</a>
+      </div>
+    </div>
+  `;
+}
+
+async function checkAndSendClientFollowups({ forceJobId = null, forceSend = false } = {}) {
+  try {
+    if (!dbReady()) return { success: false, message: "Database not connected.", dispatched: [] };
+
+    const jobQuery = { status: "open" };
+    if (forceJobId) jobQuery._id = forceJobId;
+
+    const openJobs = await Job.find(jobQuery).populate("brandId", "firstName lastName companyName email phone whatsapp");
+    const dispatched = [];
+    const now = Date.now();
+
+    for (const job of openJobs) {
+      const brand = job.brandId;
+      if (!brand || !brand.email) continue;
+
+      const pendingApps = await Application.find({
+        jobId: String(job._id),
+        status: "review",
+        contactInitiated: { $ne: true }
+      }).populate("studentId", "firstName lastName email phone whatsapp college skills studentBadge verificationStatus portfolioLink");
+
+      if (!pendingApps || pendingApps.length === 0) continue;
+
+      const oldestAppTime = pendingApps.reduce((min, a) => Math.min(min, new Date(a.createdAt).getTime()), now);
+      const hoursPending = (now - oldestAppTime) / (1000 * 60 * 60);
+
+      // Cooldown check: At least 24 hours between reminders unless forceSend
+      if (!forceSend && job.lastFollowupSentAt) {
+        const hoursSinceLastReminder = (now - new Date(job.lastFollowupSentAt).getTime()) / (1000 * 60 * 60);
+        if (hoursSinceLastReminder < 24) continue;
+      }
+
+      const currentCount = job.followupCount || 0;
+      if (!forceSend && currentCount >= 3) continue;
+
+      let stage = 1;
+      if (forceSend) {
+        stage = Math.min(3, currentCount + 1);
+      } else if (hoursPending >= 144 && currentCount >= 2) {
+        stage = 3;
+      } else if (hoursPending >= 72 && currentCount >= 1) {
+        stage = 2;
+      } else if (hoursPending >= 24 && currentCount === 0) {
+        stage = 1;
+      } else {
+        continue;
+      }
+
+      let subject = `⏰ [Action Required] ${pendingApps.length} student applicant${pendingApps.length > 1 ? 's' : ''} waiting for your review on "${job.title}"`;
+      if (stage === 2) {
+        subject = `⚡ Reminder: Review your top applicants for "${job.title}" | NextGenGrowth`;
+      } else if (stage === 3) {
+        subject = `⚠️ Final check: Still hiring for "${job.title}"? (${pendingApps.length} candidates waiting)`;
+      }
+
+      const html = generateFollowupEmailHtml(brand, job, pendingApps, stage);
+
+      try {
+        await sendConfiguredEmail("followup", brand.email, subject, html);
+
+        job.lastFollowupSentAt = new Date();
+        job.followupCount = currentCount + 1;
+        job.lastFollowupType = `stage_${stage}`;
+        await job.save();
+
+        const appIds = pendingApps.map(a => a._id);
+        await Application.updateMany(
+          { _id: { $in: appIds } },
+          { $set: { lastReminderSentAt: new Date() }, $inc: { reminderCount: 1 } }
+        );
+
+        dispatched.push({
+          jobId: job._id,
+          title: job.title,
+          brandEmail: brand.email,
+          stage,
+          pendingCount: pendingApps.length,
+          sentAt: new Date()
+        });
+        console.log(`[Follow-up Engine] ✅ Sent Stage ${stage} reminder to ${brand.email} for "${job.title}" (${pendingApps.length} pending apps)`);
+      } catch (sendErr) {
+        console.error(`[Follow-up Engine] ❌ Failed to send to ${brand.email}:`, sendErr.message);
+      }
+    }
+
+    return { success: true, count: dispatched.length, dispatched };
+  } catch (err) {
+    console.error("[Follow-up Engine] Error checking followups:", err);
+    return { success: false, message: err.message, dispatched: [] };
+  }
+}
+
+// ═══════════════════════════════════════════
 // MIDDLEWARE
 // ═══════════════════════════════════════════
 app.use(cors());
@@ -3058,11 +3252,11 @@ app.get("/api/student/stats",verifyToken,async(req,res)=>{
     const sid=req.user.id;
     const[earned,projectsDone,activeApps,pending,transactions,applications]=await Promise.all([
       Earning.aggregate([{$match:{studentId:new mongoose.Types.ObjectId(sid),status:"paid"}},{$group:{_id:null,total:{$sum:"$amount"}}}]),
-      Application.countDocuments({studentId:sid,status:"accepted"}),
-      Application.countDocuments({studentId:sid,status:"review"}),
+      Application.countDocuments({studentId:sid,status:{$in:["accepted","hired"]}}),
+      Application.countDocuments({studentId:sid,status:{$in:["review","interviewing"]}}),
       Earning.aggregate([{$match:{studentId:new mongoose.Types.ObjectId(sid),status:"pending"}},{$group:{_id:null,total:{$sum:"$amount"}}}]),
-      Earning.find({studentId:sid}).sort({createdAt:-1}).limit(10),
-      Application.find({studentId:sid}).sort({createdAt:-1}).limit(10),
+      Earning.find({studentId:sid}).sort({createdAt:-1}).limit(20),
+      Application.find({studentId:sid}).sort({createdAt:-1}).limit(50),
     ]);
     res.json({success:true,stats:{totalEarned:earned[0]?.total||0,projectsDone:projectsDone||0,activeApps:activeApps||0,pending:pending[0]?.total||0,rating:projectsDone>0?4.9:null},transactions,applications});
   }catch(err){res.status(500).json({success:false,message:"Server error."});}
@@ -3332,13 +3526,16 @@ app.get("/api/brand/stats",verifyToken,async(req,res)=>{
   try{
     if(req.user.role!=="brand")return res.status(403).json({success:false,message:"Brand only."});
     await closeJobsWithAcceptedApplications(req.user.id);
+    const brandIdQuery = mongoose.Types.ObjectId.isValid(req.user.id)
+      ? { $in: [req.user.id, new mongoose.Types.ObjectId(req.user.id)] }
+      : req.user.id;
     const[totalProjects,openProjects,projects]=await Promise.all([
-      Job.countDocuments({brandId:req.user.id}),
-      Job.countDocuments({brandId:req.user.id,status:"open"}),
-      Job.find({brandId:req.user.id}).sort({createdAt:-1}),
+      Job.countDocuments({brandId:brandIdQuery}),
+      Job.countDocuments({brandId:brandIdQuery,status:"open"}),
+      Job.find({brandId:brandIdQuery}).sort({createdAt:-1}),
     ]);
     res.json({success:true,stats:{totalProjects,openProjects,totalApps:0},projects});
-  }catch(err){res.status(500).json({success:false,message:"Server error."});}
+  }catch(err){console.error("Brand stats error:",err);res.status(500).json({success:false,message:"Server error."});}
 });
 
 // ✅ Brand posts project — goes to REAL Jobs DB
@@ -3364,14 +3561,28 @@ app.post("/api/brand/project",verifyToken,async(req,res)=>{
       }
     }
 
+    let finalTags = Array.isArray(tags) ? tags.filter(Boolean) : [];
+    if(finalTags.length === 0){
+      const catTagMap = {
+        video: ["Video Editing", "Reels", "Content Creation"],
+        design: ["Graphic Design", "Social Media", "Canva"],
+        web: ["Web Development", "Frontend", "Responsive"],
+        writing: ["Content Writing", "Copywriting", "SEO"],
+        social: ["Social Media", "Instagram", "Marketing"],
+        photo: ["Photography", "Photo Editing"],
+        other: ["Freelance", "Creator"]
+      };
+      finalTags = catTagMap[String(category).toLowerCase()] || ["Project"];
+    }
+
     const brandName=brand.companyName||`${brand.firstName} ${brand.lastName}`;
     const job=await Job.create({
       brandId:req.user.id,brandName,
       title,description:cleanDescription,budget,category,
-      deadline:deadline||"",tags:tags||[],applicationQuestions:sanitizeApplicationQuestions(applicationQuestions),
+      deadline:deadline||"",tags:finalTags,applicationQuestions:sanitizeApplicationQuestions(applicationQuestions),
     });
-    res.json({success:true,message:"Project posted! Students will see it now 🚀",projectId:job._id});
-  }catch(err){res.status(500).json({success:false,message:"Server error."});}
+    res.json({success:true,message:"Project posted! Students will see it now 🚀",projectId:job._id,job});
+  }catch(err){console.error("Brand project post error:",err);res.status(500).json({success:false,message:"Server error."});}
 });
 
 // Brand applications
@@ -3379,12 +3590,21 @@ app.get("/api/brand/applications",verifyToken,async(req,res)=>{
   try{
     if(req.user.role!=="brand")return res.status(403).json({success:false,message:"Brand only."});
     const brand=await User.findById(req.user.id);
-    const brandName=brand.companyName||`${brand.firstName} ${brand.lastName}`;
+    const brandName=(brand?.companyName||`${brand?.firstName||""} ${brand?.lastName||""}`).trim();
+    const brandIdQuery = mongoose.Types.ObjectId.isValid(req.user.id)
+      ? { $in: [req.user.id, new mongoose.Types.ObjectId(req.user.id)] }
+      : req.user.id;
     // Get brand's job IDs
-    const brandJobs=await Job.find({brandId:req.user.id}).select("_id title");
+    const brandJobs=await Job.find({brandId:brandIdQuery}).select("_id title");
     const jobIds=brandJobs.map(j=>j._id.toString());
-    const jobTitles=brandJobs.map(j=>j.title);
-    const apps=await Application.find({$or:[{brandId:req.user.id},{jobId:{$in:jobIds}},{brandName:brandName}]})
+    const orConditions=[
+      {brandId:brandIdQuery},
+      {jobId:{$in:jobIds}}
+    ];
+    if(brandName){
+      orConditions.push({brandName:new RegExp(`^${brandName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`,'i')});
+    }
+    const apps=await Application.find({$or:orConditions})
       .populate("studentId","firstName lastName email phone whatsapp college year skills headline bio linkedin portfolioLink avatar workSamples studentBadge verificationStatus complaintsCount ratingAverage ratingCount")
       .sort({createdAt:-1});
     const result=apps.map(a=>({
@@ -3412,7 +3632,7 @@ app.get("/api/brand/applications",verifyToken,async(req,res)=>{
       }
     }));
     res.json({success:true,applications:result});
-  }catch(err){res.status(500).json({success:false,message:"Server error."});}
+  }catch(err){console.error("Brand applications fetch error:",err);res.status(500).json({success:false,message:"Server error."});}
 });
 
 app.get("/api/brand/students",verifyToken,async(req,res)=>{
@@ -3549,7 +3769,7 @@ app.get("/api/brand/student/:id/profile",verifyToken,async(req,res)=>{
     if(req.user.role!=="brand")return res.status(403).json({success:false,message:"Brand only."});
     requireObjectId(req.params.id,"student ID");
     const student=await User.findOne({_id:req.params.id,role:"student"})
-      .select("firstName lastName email college year skills headline collegeId bio linkedin portfolioLink avatar workSamples studentBadge verificationStatus verificationCategory complaintsCount ratingAverage ratingCount createdAt updatedAt")
+      .select("firstName lastName email phone whatsapp college year skills headline collegeId bio linkedin portfolioLink avatar workSamples studentBadge verificationStatus verificationCategory complaintsCount ratingAverage ratingCount createdAt updatedAt")
       .lean();
     if(!student)return res.status(404).json({success:false,message:"Student not found."});
 
@@ -3618,6 +3838,95 @@ app.put("/api/brand/application/:id",verifyToken,async(req,res)=>{
     const extra=status==="accepted"&&autoRejected?` ${autoRejected} other application(s) were auto-rejected and the project is now closed.`:"";
     res.json({success:true,message:`Application ${status}! Email sent. ✅${extra}`});
   }catch(err){res.status(err.statusCode||500).json({success:false,message:err.message||"Server error."});}
+});
+
+app.post("/api/brand/application/:id/track-contact",verifyToken,async(req,res)=>{
+  try{
+    if(req.user.role!=="brand")return res.status(403).json({success:false,message:"Brand only."});
+    const app=await Application.findById(req.params.id).populate("studentId","firstName lastName email phone whatsapp");
+    if(!app)return res.status(404).json({success:false,message:"Application not found."});
+    if(!(await brandOwnsApplication(app,req.user.id)))return res.status(403).json({success:false,message:"Not authorized for this application."});
+
+    app.contactInitiated=true;
+    app.contactInitiatedAt=new Date();
+    if(app.status==="review"){
+      app.status="interviewing";
+    }
+    await app.save();
+
+    console.log(`[Brand Contact] Brand initiated WhatsApp contact with student ${app.studentId?.email} for "${app.jobTitle}"`);
+    res.json({success:true,message:"Contact tracked.",status:app.status});
+  }catch(err){
+    console.error("Track contact error:",err);
+    res.status(500).json({success:false,message:"Server error."});
+  }
+});
+
+app.post("/api/brand/application/:id/hire",verifyToken,async(req,res)=>{
+  try{
+    if(req.user.role!=="brand")return res.status(403).json({success:false,message:"Brand only."});
+    const app=await Application.findById(req.params.id).populate("studentId","firstName lastName email phone whatsapp");
+    if(!app)return res.status(404).json({success:false,message:"Application not found."});
+    if(!(await brandOwnsApplication(app,req.user.id)))return res.status(403).json({success:false,message:"Not authorized for this application."});
+
+    app.status="hired";
+    app.hiredAt=new Date();
+    await app.save();
+
+    // Close job
+    if(mongoose.Types.ObjectId.isValid(app.jobId)){
+      await Job.findByIdAndUpdate(app.jobId,{$set:{status:"closed"}});
+    }
+
+    const student=app.studentId;
+    if(student?.email){
+      sendConfiguredEmail("application",student.email,`🎉 Congratulations! You are HIRED for "${app.jobTitle}"!`,
+        `<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;padding:20px">
+          <div style="background:linear-gradient(135deg,#0a7c44,#064e2b);border-radius:16px;padding:26px;text-align:center;color:white;margin-bottom:20px">
+            <h2 style="margin:0">🎉 Congratulations! You're Hired!</h2>
+          </div>
+          <div style="background:white;border-radius:16px;padding:24px;border:1px solid #d1ead9">
+            <p>Hi ${student.firstName||"there"},</p>
+            <p><strong>${app.brandName}</strong> has officially marked you as <strong>HIRED</strong> for <b>${app.jobTitle}</b>!</p>
+            <p>Please coordinate directly with the brand on WhatsApp/email for project onboarding and execution.</p>
+            <a href="${BASE_URL}/dashboard" style="display:inline-block;background:#0a7c44;color:white;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:bold;margin-top:10px">Open Student Dashboard →</a>
+          </div>
+        </div>`
+      ).catch(e=>console.error("Hired email error:",e.message));
+    }
+
+    res.json({success:true,message:`🎉 ${student?.firstName||"Student"} successfully marked as Hired! Project is now closed.`});
+  }catch(err){
+    console.error("Hire error:",err);
+    res.status(500).json({success:false,message:"Server error."});
+  }
+});
+
+app.post("/api/student/application/:id/feedback",verifyToken,async(req,res)=>{
+  try{
+    if(req.user.role!=="student")return res.status(403).json({success:false,message:"Student only."});
+    const app=await Application.findOne({_id:req.params.id,studentId:req.user.id});
+    if(!app)return res.status(404).json({success:false,message:"Application not found."});
+
+    const status=cleanText(req.body.status,30);
+    if(!["hired","in_discussion","no_response"].includes(status)){
+      return res.status(400).json({success:false,message:"Invalid status."});
+    }
+
+    app.studentFeedback={status,updatedAt:new Date()};
+    if(status==="hired"){
+      app.status="hired";
+      app.hiredAt=new Date();
+      if(mongoose.Types.ObjectId.isValid(app.jobId)){
+        await Job.findByIdAndUpdate(app.jobId,{$set:{status:"closed"}});
+      }
+    }
+    await app.save();
+    res.json({success:true,message:"Feedback recorded! Thank you.",status:app.status});
+  }catch(err){
+    console.error("Student feedback error:",err);
+    res.status(500).json({success:false,message:"Server error."});
+  }
 });
 
 async function brandOwnsApplication(application,brandId){
@@ -4966,9 +5275,99 @@ app.delete("/api/admin/user/:id",adminOnly,async(req,res)=>{
 app.get("/api/admin/projects",adminOnly,async(req,res)=>{
   try{
     const projects=await Job.find().populate("brandId","firstName lastName email").sort({createdAt:-1});
-    const result=projects.map(p=>({...p.toObject(),firstName:p.brandId?.firstName||"",lastName:p.brandId?.lastName||"",brandEmail:p.brandId?.email||""}));
+    const jobIds=projects.map(p=>String(p._id));
+    const pendingCounts=await Application.aggregate([
+      {$match:{jobId:{$in:jobIds},status:"review",contactInitiated:{$ne:true}}},
+      {$group:{_id:"$jobId",count:{$sum:1}}}
+    ]);
+    const totalCounts=await Application.aggregate([
+      {$match:{jobId:{$in:jobIds}}},
+      {$group:{_id:"$jobId",count:{$sum:1}}}
+    ]);
+    const pendingMap={};
+    pendingCounts.forEach(c=>{pendingMap[c._id]=c.count;});
+    const totalMap={};
+    totalCounts.forEach(c=>{totalMap[c._id]=c.count;});
+
+    const result=projects.map(p=>({
+      ...p.toObject(),
+      firstName:p.brandId?.firstName||"",
+      lastName:p.brandId?.lastName||"",
+      brandEmail:p.brandId?.email||"",
+      pendingAppsCount:pendingMap[String(p._id)]||0,
+      totalAppsCount:totalMap[String(p._id)]||0,
+      followupCount:p.followupCount||0,
+      lastFollowupSentAt:p.lastFollowupSentAt||null,
+      lastFollowupType:p.lastFollowupType||"",
+    }));
     res.json({success:true,projects:result});
   }catch(err){res.status(500).json({success:false,message:"Server error."});}
+});
+
+app.post("/api/admin/followup/run",adminOnly,async(req,res)=>{
+  try{
+    const result=await checkAndSendClientFollowups({forceSend:!!req.body.forceSend});
+    res.json({
+      success:true,
+      message:`Follow-up check completed. ${result.count||0} email(s) dispatched.`,
+      dispatched:result.dispatched||[]
+    });
+  }catch(err){
+    console.error("Admin followup run error:",err);
+    res.status(500).json({success:false,message:err.message||"Server error."});
+  }
+});
+
+app.post("/api/admin/followup/job/:id",adminOnly,async(req,res)=>{
+  try{
+    const job=await Job.findById(req.params.id);
+    if(!job)return res.status(404).json({success:false,message:"Project not found."});
+    const result=await checkAndSendClientFollowups({forceJobId:job._id,forceSend:true});
+    if(!result.dispatched||result.dispatched.length===0){
+      return res.json({success:false,message:"No pending unreviewed applications for this project or client email missing."});
+    }
+    res.json({
+      success:true,
+      message:`Follow-up email sent to client (${result.dispatched[0].brandEmail})!`,
+      detail:result.dispatched[0]
+    });
+  }catch(err){
+    console.error("Admin job followup error:",err);
+    res.status(500).json({success:false,message:err.message||"Server error."});
+  }
+});
+
+app.get("/api/admin/followup/status",adminOnly,async(req,res)=>{
+  try{
+    const openJobs=await Job.find({status:"open"}).populate("brandId","firstName lastName companyName email");
+    const jobIds=openJobs.map(j=>String(j._id));
+    const pendingApps=await Application.find({jobId:{$in:jobIds},status:"review",contactInitiated:{$ne:true}});
+    const appMap={};
+    pendingApps.forEach(a=>{
+      appMap[a.jobId]=(appMap[a.jobId]||0)+1;
+    });
+
+    const jobsWithPending=openJobs.filter(j=>appMap[String(j._id)]>0).map(j=>({
+      id:j._id,
+      title:j.title,
+      brandName:j.brandName||`${j.brandId?.firstName||""} ${j.brandId?.lastName||""}`.trim(),
+      brandEmail:j.brandId?.email||"",
+      pendingCount:appMap[String(j._id)]||0,
+      followupCount:j.followupCount||0,
+      lastFollowupSentAt:j.lastFollowupSentAt||null,
+      lastFollowupType:j.lastFollowupType||"",
+      postedAt:j.createdAt
+    }));
+
+    res.json({
+      success:true,
+      totalOpenJobs:openJobs.length,
+      jobsNeedingAttention:jobsWithPending.length,
+      jobs:jobsWithPending
+    });
+  }catch(err){
+    res.status(500).json({success:false,message:"Server error."});
+  }
 });
 
 app.delete("/api/admin/project/:id",adminOnly,async(req,res)=>{
@@ -6101,4 +6500,18 @@ app.listen(PORT,()=>{
   console.log(`🔑 Google: ${GOOGLE_CLIENT_ID?"Configured":"Not configured"}`);
   console.log(`💳 Razorpay: ${razorpayConfig.configured?`Configured ✅ (${razorpayConfig.mode})`:`Not configured ❌ missing ${razorpayConfig.missing.join(", ")}`}`);
   console.log(`🗄️  DB:    ${MONGO_URI?"MongoDB Atlas":"Not configured"}\n`);
+
+  // ═══════════════════════════════════════════
+  // CLIENT FOLLOW-UP BACKGROUND SCHEDULER
+  // Checks every 6 hours for unreviewed applications
+  // ═══════════════════════════════════════════
+  const FOLLOWUP_CHECK_INTERVAL_MS = 6 * 60 * 60 * 1000;
+  setTimeout(() => {
+    console.log("[Follow-up Scheduler] Running initial check for unreviewed applications...");
+    checkAndSendClientFollowups().catch(err => console.error("[Follow-up Scheduler] Initial check error:", err.message));
+    setInterval(() => {
+      console.log("[Follow-up Scheduler] Running periodic 6-hour check for unreviewed applications...");
+      checkAndSendClientFollowups().catch(err => console.error("[Follow-up Scheduler] Periodic error:", err.message));
+    }, FOLLOWUP_CHECK_INTERVAL_MS);
+  }, 2 * 60 * 1000);
 });

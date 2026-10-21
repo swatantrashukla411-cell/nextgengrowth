@@ -1096,13 +1096,13 @@
       </div>
       <div class="fb">
         <button class="fbtn aif active" id="aiBtn" onclick="setFilter('ai',this)">✨ My Skills</button>
-        <button class="fbtn" onclick="setFilter('all',this)">All</button>
-        <button class="fbtn" onclick="setFilter('internship',this)">🎓 Internships</button>
-        <button class="fbtn" onclick="setFilter('sports',this)">🏸 Sports</button>
-        <button class="fbtn" onclick="setFilter('video',this)">🎬 Video</button>
-        <button class="fbtn" onclick="setFilter('design',this)">🎨 Design</button>
-        <button class="fbtn" onclick="setFilter('writing',this)">✍️ Writing</button>
-        <button class="fbtn" onclick="setFilter('web',this)">💻 Web Dev</button>
+        <button class="fbtn" id="fbtn-all" onclick="setFilter('all',this)">All</button>
+        <button class="fbtn" id="fbtn-internship" onclick="setFilter('internship',this)">🎓 Internships</button>
+        <button class="fbtn" id="fbtn-video" onclick="setFilter('video',this)">🎬 Video</button>
+        <button class="fbtn" id="fbtn-design" onclick="setFilter('design',this)">🎨 Design</button>
+        <button class="fbtn" id="fbtn-writing" onclick="setFilter('writing',this)">✍️ Writing</button>
+        <button class="fbtn" id="fbtn-web" onclick="setFilter('web',this)">💻 Web Dev</button>
+        <button class="fbtn" id="fbtn-sports" onclick="setFilter('sports',this)">🏸 Sports</button>
       </div>
       <div class="pg" id="projGrid"></div>
     </div>
@@ -1291,15 +1291,42 @@
 
     <!-- COURSES -->
     <div class="page" id="page-courses">
-      <div class="ph"><h2>Skill Courses 🎓</h2><p>Learn, improve, and land better projects.</p></div>
-      <div class="ch"><div style="font-size:2rem;flex-shrink:0">🚀</div><div style="flex:1"><h3 style="font-family:'Clash Display',sans-serif;font-size:1rem;font-weight:700;margin-bottom:4px">EdTech Coming Soon!</h3><p style="font-size:.8rem;color:var(--ts);line-height:1.5;margin-bottom:10px">Courses in Video Editing, Graphic Design & more.</p><button class="btn bpri" style="font-size:.8rem" onclick="showToast('You are on early access list! 🎉','success')">Notify Me</button></div></div>
-      <div class="cg">
-        <div class="cc" onclick="showToast('Course in progress!','info')"><div class="cth" style="background:linear-gradient(135deg,#e8fdf2,#a7f3d0)">🎬<span class="cm">Free</span></div><div class="cb"><div class="ct">Video Editing with CapCut</div><div class="c-m"><span>4 lessons · 2hrs</span><span class="cf">Free</span></div><div class="cpb"><div class="cpf" style="width:60%"></div></div></div></div>
-        <div class="cc" onclick="showToast('Coming soon!','info')"><div class="cth" style="background:linear-gradient(135deg,#fef9c3,#fde68a)">🎨<span class="cm">Soon</span></div><div class="cb"><div class="ct">Graphic Design with Canva</div><div class="c-m"><span>8 lessons · 4hrs</span><span class="cp_">₹499</span></div></div></div>
-        <div class="cc" onclick="showToast('Coming soon!','info')"><div class="cth" style="background:linear-gradient(135deg,#eff6ff,#bfdbfe)">💻<span class="cm">Soon</span></div><div class="cb"><div class="ct">Websites with HTML & CSS</div><div class="c-m"><span>12 lessons · 6hrs</span><span class="cp_">₹799</span></div></div></div>
-        <div class="cc" onclick="showToast('Coming soon!','info')"><div class="cth" style="background:linear-gradient(135deg,#fff7ed,#fed7aa)">✍️<span class="cm">Soon</span></div><div class="cb"><div class="ct">Content Writing & SEO</div><div class="c-m"><span>5 lessons · 2.5hrs</span><span class="cp_">₹299</span></div></div></div>
-        <div class="cc" onclick="showToast('Coming soon!','info')"><div class="cth" style="background:linear-gradient(135deg,#fdf4ff,#e9d5ff)">📱<span class="cm">Soon</span></div><div class="cb"><div class="ct">Instagram Growth</div><div class="c-m"><span>6 lessons · 3hrs</span><span class="cp_">₹399</span></div></div></div>
-        <div class="cc" onclick="showToast('Coming soon!','info')"><div class="cth" style="background:linear-gradient(135deg,#fef2f2,#fecaca)">🤖<span class="cm">Soon</span></div><div class="cb"><div class="ct">AI Tools for Creators</div><div class="c-m"><span>6 lessons · 3hrs</span><span class="cp_">₹599</span></div></div></div>
+      <div class="ph">
+        <h2>Skill Roadmaps & Playbooks 🎓</h2>
+        <p>Master high-income creator & tech skills, build verified portfolio proof, and land paid projects on NextGenGrowth.</p>
+      </div>
+
+      <!-- Action Hero Cards -->
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-bottom:18px">
+        <div style="background:linear-gradient(135deg,#064e2b,#0a7c44);color:white;border-radius:14px;padding:18px;position:relative;overflow:hidden">
+          <div style="font-size:1.8rem;margin-bottom:6px">🧭</div>
+          <h3 style="font-family:'Clash Display',sans-serif;font-size:1.08rem;font-weight:700;margin-bottom:4px">AI Skill Compass</h3>
+          <p style="font-size:.8rem;color:rgba(255,255,255,.82);line-height:1.45;margin-bottom:14px">Not sure which skill fits your natural strengths? Let our AI analyze your interests and match you to top paying projects.</p>
+          <a class="btn" style="background:white;color:var(--gd);font-size:.8rem;font-weight:700;box-shadow:0 3px 10px rgba(0,0,0,.15)" href="/skill-compass">Launch AI Skill Compass →</a>
+        </div>
+
+        <div style="background:var(--gl);border:1.5px solid var(--br);border-radius:14px;padding:18px">
+          <div style="font-size:1.8rem;margin-bottom:6px">📁</div>
+          <h3 style="font-family:'Clash Display',sans-serif;font-size:1.08rem;font-weight:700;color:var(--td);margin-bottom:4px">Verified Portfolio Proof</h3>
+          <p style="font-size:.8rem;color:var(--ts);line-height:1.45;margin-bottom:14px">Brands hire students with real proof of work, not paper certificates. Build sample projects and add them to your portfolio.</p>
+          <button class="btn bpri" style="font-size:.8rem;font-weight:700" onclick="goTo('portfolio',null)">Update My Portfolio →</button>
+        </div>
+      </div>
+
+      <!-- Category Filter Pills for courses -->
+      <div class="fb" style="margin-bottom:16px">
+        <button class="fbtn active" id="cfbtn-all" onclick="filterCourseTracks('all',this)">All Tracks (6)</button>
+        <button class="fbtn" id="cfbtn-video" onclick="filterCourseTracks('video',this)">🎬 Video Editing</button>
+        <button class="fbtn" id="cfbtn-design" onclick="filterCourseTracks('design',this)">🎨 Graphic Design</button>
+        <button class="fbtn" id="cfbtn-web" onclick="filterCourseTracks('web',this)">💻 Web Dev</button>
+        <button class="fbtn" id="cfbtn-writing" onclick="filterCourseTracks('writing',this)">✍️ Copywriting & SEO</button>
+        <button class="fbtn" id="cfbtn-ai" onclick="filterCourseTracks('ai',this)">🤖 AI & Automation</button>
+        <button class="fbtn" id="cfbtn-growth" onclick="filterCourseTracks('growth',this)">📱 Social Media</button>
+      </div>
+
+      <!-- Course Cards Grid -->
+      <div class="cg" id="coursesGrid" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px">
+        <!-- Rendered dynamically by renderCourseGrid() -->
       </div>
     </div>
 
@@ -1601,6 +1628,12 @@
 <div class="brand-profile-modal" id="projectApplyModal" aria-hidden="true" onclick="if(event.target===this)closeApplyModal()">
   <div class="brand-profile-card project-apply-modal-card" id="projectApplyContent" onclick="event.stopPropagation()"></div>
 </div>
+<div class="brand-profile-modal" id="skillGuideModal" aria-hidden="true" onclick="if(event.target===this)closeSkillGuide()">
+  <div class="brand-profile-card" style="max-width:680px" onclick="event.stopPropagation()">
+    <button class="brand-profile-close" onclick="closeSkillGuide()" aria-label="Close skill guide">×</button>
+    <div id="skillGuideContent"></div>
+  </div>
+</div>
 <div class="toast" id="toast"></div>
 
 <script>
@@ -1608,8 +1641,8 @@
 // AUTH GUARD
 const _tk=localStorage.getItem('ngg_token');
 const _u=JSON.parse(localStorage.getItem('ngg_user')||'null');
-if(!_tk||!_u){window.location.href='/login';}
-if(_u&&_u.role&&_u.role!=='student'){window.location.href='/login';}
+if(!_tk||!_u){window.location.replace('/login');}
+if(_u&&_u.role&&_u.role!=='student'){window.location.replace('/login');}
 
 // Instant hydration of student avatar & name
 if(_u){
@@ -2443,22 +2476,53 @@ function renderHomeMatchedJobs(jobs){
 }
 
 /// PROJECTS
+function filterByTag(tag){
+  curSearch = String(tag||'').toLowerCase();
+  curCat = 'all';
+  curFilter = 'manual';
+  document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));
+  const allBtn = document.getElementById('fbtn-all');
+  if(allBtn) allBtn.classList.add('active');
+  const searchInput = document.getElementById('projSearch') || document.getElementById('searchInput');
+  if(searchInput) searchInput.value = tag;
+  renderProjects();
+  showToast(`Filtered by tag: "${tag}"`, 'info');
+}
+
+/// PROJECTS
 function renderProjects(){
   let jobs=curFilter==='ai'?aiJobs:ALL_JOBS;
   // Recent projects always first!
   jobs=[...jobs].sort((a,b)=> new Date(b.postedAt||b.createdAt||0).getTime() - new Date(a.postedAt||a.createdAt||0).getTime());
+
+  const CAT_MAP = {
+    video: ['video', 'editing', 'reel', 'reels', 'youtube', 'short', 'shorts', 'clip', 'premiere', 'capcut', 'davinci'],
+    design: ['design', 'graphic', 'ui/ux', 'figma', 'canva', 'logo', 'branding', 'thumbnail', 'carousel', 'photoshop', 'illustrator', 'banner'],
+    writing: ['writing', 'content', 'copywriting', 'seo', 'article', 'blog', 'ghostwriting', 'script', 'copywriter'],
+    web: ['web', 'development', 'frontend', 'developer', 'react', 'next.js', 'html', 'css', 'javascript', 'wordpress', 'website', 'fullstack'],
+    internship: ['internship', 'intern', 'monthly', 'longterm', 'retainer'],
+    sports: ['sports', 'badminton', 'fitness', 'cricket', 'athletic']
+  };
+
   if(curCat!=='all'){
-    if(curCat==='internship'){
-      jobs=jobs.filter(j=>j.cat==='internship'||(j.categoryPath&&j.categoryPath.toLowerCase().includes('internship'))||(j.tags||[]).some(t=>t.toLowerCase().includes('internship'))||(j.roleType&&j.roleType.toLowerCase().includes('internship'))||(j.title&&j.title.toLowerCase().includes('internship')));
-    }else if(curCat==='sports'){
-      jobs=jobs.filter(j=>j.cat==='sports'||(j.categoryPath&&j.categoryPath.toLowerCase().includes('sports'))||(j.tags||[]).some(t=>t.toLowerCase().includes('sports'))||(j.title&&j.title.toLowerCase().includes('badminton'))||(j.title&&j.title.toLowerCase().includes('sports')));
-    }else{
-      jobs=jobs.filter(j=>j.cat===curCat||(j.tags||[]).some(t=>t.toLowerCase()===curCat.toLowerCase()));
-    }
+    const kws = CAT_MAP[curCat] || [curCat.toLowerCase()];
+    jobs = jobs.filter(j => {
+      const searchStr = [
+        j.cat,
+        j.category,
+        j.title,
+        j.categoryPath,
+        j.roleType,
+        getProjectDescription(j),
+        ...(j.tags || [])
+      ].filter(Boolean).join(' ').toLowerCase();
+      return kws.some(kw => searchStr.includes(kw));
+    });
   }
+
   if(curSearch)jobs=jobs.filter(j=>[j.title,j.brand,j.categoryPath,getProjectDescription(j),...(j.tags||[])].join(' ').toLowerCase().includes(curSearch));
   const grid=document.getElementById('projGrid');
-  if(!jobs.length){grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--ts)"><div style="font-size:2rem;margin-bottom:8px">🔍</div><h3 style="font-family:'Clash Display',sans-serif;color:var(--td);margin-bottom:5px">No projects found</h3><p>Try different filter or add more skills</p></div>`;return;}
+  if(!jobs.length){grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--ts)"><div style="font-size:2rem;margin-bottom:8px">🔍</div><h3 style="font-family:'Clash Display',sans-serif;color:var(--td);margin-bottom:5px">No projects found</h3><p>Try switching to "All" or explore other categories.</p><button class="btn bout bsm" style="margin-top:10px" onclick="setFilter('all',document.getElementById('fbtn-all'))">View All Projects</button></div>`;return;}
   const bdg={hot:'<span class="tag th">🔥 Hot</span>',new:'<span class="tag tn">✨ New</span>',apply:'<span class="tag trev">📝 Apply</span>',demo:'<span class="tag tdemo">Demo</span>'};
   grid.innerHTML=jobs.map(j=>{
     const m=j.isMatch&&curFilter==='ai';const mt=j.matchedTags||[];
@@ -2494,16 +2558,24 @@ function renderProjects(){
       ${categoryPathHtml}
       <div class="pt_"><div class="pi">${j.ico||'🏢'}</div><div style="padding-right:${m?'70px':'0'}"><div class="pb_">${esc(j.brand)}</div><div class="pn">${esc(j.title)}</div></div></div>
       ${prominentHighlightsHtml}
-      <div class="ptgs">${(j.tags||[]).map(t=>`<span class="ptg ${mt.includes(t)?'mt':''}">${esc(t)}</span>`).join('')}</div>
+      <div class="ptgs">${(j.tags||[]).map(t=>`<span class="ptg ${mt.includes(t)?'mt':''}" style="cursor:pointer" title="Click to filter by '${esc(t)}'" onclick="event.stopPropagation();filterByTag('${esc(t)}')">${esc(t)}</span>`).join('')}</div>
       <div class="pf_"><div class="pf-top"><div class="pp">${esc(j.pay)}</div>${badgeMarkup}</div><div class="pm">⏱ ${esc(j.days)} &nbsp;·&nbsp; 📍 Remote &nbsp;·&nbsp; 👥 ${j.applicantCount || 0} applied</div><div class="project-actions"><button class="pa" style="background:white" onclick="event.stopPropagation();openProjectDetails('${jobId}')">Details</button>${brandBtn}${btnHtml}</div></div>
     </div>`;
   }).join('');
 }
 
 function setFilter(f,btn){
+  curSearch = '';
+  const searchInput = document.getElementById('projSearch') || document.getElementById('searchInput');
+  if(searchInput) searchInput.value = '';
   if(f==='ai'){curFilter='ai';curCat='all';}else{curFilter='manual';curCat=f;}
   document.querySelectorAll('.fbtn').forEach(b=>b.classList.remove('active'));
-  if(btn)btn.classList.add('active');renderProjects();
+  if(btn)btn.classList.add('active');
+  else{
+    const el = document.getElementById(f==='ai'?'aiBtn':'fbtn-'+f);
+    if(el) el.classList.add('active');
+  }
+  renderProjects();
 }
 
 function closeProjectDetails(){
@@ -3708,9 +3780,310 @@ async function submitMentorApplication(){
   btn.disabled=false;
 }
 
+// ══ SKILL TRACKS & PLAYBOOKS ══
+const SKILL_TRACKS = {
+  video: {
+    id: 'video',
+    catKey: 'video',
+    title: 'Short-Form Video Editing (Reels & Shorts)',
+    icon: '🎬',
+    bg: 'linear-gradient(135deg,#e8fdf2,#a7f3d0)',
+    badge: '🔥 High Demand',
+    payRange: '₹2,500 – ₹15,000 / gig',
+    difficulty: 'Beginner to Intermediate',
+    timeCommitment: '2 - 3 weeks',
+    tag: 'Video Editing',
+    summary: 'Master 9:16 vertical videos with captivating hooks, dynamic captions, sound design, and retention pacing for Instagram and YouTube Shorts.',
+    tools: ['CapCut (Desktop/Mobile)', 'Adobe Premiere Pro', 'DaVinci Resolve', 'ElevenLabs (Voice AI)', 'Submagic'],
+    roadmap: [
+      { stage: '1. Hook & Pacing Foundations', desc: 'Master the first 3 seconds: visual disruptions, zoom cuts, sound design (whooshes, risers, pop), and clean typography.' },
+      { stage: '2. Build 3 Portfolio Proof Assets', desc: 'Create: 1) Talking-head creator reel with B-roll & captions, 2) E-commerce product showcase video, 3) Podcast viral clip re-edit.' },
+      { stage: '3. Pitch & Win Projects on NextGenGrowth', desc: 'Apply with direct Google Drive or portfolio video links, point out how you improve retention, and offer a quick 1-reel sample.' }
+    ],
+    resources: [
+      { title: 'CapCut Video Editing Crash Course', url: 'https://www.youtube.com/results?search_query=capcut+pc+editing+tutorial+for+beginners' },
+      { title: 'Short-Form Retention & Hook Secrets', url: 'https://www.youtube.com/results?search_query=short+form+video+editing+hooks+and+pacing' },
+      { title: 'Sound Design & SFX for Viral Reels', url: 'https://www.youtube.com/results?search_query=reels+sound+design+tutorial' }
+    ]
+  },
+  design: {
+    id: 'design',
+    catKey: 'design',
+    title: 'Visual Design & Brand Identity (Canva / Figma)',
+    icon: '🎨',
+    bg: 'linear-gradient(135deg,#fef9c3,#fde68a)',
+    badge: '🌟 Brand Favorite',
+    payRange: '₹1,500 – ₹10,000 / gig',
+    difficulty: 'Beginner Friendly',
+    timeCommitment: '1 - 2 weeks',
+    tag: 'Graphic Design',
+    summary: 'Design high-converting social media carousels, ad creatives, YouTube thumbnails, and visual branding assets for modern consumer startups.',
+    tools: ['Canva Pro', 'Figma', 'Adobe Photoshop', 'Freepik & Unsplash', 'Coolors'],
+    roadmap: [
+      { stage: '1. Design Principles & Typography', desc: 'Learn visual hierarchy, font pairings, contrast ratios, and whitespace rules to make designs look agency-grade.' },
+      { stage: '2. Build 3 Portfolio Proof Assets', desc: 'Create: 1) A 7-slide educational Instagram carousel, 2) 3 high-CTR YouTube thumbnails, 3) Meta ad creative set (Story + Feed).' },
+      { stage: '3. Apply to NextGenGrowth Design Roles', desc: 'Share a clean Behance or Figma link in your portfolio. Highlight click-through rate improvements for client ads.' }
+    ],
+    resources: [
+      { title: 'Figma 101 for Social & UI Design', url: 'https://www.youtube.com/results?search_query=figma+for+beginners+social+media+design' },
+      { title: 'Canva Design Like a Pro Masterclass', url: 'https://www.youtube.com/results?search_query=canva+pro+design+masterclass' },
+      { title: 'High CTR YouTube Thumbnail Guide', url: 'https://www.youtube.com/results?search_query=how+to+design+high+ctr+thumbnails' }
+    ]
+  },
+  web: {
+    id: 'web',
+    catKey: 'web',
+    title: 'Modern Web Development & Landing Pages',
+    icon: '💻',
+    bg: 'linear-gradient(135deg,#eff6ff,#bfdbfe)',
+    badge: '💼 Highest Payouts',
+    payRange: '₹5,000 – ₹30,000 / project',
+    difficulty: 'Intermediate',
+    timeCommitment: '3 - 5 weeks',
+    tag: 'Web Development',
+    summary: 'Build high-speed, mobile-responsive landing pages, brand websites, and interactive web apps using modern HTML, CSS, Tailwind, or React.',
+    tools: ['HTML5 & CSS3', 'Tailwind CSS', 'JavaScript & React', 'Vercel / Netlify', 'GitHub'],
+    roadmap: [
+      { stage: '1. Responsive Layouts & Tailwind', desc: 'Master mobile-first flexbox, CSS grid, semantic markup, and clean UI styling with Tailwind CSS.' },
+      { stage: '2. Build 3 Live Deployed Projects', desc: 'Deploy: 1) High-converting SaaS landing page with dark mode, 2) Personal portfolio with work showcase, 3) Interactive product catalog.' },
+      { stage: '3. Land Brand Dev Work', desc: 'Brands look for live links! Add your deployed Vercel/Netlify URLs in your NextGenGrowth portfolio to get hired immediately.' }
+    ],
+    resources: [
+      { title: 'Tailwind CSS Full Course', url: 'https://www.youtube.com/results?search_query=tailwind+css+full+course' },
+      { title: 'Responsive Landing Page in 2 Hours', url: 'https://www.youtube.com/results?search_query=build+responsive+landing+page+html+css' },
+      { title: 'Git & GitHub Zero to Hero', url: 'https://www.youtube.com/results?search_query=git+github+tutorial+for+beginners' }
+    ]
+  },
+  writing: {
+    id: 'writing',
+    catKey: 'writing',
+    title: 'Content Writing, Copywriting & SEO',
+    icon: '✍️',
+    bg: 'linear-gradient(135deg,#fff7ed,#fed7aa)',
+    badge: '🚀 Evergreen Skill',
+    payRange: '₹1,500 – ₹12,000 / gig',
+    difficulty: 'Beginner Friendly',
+    timeCommitment: '1 - 2 weeks',
+    tag: 'Content Writing',
+    summary: 'Write compelling sales copy, viral LinkedIn posts, SEO-optimized blog articles, and email newsletters that turn readers into buyers.',
+    tools: ['Google Docs & Notion', 'Grammarly / Hemingway', 'ChatGPT & Claude', 'Ahrefs Webmaster'],
+    roadmap: [
+      { stage: '1. Direct-Response Copy Frameworks', desc: 'Master the AIDA (Attention, Interest, Desire, Action) and PAS (Problem, Agitate, Solution) formulas.' },
+      { stage: '2. Build 3 Writing Samples', desc: 'Write: 1) 1,200-word SEO article for a D2C brand, 2) 3 high-engagement LinkedIn posts, 3) 5 email welcome sequences.' },
+      { stage: '3. Pitch NextGenGrowth Brands', desc: 'Share a Notion document with clean formatting. Show how your writing matches the brand tone.' }
+    ],
+    resources: [
+      { title: 'Copywriting Course: The AIDA Formula', url: 'https://www.youtube.com/results?search_query=copywriting+basics+for+beginners+tutorial' },
+      { title: 'SEO Content Writing Playbook', url: 'https://www.youtube.com/results?search_query=seo+content+writing+tutorial+for+beginners' },
+      { title: 'Writing Viral LinkedIn Hooks', url: 'https://www.youtube.com/results?search_query=how+to+write+viral+linkedin+posts' }
+    ]
+  },
+  ai: {
+    id: 'ai',
+    catKey: 'ai',
+    title: 'AI Tools & Creative Automation',
+    icon: '🤖',
+    bg: 'linear-gradient(135deg,#fef2f2,#fecaca)',
+    badge: '⚡ Future Proof',
+    payRange: '₹3,000 – ₹20,000 / gig',
+    difficulty: 'Beginner to Intermediate',
+    timeCommitment: '1 - 2 weeks',
+    tag: 'AI Tools',
+    summary: 'Harness generative AI tools like Midjourney, ChatGPT, Claude, and automation pipelines (Make.com, Zapier) to 10x output speed for brands.',
+    tools: ['ChatGPT Plus & Claude 3.5', 'Midjourney v6', 'Make.com / Zapier', 'ElevenLabs Voice AI', 'Perplexity AI'],
+    roadmap: [
+      { stage: '1. Prompt Engineering & Workflows', desc: 'Learn structured prompting (context, role, constraints, multi-shot) to get consistent production-ready deliverables.' },
+      { stage: '2. Build 3 Automated Workflows', desc: 'Create: 1) Automated social post generator, 2) AI image asset pack for brand marketing, 3) Customer FAQ bot.' },
+      { stage: '3. Pitch Efficiency to Startups', desc: 'Pitch startup founders on how you save 20 hours/week using AI workflows. Apply on NextGenGrowth roles.' }
+    ],
+    resources: [
+      { title: 'Prompt Engineering Masterclass', url: 'https://www.youtube.com/results?search_query=prompt+engineering+masterclass' },
+      { title: 'Make.com No-Code Automation for Beginners', url: 'https://www.youtube.com/results?search_query=make.com+automation+for+beginners' },
+      { title: 'Midjourney Commercial Image Generation', url: 'https://www.youtube.com/results?search_query=midjourney+tutorial+for+designers' }
+    ]
+  },
+  growth: {
+    id: 'growth',
+    catKey: 'marketing',
+    title: 'Social Media Growth & Management',
+    icon: '📱',
+    bg: 'linear-gradient(135deg,#fdf4ff,#e9d5ff)',
+    badge: '📈 Retainer Potential',
+    payRange: '₹6,000 – ₹25,000 / month',
+    difficulty: 'Intermediate',
+    timeCommitment: '2 - 3 weeks',
+    tag: 'Social Media',
+    summary: 'Strategize organic social distribution, manage brand communities, write content calendars, and drive authentic audience engagement.',
+    tools: ['Notion Content Calendars', 'Buffer / Meta Business Suite', 'Instagram Analytics', 'Canva'],
+    roadmap: [
+      { stage: '1. Organic Distribution Architecture', desc: 'Learn how algorithms reward watch time, saves, shares, and comment loops. Build a 30-day content calendar.' },
+      { stage: '2. Case Study Creation', desc: 'Audit a popular brand account, analyze what works, and create a 10-slide growth improvement proposal.' },
+      { stage: '3. Close Monthly Retainers', desc: 'Apply for long-term and internship roles on NextGenGrowth with guaranteed deliverables (e.g. 15 reels + daily stories).' }
+    ],
+    resources: [
+      { title: 'Instagram Algorithm & Organic Growth', url: 'https://www.youtube.com/results?search_query=instagram+growth+strategy+algorithm' },
+      { title: 'Social Media Management for Freelancers', url: 'https://www.youtube.com/results?search_query=social+media+management+course' },
+      { title: 'How to Build a Content Calendar in Notion', url: 'https://www.youtube.com/results?search_query=social+media+content+calendar+notion' }
+    ]
+  }
+};
+
+let curCourseFilter = 'all';
+
+function renderCourseGrid(){
+  const grid = document.getElementById('coursesGrid');
+  if(!grid) return;
+  const tracks = Object.values(SKILL_TRACKS).filter(t => curCourseFilter === 'all' || t.id === curCourseFilter);
+  if(!tracks.length){
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:30px;color:var(--ts)">No tracks found in this category.</div>';
+    return;
+  }
+  grid.innerHTML = tracks.map(t => {
+    const isAdded = (userSkills||[]).some(s => s.toLowerCase() === t.tag.toLowerCase());
+    return `
+      <div class="card" style="display:flex;flex-direction:column;gap:10px;position:relative;border-radius:14px;transition:transform .2s,box-shadow .2s;cursor:pointer" onclick="openSkillGuide('${t.id}')">
+        <div style="height:100px;background:${t.bg};border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:2.4rem;position:relative">
+          ${t.icon}
+          <span style="position:absolute;top:8px;right:8px;background:rgba(255,255,255,.92);border-radius:100px;padding:3px 9px;font-size:.65rem;font-weight:700;color:var(--gm)">${t.badge}</span>
+        </div>
+        <div>
+          <div style="font-family:'Clash Display',sans-serif;font-size:.95rem;font-weight:700;color:var(--td);line-height:1.3;margin-bottom:4px">${esc(t.title)}</div>
+          <p style="font-size:.76rem;color:var(--ts);line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${esc(t.summary)}</p>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;font-size:.74rem;padding-top:6px;border-top:1px solid var(--br);margin-top:auto">
+          <span style="font-weight:700;color:var(--gm)">${esc(t.payRange)}</span>
+          <span style="color:var(--ts)">${esc(t.difficulty)}</span>
+        </div>
+        <div style="display:flex;gap:7px;margin-top:2px" onclick="event.stopPropagation()">
+          <button class="btn bout bsm" style="flex:1;justify-content:center" onclick="openSkillGuide('${t.id}')">📖 Roadmap</button>
+          <button class="btn bpri bsm" style="flex:1;justify-content:center" onclick="jumpToProjects('${t.catKey}')">⚡ Find Jobs</button>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function filterCourseTracks(trackId, btn){
+  curCourseFilter = trackId;
+  document.querySelectorAll('[id^="cfbtn-"]').forEach(b => b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  renderCourseGrid();
+}
+
+function openSkillGuide(trackKey){
+  const t = SKILL_TRACKS[trackKey];
+  if(!t) return;
+  const isAdded = (userSkills||[]).some(s => s.toLowerCase() === t.tag.toLowerCase());
+  const content = document.getElementById('skillGuideContent');
+  if(!content) return;
+  content.innerHTML = `
+    <div style="display:flex;align-items:flex-start;gap:14px;margin-bottom:16px;padding-right:32px">
+      <div style="width:52px;height:52px;border-radius:14px;background:${t.bg};display:flex;align-items:center;justify-content:center;font-size:1.8rem;flex-shrink:0">${t.icon}</div>
+      <div>
+        <div style="display:inline-block;padding:2px 8px;border-radius:100px;background:var(--gl);color:var(--gm);font-size:.68rem;font-weight:700;margin-bottom:4px">${t.badge}</div>
+        <h3 style="font-family:'Clash Display',sans-serif;font-size:1.25rem;font-weight:700;color:var(--td);line-height:1.25">${esc(t.title)}</h3>
+        <div style="font-size:.78rem;color:var(--ts);margin-top:3px">Typical Pay: <strong style="color:var(--gm)">${esc(t.payRange)}</strong> · Time to Learn: <strong>${esc(t.timeCommitment)}</strong></div>
+      </div>
+    </div>
+
+    <p style="font-size:.83rem;color:var(--tm);line-height:1.55;margin-bottom:14px">${esc(t.summary)}</p>
+
+    <div style="margin-bottom:16px">
+      <div class="st" style="font-size:.84rem;margin-bottom:8px">🛠️ Essential Tools to Learn</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        ${t.tools.map(tool => `<span style="padding:4px 10px;background:var(--gp);border:1px solid var(--br);border-radius:100px;font-size:.74rem;font-weight:600;color:var(--td)">${esc(tool)}</span>`).join('')}
+      </div>
+    </div>
+
+    <div style="margin-bottom:16px">
+      <div class="st" style="font-size:.84rem;margin-bottom:10px">🗺️ 3-Stage Earning Roadmap</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        ${t.roadmap.map(rm => `
+          <div style="background:var(--gp);border:1px solid var(--br);border-radius:10px;padding:10px 12px">
+            <strong style="display:block;font-size:.8rem;color:var(--td);margin-bottom:2px">${esc(rm.stage)}</strong>
+            <span style="font-size:.75rem;color:var(--ts);line-height:1.4">${esc(rm.desc)}</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div style="margin-bottom:18px">
+      <div class="st" style="font-size:.84rem;margin-bottom:8px">📺 Curated Free Learning Resources</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        ${t.resources.map(r => `
+          <a href="${esc(r.url)}" target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:white;border:1px solid var(--br);border-radius:8px;text-decoration:none;font-size:.78rem;font-weight:600;color:var(--td);transition:border-color .2s" onmouseover="this.style.borderColor='var(--gb)'" onmouseout="this.style.borderColor='var(--br)'">
+            <span>▶ ${esc(r.title)}</span>
+            <span style="color:var(--gm);font-size:.72rem">Free Guide ↗</span>
+          </a>
+        `).join('')}
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;padding-top:12px;border-top:1px solid var(--br)">
+      <button class="btn bpri" style="justify-content:center;font-size:.8rem" onclick="jumpToProjects('${t.catKey}')">⚡ Find Brand Projects</button>
+      <button class="btn ${isAdded?'bout':'bpri'}" style="justify-content:center;font-size:.8rem;${isAdded?'opacity:0.75':''}" onclick="addSkillToProfile('${t.tag}')">${isAdded ? '✓ Skill in Profile' : '➕ Add Skill to Profile'}</button>
+      <button class="btn bout" style="justify-content:center;font-size:.8rem" onclick="closeSkillGuide();goTo('portfolio',null)">📁 Add Proof to Portfolio</button>
+    </div>
+  `;
+
+  const modal = document.getElementById('skillGuideModal');
+  if(modal){
+    modal.classList.add('show');
+    modal.setAttribute('aria-hidden', 'false');
+  }
+}
+
+function closeSkillGuide(){
+  const modal = document.getElementById('skillGuideModal');
+  if(modal){
+    modal.classList.remove('show');
+    modal.setAttribute('aria-hidden', 'true');
+  }
+}
+
+function jumpToProjects(catKey){
+  closeSkillGuide();
+  goTo('projects', null);
+  setFilter(catKey);
+}
+
+async function addSkillToProfile(skillName){
+  if(!skillName) return;
+  const current = Array.isArray(userSkills) ? [...userSkills] : [];
+  if(current.some(s => s.toLowerCase() === skillName.toLowerCase())){
+    showToast(`"${skillName}" is already in your profile!`, 'info');
+    return;
+  }
+  current.push(skillName);
+  try{
+    const res = await fetch('/api/profile', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + _tk },
+      body: JSON.stringify({ skills: current })
+    });
+    const data = await res.json();
+    if(data.success){
+      userSkills = current;
+      if(_u) _u.skills = current;
+      localStorage.setItem('ngg_user', JSON.stringify(_u));
+      loadUserData(_u);
+      showToast(`Added "${skillName}" to your profile! Matches updated 🎉`, 'success');
+      const modal = document.getElementById('skillGuideModal');
+      if(modal && modal.classList.contains('show')){
+        const currentTrack = Object.values(SKILL_TRACKS).find(t => t.tag.toLowerCase() === skillName.toLowerCase());
+        if(currentTrack) openSkillGuide(currentTrack.id);
+      }
+    }else{
+      showToast(data.message || 'Could not update skills.', 'error');
+    }
+  }catch{
+    showToast('Network error saving skill.', 'error');
+  }
+}
+
 // NAVIGATION
 const PT={home:'Dashboard',projects:'Browse Projects',longterm:'Long-Term Roles',applications:'My Applications',portfolio:'My Portfolio',earnings:'My Earnings',courses:'Skill Courses',mentors:'Mentors',profile:'My Profile',kyc:'Payout KYC',referrals:'Referral Program'};
-function goTo(pg,navBtn){
+function goTo(pg,navBtn,skipHistory=false){
   closeNotifications();
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   const el=document.getElementById('page-'+pg);if(el)el.classList.add('active');
@@ -3719,7 +4092,13 @@ function goTo(pg,navBtn){
   else document.querySelectorAll('.ni').forEach(n=>{if((n.getAttribute('onclick')||'').includes("'"+pg+"'"))n.classList.add('active');});
   document.getElementById('pgT').textContent=PT[pg]||'Dashboard';
   setBottomNav(pg);
+  if(!skipHistory){
+    try{
+      history.pushState({page:pg}, '', '#'+pg);
+    }catch(_){}
+  }
   if(pg==='projects')renderProjects();
+  if(pg==='courses')renderCourseGrid();
   if(pg==='longterm')loadLongTermRoles();
   if(pg==='applications'){renderAppList(realApps,'all');renderApprovedProjects(realApps);loadStudentWorkspaces();}
   if(pg==='mentors')loadMentors();
@@ -3729,6 +4108,11 @@ function goTo(pg,navBtn){
   closeSidebar();
   gsap.fromTo('#page-'+pg,{opacity:0,y:10},{opacity:1,y:0,duration:.28,ease:'power2.out'});
 }
+
+window.addEventListener('popstate', (e)=>{
+  const pg = (window.location.hash||'').replace('#','') || 'home';
+  if(PT[pg]) goTo(pg, null, true);
+});
 
 // ✅ MOBILE SIDEBAR
 function openSidebar(){
@@ -3759,7 +4143,7 @@ function logout(){
   const finish=()=>{
     localStorage.removeItem('ngg_token');
     localStorage.removeItem('ngg_user');
-    window.location.href='/';
+    window.location.replace('/');
   };
   const clearServerSession=()=>fetch('/api/logout',{method:'POST',keepalive:true}).catch(()=>{});
   const run=()=>clearServerSession().finally(finish);
@@ -3779,8 +4163,16 @@ window.addEventListener('DOMContentLoaded',()=>{
   loadKyc();
   fetchFreshProfile();    
   loadLongTermRoles();
+  renderCourseGrid();
   
   if (typeof loadLiveJobs === 'function') loadLiveJobs(); // Fetch real jobs
+
+  const initialHash = (window.location.hash||'').replace('#','').trim();
+  if(initialHash && PT[initialHash]){
+    goTo(initialHash, null, true);
+  } else {
+    try{ history.replaceState({page:'home'}, '', '#home'); }catch(_){}
+  }
 
   document.addEventListener('click',e=>{
     const panel=document.getElementById('notifPanel');

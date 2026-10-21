@@ -1314,7 +1314,7 @@
           if (role === 'brand') {
             document.getElementById('pendingBox').classList.add('show');
             toast('Brand account created!', 'success');
-            setTimeout(() => window.location.href = '/brand-dashboard', 1000);
+            setTimeout(() => window.location.replace('/brand-dashboard'), 1000);
           } else {
             toast('Account created! Joining WhatsApp community...', 'success');
             const cLink = res.communityLink || '';
@@ -1322,7 +1322,7 @@
               if (cLink) {
                 window.open(cLink, '_blank');
               }
-              window.location.href = '/dashboard';
+              window.location.replace('/dashboard');
             }, 1200);
           }
         } else throw new Error(res.message || 'Registration failed');
