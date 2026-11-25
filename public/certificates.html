@@ -7,7 +7,7 @@
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,500;1,600;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,500;1,600;1,700&family=Great+Vibes&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet" />
   <script src="/vendor/html2canvas.min.js"></script>
   <script src="/vendor/jspdf.umd.min.js"></script>
   <style>
@@ -628,9 +628,9 @@
     }
 
     .col-sig {
-      padding: 0 22px;
+      padding: 0 20px;
       border-right: 1.5px solid rgba(201, 161, 69, 0.55);
-      height: 76px;
+      height: 82px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -642,7 +642,17 @@
       display: flex;
       align-items: flex-end;
       justify-content: center;
-      margin-bottom: 3px;
+      margin-bottom: 2px;
+    }
+
+    .sig-calligraphy {
+      font-family: 'Great Vibes', 'Cormorant Garamond', cursive;
+      font-size: 31px;
+      line-height: 1;
+      color: #032e20;
+      white-space: nowrap;
+      transform: rotate(-1.5deg);
+      padding: 0 6px 2px;
     }
 
     .sig-img-rendered {
@@ -653,18 +663,29 @@
     }
 
     .sig-line {
-      width: 185px;
+      width: 195px;
       height: 1.2px;
       background: #1a2d24;
-      margin-bottom: 4px;
+      margin-bottom: 3px;
+    }
+
+    .sig-caption-name {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #033826;
+      line-height: 1.2;
     }
 
     .sig-caption {
       font-family: 'Cormorant Garamond', serif;
       font-style: italic;
       font-weight: 600;
-      font-size: 14.5px;
-      color: #1f332a;
+      font-size: 13.5px;
+      color: #2f4339;
+      line-height: 1.15;
     }
 
     .col-qr {
@@ -899,10 +920,11 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label">Your Signature (Saved Automatically)</label>
+            <label class="form-label">Founder / Signatory Name & Signature</label>
+            <input type="text" class="form-input" id="in-signatory" value="Swatantra Shukla" oninput="updateLivePreview()" style="margin-bottom: 6px;" placeholder="e.g. Swatantra Shukla" />
             <div class="sig-box-mini">
               <img id="mini-sig-preview" class="sig-preview-mini" alt="Signature" style="display: none;" />
-              <span id="mini-sig-fallback" style="font-size: 0.78rem; color: var(--ink-500); font-weight: 600;">Default Vector Sig</span>
+              <span id="mini-sig-fallback" style="font-size: 0.78rem; color: #044731; font-weight: 700;">Calligraphy: Swatantra Shukla</span>
               <button type="button" class="btn btn-outline" style="width: auto; padding: 6px 12px; font-size: 0.76rem;" onclick="openSigModal()">✍️ Draw / Upload</button>
             </div>
           </div>
@@ -1110,15 +1132,12 @@
               <!-- Col 3: Founder Signature -->
               <div class="col-sig">
                 <div class="sig-visual-slot" id="p-sig-slot">
-                  <!-- Crisp handwritten vector fallback -->
-                  <svg id="p-sig-svg" width="175" height="44" viewBox="0 0 220 55" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M18 39 C26 15, 42 8, 34 29 C28 45, 14 43, 25 32 C37 20, 48 36, 56 26 C60 21, 59 35, 67 27 C72 22, 73 34, 82 28 C90 23, 86 35, 95 26 C100 18, 103 10, 99 34 C96 42, 108 26, 118 28 C128 29, 134 22, 142 29 C149 34, 154 20, 162 28 C170 35, 184 26, 202 27" stroke="#06281c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
-                    <path d="M12 46 Q95 40 194 37" stroke="#06281c" stroke-width="1.3" stroke-linecap="round" opacity="0.7" />
-                  </svg>
+                  <div id="p-sig-svg" class="sig-calligraphy">Swatantra Shukla</div>
                   <img id="p-sig-img" class="sig-img-rendered" style="display: none;" alt="Authorized Signature" />
                 </div>
                 <div class="sig-line"></div>
-                <div class="sig-caption">Authorized Signatory</div>
+                <div class="sig-caption-name" id="p-sig-label">SWATANTRA SHUKLA</div>
+                <div class="sig-caption">Founder &bull; Authorized Signatory</div>
               </div>
 
               <!-- Col 4: Real QR Verification Box -->
@@ -1164,7 +1183,7 @@
             <div>
               <div id="lor-sig-slot" style="height: 44px; margin-bottom: 4px;"></div>
               <div style="width: 190px; height: 1.2px; background: #1a2d24; margin-bottom: 6px;"></div>
-              <strong style="display: block; font-size: 0.9rem;">Swatantra Shukla</strong>
+              <strong id="lor-sig-name" style="display: block; font-size: 0.9rem;">Swatantra Shukla</strong>
               <span style="font-size: 0.78rem; color: var(--ink-500);">Founder, NextGenGrowth • UDYAM-UP-48-0068269</span>
             </div>
             <div style="text-align: center;">
@@ -1198,7 +1217,7 @@
       <div style="margin: 14px 0; text-align: center; font-size: 0.78rem; color: var(--ink-500); font-weight: 700;">— OR UPLOAD IMAGE —</div>
 
       <input type="file" accept="image/*" id="sig-file-input" onchange="handleSigUpload(event)" class="form-input" style="padding: 8px;" />
-      <button type="button" class="btn btn-outline" style="margin-top: 8px; color: #dc2626;" onclick="resetDefaultSig()">Reset to Default Vector Signature</button>
+      <button type="button" class="btn btn-outline" style="margin-top: 8px; color: #dc2626;" onclick="resetDefaultSig()">Reset to Calligraphy (Swatantra Shukla)</button>
     </div>
   </div>
 
@@ -1311,10 +1330,25 @@
       const projects = document.getElementById('in-projects').value || '1';
       const certSubtitle = document.getElementById('in-cert-title').value;
       const customNote = document.getElementById('in-note').value.trim();
+      const signatory = document.getElementById('in-signatory').value.trim() || 'Swatantra Shukla';
 
       document.getElementById('p-cert-subtitle').innerText = certSubtitle;
       document.getElementById('p-name').innerText = name;
       document.getElementById('p-role-ribbon').innerText = role;
+      document.getElementById('p-sig-svg').innerText = signatory;
+      document.getElementById('p-sig-label').innerText = signatory.toUpperCase();
+      if (!localStorage.getItem(SIG_STORAGE_KEY)) {
+        document.getElementById('mini-sig-fallback').innerText = `Calligraphy: ${signatory}`;
+        const lorSlot = document.getElementById('lor-sig-slot');
+        lorSlot.innerHTML = '';
+        const div = document.createElement('div');
+        div.className = 'sig-calligraphy';
+        div.style.fontSize = '32px';
+        div.style.display = 'inline-block';
+        div.innerText = signatory;
+        lorSlot.appendChild(div);
+      }
+      document.getElementById('lor-sig-name').innerText = signatory;
 
       if (customNote) {
         document.getElementById('p-statement-1').innerText = customNote;
@@ -1350,11 +1384,20 @@
         miniFallback.style.display = 'none';
         lorSlot.innerHTML = `<img src="${savedSig}" style="max-height:44px; max-width:175px; mix-blend-mode:multiply;" />`;
       } else {
+        const signatory = document.getElementById('in-signatory')?.value.trim() || 'Swatantra Shukla';
+        svgEl.innerText = signatory;
         svgEl.style.display = 'block';
         imgEl.style.display = 'none';
         miniImg.style.display = 'none';
+        miniFallback.innerText = `Calligraphy: ${signatory}`;
         miniFallback.style.display = 'inline';
-        lorSlot.innerHTML = svgEl.outerHTML;
+        lorSlot.innerHTML = '';
+        const div = document.createElement('div');
+        div.className = 'sig-calligraphy';
+        div.style.fontSize = '32px';
+        div.style.display = 'inline-block';
+        div.innerText = signatory;
+        lorSlot.appendChild(div);
       }
     }
 
@@ -1470,6 +1513,7 @@
         duration: document.getElementById('in-duration').value.trim(),
         projectsCompleted: Number(document.getElementById('in-projects').value) || 1,
         endorsementText: document.getElementById('in-note').value.trim(),
+        issuedBy: document.getElementById('in-signatory').value.trim() || 'Swatantra Shukla',
       };
 
       try {
