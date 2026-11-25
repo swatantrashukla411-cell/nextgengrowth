@@ -6493,6 +6493,18 @@ app.get('/coupon-print', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'coupon-print.html'));
 });
 
+// Founder-Only Certificate Studio & Public QR Verification
+const certificateRoutes = require('./server/routes/certificateRoutes');
+app.use('/vendor/html2canvas.min.js', express.static(path.join(__dirname, 'node_modules/html2canvas/dist/html2canvas.min.js')));
+app.use('/vendor/jspdf.umd.min.js', express.static(path.join(__dirname, 'node_modules/jspdf/dist/jspdf.umd.min.js')));
+app.use('/api/certificates', certificateRoutes);
+app.get('/certificates', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'certificates.html'));
+});
+app.get('/verify/:certId', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'verify.html'));
+});
+
 app.listen(PORT,()=>{
   const razorpayConfig=getRazorpayConfig();
   console.log(`\n🚀 Server: http://localhost:${PORT}`);

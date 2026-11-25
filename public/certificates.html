@@ -1,0 +1,1629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NextGenGrowth | Founder Certificate & QR Studio</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,500;1,600;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@600;700&display=swap" rel="stylesheet" />
+  <script src="/vendor/html2canvas.min.js"></script>
+  <script src="/vendor/jspdf.umd.min.js"></script>
+  <style>
+    :root {
+      --primary: #10b981;
+      --primary-dark: #044731;
+      --emerald-deep: #033524;
+      --gold: #c9a145;
+      --ink-900: #0a1f17;
+      --ink-700: #1f3a2e;
+      --ink-500: #4b6358;
+      --border: rgba(16, 185, 129, 0.18);
+      --bg-soft: #f6fbf8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: #e9f0ec;
+      color: var(--ink-900);
+      min-height: 100vh;
+    }
+
+    /* ==================== ADMIN LOCK OVERLAY ==================== */
+    .auth-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      background: rgba(3, 35, 24, 0.88);
+      backdrop-filter: blur(14px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .auth-card {
+      background: white;
+      width: 100%;
+      max-width: 420px;
+      border-radius: 22px;
+      padding: 36px;
+      box-shadow: 0 28px 70px rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(201, 161, 69, 0.4);
+      text-align: center;
+    }
+
+    .auth-logo {
+      width: 68px;
+      height: 68px;
+      margin: 0 auto 14px;
+      border-radius: 50%;
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.25);
+    }
+
+    /* ==================== TOPBAR ==================== */
+    .topbar {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 12px 26px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 1.05rem;
+      color: var(--ink-900);
+      text-decoration: none;
+    }
+
+    .brand-wrap img { height: 34px; width: 34px; border-radius: 50%; }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .msme-pill {
+      background: #ecfdf5;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      color: #044731;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* ==================== STUDIO LAYOUT ==================== */
+    .studio-grid {
+      display: grid;
+      grid-template-columns: 370px 1fr;
+      gap: 24px;
+      max-width: 1600px;
+      margin: 22px auto;
+      padding: 0 22px 48px;
+      align-items: start;
+    }
+
+    .panel {
+      background: white;
+      border-radius: 18px;
+      padding: 22px;
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 30px rgba(10, 31, 23, 0.06);
+    }
+
+    .panel h2 { font-size: 1.18rem; font-weight: 800; margin-bottom: 4px; }
+    .panel-sub { font-size: 0.82rem; color: var(--ink-500); margin-bottom: 16px; }
+
+    .type-toggle {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      background: var(--bg-soft);
+      padding: 5px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+
+    .type-btn {
+      padding: 8px 10px;
+      border: none;
+      background: transparent;
+      border-radius: 8px;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 0.82rem;
+      color: var(--ink-500);
+      cursor: pointer;
+    }
+
+    .type-btn.active {
+      background: white;
+      color: #044731;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .form-group { margin-bottom: 12px; }
+
+    .form-label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--ink-700);
+      margin-bottom: 4px;
+    }
+
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #d5e2dc;
+      border-radius: 10px;
+      font-family: inherit;
+      font-size: 0.88rem;
+      color: var(--ink-900);
+      background: #fff;
+    }
+
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.16);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      width: 100%;
+      padding: 11px 16px;
+      border-radius: 11px;
+      font-family: inherit;
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+      color: white;
+      box-shadow: 0 6px 18px rgba(16, 185, 129, 0.28);
+    }
+
+    .btn-primary:hover { transform: translateY(-1px); }
+
+    .btn-dark {
+      background: #043927;
+      color: white;
+    }
+
+    .btn-dark:hover { background: #02261a; }
+
+    .btn-gold {
+      background: linear-gradient(135deg, #d4af37 0%, #b58927 100%);
+      color: white;
+    }
+
+    .btn-outline {
+      background: white;
+      border: 1px solid #cbd9d2;
+      color: var(--ink-900);
+    }
+
+    .btn-outline:hover { background: var(--bg-soft); border-color: var(--primary); }
+
+    .action-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .issued-banner {
+      display: none;
+      background: #ecfdf5;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+      border-radius: 12px;
+      padding: 12px;
+      margin-top: 12px;
+      font-size: 0.8rem;
+    }
+
+    .issued-banner a.verify-url {
+      color: #044731;
+      font-weight: 700;
+      word-break: break-all;
+    }
+
+    .sig-box-mini {
+      background: var(--bg-soft);
+      border: 1px dashed #9fc5b4;
+      border-radius: 10px;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .sig-preview-mini {
+      height: 36px;
+      max-width: 130px;
+      object-fit: contain;
+      mix-blend-mode: multiply;
+    }
+
+    .history-list {
+      margin-top: 18px;
+      border-top: 1px solid var(--border);
+      padding-top: 14px;
+    }
+
+    .history-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 10px;
+      border-radius: 8px;
+      background: var(--bg-soft);
+      margin-bottom: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      border: 1px solid transparent;
+    }
+
+    .history-item:hover { border-color: var(--primary); }
+
+    /* ==================== CERTIFICATE STAGE ==================== */
+    .preview-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+    }
+
+    .preview-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-width: 1120px;
+      background: white;
+      padding: 10px 18px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      font-size: 0.84rem;
+      color: var(--ink-700);
+      font-weight: 600;
+    }
+
+    .cert-scaler-viewport {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* EXACT 1120x792 LUXURY CERTIFICATE TEMPLATE (MATCHING UPLOADED PDF) */
+    .cert-canvas {
+      width: 1120px;
+      height: 792px;
+      background: linear-gradient(160deg, #ffffff 0%, #fafbf9 60%, #f4f7f5 100%);
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+      box-shadow: 0 24px 70px rgba(3, 53, 36, 0.22);
+      transform-origin: top center;
+      user-select: none;
+    }
+
+    /* Outer Forest Border & Inner Gold Line */
+    .cert-frame-outer {
+      position: absolute;
+      inset: 0;
+      border: 9px solid #043e2b;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .cert-frame-inner {
+      position: absolute;
+      inset: 14px;
+      border: 1.5px solid #c9a145;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    /* Background SVG Waves */
+    .cert-bg-waves {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* Top-Left & Bottom-Right Folded Corner Ribbons */
+    .corner-ribbon-tl {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 245px;
+      height: 245px;
+      z-index: 8;
+      pointer-events: none;
+    }
+
+    .corner-ribbon-br {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 245px;
+      height: 245px;
+      z-index: 8;
+      pointer-events: none;
+    }
+
+    /* Inner Content Layout */
+    .cert-content {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      height: 100%;
+      padding: 26px 64px 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Top Circular Logo + Flanking Gold Lines */
+    .cert-top-logo-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+      width: 100%;
+      margin-top: 2px;
+    }
+
+    .gold-rule-left {
+      width: 220px;
+      height: 1.5px;
+      background: linear-gradient(90deg, rgba(201, 161, 69, 0.08), #c9a145);
+    }
+
+    .gold-rule-right {
+      width: 220px;
+      height: 1.5px;
+      background: linear-gradient(90deg, #c9a145, rgba(201, 161, 69, 0.08));
+    }
+
+    .cert-logo-badge {
+      width: 112px;
+      height: 112px;
+      border-radius: 50%;
+      object-fit: cover;
+      box-shadow: 0 8px 24px rgba(3, 53, 36, 0.18);
+      background: #0b1622;
+    }
+
+    /* Title + Laurel Wreaths */
+    .cert-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 22px;
+      margin-top: 6px;
+    }
+
+    .laurel-svg {
+      width: 56px;
+      height: 76px;
+      flex-shrink: 0;
+    }
+
+    .cert-title-stack {
+      text-align: center;
+    }
+
+    .cert-h1 {
+      font-family: 'Cinzel', Georgia, serif;
+      font-size: 46px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      color: #033d2a;
+      line-height: 1.08;
+      margin-right: -0.16em;
+    }
+
+    .cert-h2 {
+      font-family: 'Cinzel', Georgia, serif;
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: 0.34em;
+      color: #084833;
+      margin-top: 6px;
+      margin-right: -0.34em;
+    }
+
+    /* Presented To & Name */
+    .cert-presented {
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-style: italic;
+      font-weight: 600;
+      font-size: 23px;
+      color: #1f2e28;
+      margin-top: 8px;
+    }
+
+    .cert-recipient-name {
+      font-family: 'Cinzel', Georgia, serif;
+      font-size: 46px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      color: #033826;
+      text-transform: uppercase;
+      line-height: 1.12;
+      margin-top: 4px;
+      text-align: center;
+    }
+
+    /* Swallowtail Emerald Role Ribbon */
+    .role-ribbon-wrap {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 390px;
+      max-width: 720px;
+      height: 42px;
+      padding: 0 54px;
+      margin-top: 8px;
+    }
+
+    .role-ribbon-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      filter: drop-shadow(0 4px 10px rgba(3, 56, 38, 0.22));
+    }
+
+    .role-ribbon-text {
+      position: relative;
+      z-index: 2;
+      color: #ffffff;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.36em;
+      margin-right: -0.36em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    /* Body Copy & Champagne Journey Strip */
+    .cert-copy-block {
+      text-align: center;
+      max-width: 850px;
+      margin-top: 8px;
+    }
+
+    .cert-p1 {
+      font-size: 15.5px;
+      line-height: 1.5;
+      color: #16241d;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .cert-p2 {
+      font-size: 13.8px;
+      line-height: 1.55;
+      color: #293a32;
+      font-weight: 400;
+    }
+
+    .journey-bar {
+      width: 760px;
+      margin: 12px auto 0;
+      padding: 7px 24px;
+      background: linear-gradient(90deg, rgba(212, 175, 55, 0) 0%, rgba(212, 175, 55, 0.24) 22%, rgba(212, 175, 55, 0.24) 78%, rgba(212, 175, 55, 0) 100%);
+      text-align: center;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-style: italic;
+      font-weight: 700;
+      font-size: 15.5px;
+      color: #033f2b;
+    }
+
+    /* 4-Column Footer Row */
+    .cert-bottom-bar {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 1.1fr 1.25fr 1.05fr 0.72fr;
+      align-items: center;
+      margin-top: 8px;
+      padding-bottom: 4px;
+    }
+
+    .col-brand {
+      padding-right: 18px;
+      border-right: 1.5px solid rgba(201, 161, 69, 0.55);
+      height: 76px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .col-brand-title {
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing: 0.16em;
+      color: #091d16;
+      text-transform: uppercase;
+    }
+
+    .col-brand-sub {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 16px;
+      color: #2b3f36;
+      margin-top: 2px;
+    }
+
+    .col-udyam {
+      padding: 0 20px;
+      border-right: 1.5px solid rgba(201, 161, 69, 0.55);
+      height: 76px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .udyam-top-pill {
+      background: #04432f;
+      color: #ffffff;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      padding: 5px 18px;
+      border-radius: 999px;
+      z-index: 2;
+      margin-bottom: -4px;
+    }
+
+    .udyam-num-box {
+      border: 1.5px solid #c9a145;
+      background: #fffdf7;
+      border-radius: 8px;
+      padding: 7px 18px 5px;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 15.5px;
+      letter-spacing: 0.04em;
+      color: #081e16;
+    }
+
+    .col-sig {
+      padding: 0 22px;
+      border-right: 1.5px solid rgba(201, 161, 69, 0.55);
+      height: 76px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .sig-visual-slot {
+      height: 44px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      margin-bottom: 3px;
+    }
+
+    .sig-img-rendered {
+      max-height: 44px;
+      max-width: 175px;
+      object-fit: contain;
+      mix-blend-mode: multiply;
+    }
+
+    .sig-line {
+      width: 185px;
+      height: 1.2px;
+      background: #1a2d24;
+      margin-bottom: 4px;
+    }
+
+    .sig-caption {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-weight: 600;
+      font-size: 14.5px;
+      color: #1f332a;
+    }
+
+    .col-qr {
+      padding-left: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .qr-box-frame {
+      width: 82px;
+      height: 82px;
+      border: 1.5px dashed #8a7b55;
+      background: #ffffff;
+      padding: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .qr-box-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .qr-placeholder-txt {
+      font-size: 9px;
+      font-weight: 700;
+      color: #36473f;
+      text-align: center;
+      line-height: 1.25;
+    }
+
+    .qr-id-caption {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 9px;
+      font-weight: 700;
+      color: #044731;
+      margin-top: 3px;
+      letter-spacing: 0.03em;
+    }
+
+    /* ==================== LOR SHEET ==================== */
+    .lor-sheet {
+      display: none;
+      width: 794px;
+      min-height: 1120px;
+      background: white;
+      padding: 52px 58px;
+      box-shadow: 0 24px 60px rgba(3, 53, 36, 0.2);
+      border-top: 9px solid #043e2b;
+      position: relative;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .lor-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 18px;
+      border-bottom: 2px solid #043e2b;
+      margin-bottom: 28px;
+    }
+
+    .lor-title {
+      text-align: center;
+      font-family: 'Cinzel', serif;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #033d2a;
+      margin: 16px 0 24px;
+      text-decoration: underline;
+      text-underline-offset: 6px;
+    }
+
+    .lor-para {
+      font-size: 15px;
+      line-height: 1.85;
+      color: #16241d;
+      margin-bottom: 16px;
+      text-align: justify;
+    }
+
+    /* ==================== SIGNATURE DRAW MODAL ==================== */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 35, 24, 0.65);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-backdrop.open { display: flex; }
+
+    .sig-modal-card {
+      background: white;
+      border-radius: 20px;
+      width: 100%;
+      max-width: 480px;
+      padding: 26px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    #sig-draw-pad {
+      width: 100%;
+      height: 170px;
+      border: 2px dashed #9dc7b5;
+      border-radius: 12px;
+      background: #fbfdfc;
+      cursor: crosshair;
+      touch-action: none;
+    }
+
+    @media (max-width: 980px) {
+      .studio-grid { grid-template-columns: 1fr; }
+    }
+
+    @media print {
+      body { background: white; margin: 0; padding: 0; }
+      .topbar, .left-panel-wrap, .preview-toolbar, .auth-overlay, .modal-backdrop { display: none !important; }
+      .studio-grid { display: block; margin: 0; padding: 0; max-width: none; }
+      .cert-scaler-viewport { overflow: visible !important; height: auto !important; }
+      .cert-canvas {
+        transform: none !important;
+        box-shadow: none !important;
+        margin: 0 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      .lor-sheet {
+        box-shadow: none !important;
+        margin: 0 auto !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+      @page { size: A4 landscape; margin: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== ADMIN LOGIN LOCK ==================== -->
+  <div class="auth-overlay" id="auth-overlay">
+    <div class="auth-card">
+      <img src="/android-chrome-512x512.png" alt="NextGenGrowth" class="auth-logo" onerror="this.src='/logo.png'" />
+      <h2 style="font-size: 1.35rem; font-weight: 800; color: #033d2a; margin-bottom: 4px;">Founder Certificate Studio</h2>
+      <p style="font-size: 0.85rem; color: var(--ink-500); margin-bottom: 22px;">Private portal • Only authorized NextGenGrowth admin can issue credentials.</p>
+      <form onsubmit="handleAdminLogin(event)">
+        <div class="form-group" style="text-align: left;">
+          <label class="form-label">Admin Email</label>
+          <input type="email" class="form-input" id="login-email" required placeholder="admin@nextgengrowth.in" />
+        </div>
+        <div class="form-group" style="text-align: left;">
+          <label class="form-label">Admin Password</label>
+          <input type="password" class="form-input" id="login-pass" required placeholder="••••••••" />
+        </div>
+        <div id="login-error" style="color: #dc2626; font-size: 0.82rem; font-weight: 700; margin-bottom: 10px; display: none;"></div>
+        <button type="submit" class="btn btn-primary" id="login-btn">🔓 Unlock Certificate Studio</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Top Navigation -->
+  <div class="topbar">
+    <a href="/" class="brand-wrap">
+      <img src="/android-chrome-512x512.png" alt="NextGenGrowth" onerror="this.src='/logo.png'" />
+      <span>NextGenGrowth • Official Certificate Studio</span>
+    </a>
+    <div class="topbar-right">
+      <span class="msme-pill">UDYAM-UP-48-0068269</span>
+      <button class="btn btn-outline" style="width: auto; padding: 7px 14px; font-size: 0.8rem;" onclick="logoutAdmin()">Logout</button>
+    </div>
+  </div>
+
+  <div class="studio-grid">
+    <!-- ==================== LEFT CONTROLS ==================== -->
+    <div class="left-panel-wrap">
+      <div class="panel">
+        <h2>Create Official Credential</h2>
+        <p class="panel-sub">Naam aur kaam daalo — exact luxury design + real QR + signature ready.</p>
+
+        <div class="type-toggle">
+          <button type="button" class="type-btn active" id="btn-type-app" onclick="setDocType('appreciation')">🏆 Certificate</button>
+          <button type="button" class="type-btn" id="btn-type-lor" onclick="setDocType('lor')">📄 Official LOR</button>
+        </div>
+
+        <form id="cert-form" onsubmit="issueCertificate(event)">
+          <div class="form-group" id="title-select-wrap">
+            <label class="form-label">Certificate Type</label>
+            <select class="form-select" id="in-cert-title" onchange="updateLivePreview()">
+              <option value="OF APPRECIATION">CERTIFICATE OF APPRECIATION</option>
+              <option value="OF INTERNSHIP">CERTIFICATE OF INTERNSHIP</option>
+              <option value="OF EXCELLENCE">CERTIFICATE OF EXCELLENCE</option>
+              <option value="OF COMPLETION">CERTIFICATE OF COMPLETION</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Student / Member Name *</label>
+            <input type="text" class="form-input" id="in-name" value="AYUSH SINGH" oninput="updateLivePreview()" required placeholder="e.g. AYUSH SINGH" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Unka Kaam / Role (Ribbon Banner) *</label>
+            <input type="text" class="form-input" id="in-role" value="MANAGEMENT" oninput="updateLivePreview()" required placeholder="e.g. MANAGEMENT, VIDEO EDITING, UI/UX DESIGN" />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">College / Track (Optional, stored in QR verification)</label>
+            <input type="text" class="form-input" id="in-college" value="NextGenGrowth Fellow" oninput="updateLivePreview()" placeholder="e.g. Delhi University" />
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 8px;">
+            <div class="form-group">
+              <label class="form-label">Duration (Optional)</label>
+              <input type="text" class="form-input" id="in-duration" value="2026" oninput="updateLivePreview()" placeholder="e.g. Oct - Nov 2026" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Sprints Done</label>
+              <input type="number" class="form-input" id="in-projects" value="5" min="1" oninput="updateLivePreview()" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Your Signature (Saved Automatically)</label>
+            <div class="sig-box-mini">
+              <img id="mini-sig-preview" class="sig-preview-mini" alt="Signature" style="display: none;" />
+              <span id="mini-sig-fallback" style="font-size: 0.78rem; color: var(--ink-500); font-weight: 600;">Default Vector Sig</span>
+              <button type="button" class="btn btn-outline" style="width: auto; padding: 6px 12px; font-size: 0.76rem;" onclick="openSigModal()">✍️ Draw / Upload</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Custom Note / LOR Body (Optional)</label>
+            <textarea class="form-textarea" id="in-note" rows="2" placeholder="Leave blank to keep the exact official text..." oninput="updateLivePreview()"></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="issue-btn">
+            ⚡ Issue Official QR & Save to MongoDB
+          </button>
+
+          <div class="action-grid">
+            <button type="button" class="btn btn-dark" onclick="downloadHighResPDF()" id="dl-pdf-btn">
+              📄 Download PDF
+            </button>
+            <button type="button" class="btn btn-gold" onclick="downloadHighResPNG()" id="dl-png-btn">
+              🖼️ Download HD PNG
+            </button>
+          </div>
+
+          <button type="button" class="btn btn-outline" style="margin-top: 8px;" onclick="window.print()">
+            🖨️ Print Vector PDF (Ctrl+P)
+          </button>
+        </form>
+
+        <div class="issued-banner" id="issued-banner">
+          <div style="font-weight: 800; color: #044731; margin-bottom: 4px;">✅ Official QR Locked & Saved!</div>
+          <div style="margin-bottom: 8px;">Verify Link: <a href="#" id="verify-link" class="verify-url" target="_blank"></a></div>
+          <a href="#" id="download-qr-btn" download class="btn btn-outline" style="padding: 7px 12px; font-size: 0.78rem;">
+            ⬇️ Download Standalone 1000px QR (.PNG)
+          </a>
+        </div>
+
+        <div class="history-list">
+          <div style="font-size: 0.78rem; font-weight: 800; color: var(--ink-700); margin-bottom: 8px;">Recently Issued Credentials</div>
+          <div id="history-container" style="font-size: 0.78rem; color: var(--ink-500);">Loading...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== RIGHT LIVE CERTIFICATE PREVIEW ==================== -->
+    <div class="preview-stage">
+      <div class="preview-toolbar">
+        <span>✨ Live 300-DPI Print Preview (Exact Template Match)</span>
+        <span style="font-family: 'JetBrains Mono', monospace; font-size: 0.78rem; color: #044731;" id="toolbar-cert-id">ID: DRAFT-PREVIEW</span>
+      </div>
+
+      <div class="cert-scaler-viewport" id="cert-viewport">
+        <!-- 1. EXACT LUXURY APPRECIATION / INTERNSHIP CERTIFICATE (1120 x 792) -->
+        <div class="cert-canvas" id="experience-sheet">
+          <!-- Outer & Inner Frames -->
+          <div class="cert-frame-outer"></div>
+          <div class="cert-frame-inner"></div>
+
+          <!-- Background Flowing Golden Waves SVG -->
+          <svg class="cert-bg-waves" viewBox="0 0 1120 792" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M-40 310 C 180 180, 420 450, 680 280 C 890 140, 1020 260, 1180 170" stroke="#d9c698" stroke-width="1.2" stroke-opacity="0.32" />
+            <path d="M-40 330 C 190 200, 430 470, 690 300 C 900 160, 1030 280, 1180 190" stroke="#d9c698" stroke-width="1" stroke-opacity="0.26" />
+            <path d="M-40 350 C 200 220, 440 490, 700 320 C 910 180, 1040 300, 1180 210" stroke="#d9c698" stroke-width="0.9" stroke-opacity="0.2" />
+            <path d="M-40 370 C 210 240, 450 510, 710 340 C 920 200, 1050 320, 1180 230" stroke="#d9c698" stroke-width="0.8" stroke-opacity="0.16" />
+            <path d="M-40 540 C 210 660, 460 440, 740 590 C 950 700, 1060 540, 1180 610" stroke="#d9c698" stroke-width="1.1" stroke-opacity="0.26" />
+            <path d="M-40 560 C 220 680, 470 460, 750 610 C 960 720, 1070 560, 1180 630" stroke="#d9c698" stroke-width="0.9" stroke-opacity="0.2" />
+            <path d="M-40 580 C 230 700, 480 480, 760 630 C 970 740, 1080 580, 1180 650" stroke="#d9c698" stroke-width="0.8" stroke-opacity="0.15" />
+          </svg>
+
+          <!-- Top-Left Folded Corner Ribbon -->
+          <svg class="corner-ribbon-tl" viewBox="0 0 245 245" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="tlGold" x1="0%" y1="100%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#c08e27" />
+                <stop offset="50%" stop-color="#f7e291" />
+                <stop offset="100%" stop-color="#b98620" />
+              </linearGradient>
+              <linearGradient id="tlGreen1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#045138" />
+                <stop offset="100%" stop-color="#022c1e" />
+              </linearGradient>
+              <linearGradient id="tlGreen2" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#096f4d" />
+                <stop offset="100%" stop-color="#03442e" />
+              </linearGradient>
+            </defs>
+            <polygon points="0,0 238,0 0,238" fill="url(#tlGold)" />
+            <polygon points="0,0 220,0 0,220" fill="url(#tlGreen1)" />
+            <polygon points="0,0 175,0 0,175" fill="url(#tlGreen2)" />
+            <polygon points="0,206 206,0 218,0 0,218" fill="url(#tlGold)" opacity="0.95" />
+          </svg>
+
+          <!-- Bottom-Right Folded Corner Ribbon -->
+          <svg class="corner-ribbon-br" viewBox="0 0 245 245" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="brGold" x1="0%" y1="100%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#b98620" />
+                <stop offset="50%" stop-color="#f7e291" />
+                <stop offset="100%" stop-color="#c08e27" />
+              </linearGradient>
+              <linearGradient id="brGreen1" x1="100%" y1="100%" x2="0%" y2="0%">
+                <stop offset="0%" stop-color="#045138" />
+                <stop offset="100%" stop-color="#022c1e" />
+              </linearGradient>
+              <linearGradient id="brGreen2" x1="100%" y1="100%" x2="0%" y2="0%">
+                <stop offset="0%" stop-color="#096f4d" />
+                <stop offset="100%" stop-color="#03442e" />
+              </linearGradient>
+            </defs>
+            <polygon points="245,245 7,245 245,7" fill="url(#brGold)" />
+            <polygon points="245,245 25,245 245,25" fill="url(#brGreen1)" />
+            <polygon points="245,245 70,245 245,70" fill="url(#brGreen2)" />
+            <polygon points="245,39 39,245 27,245 245,27" fill="url(#brGold)" opacity="0.95" />
+          </svg>
+
+          <!-- Main Content -->
+          <div class="cert-content">
+            <!-- Top Logo & Horizontal Gold Rules -->
+            <div class="cert-top-logo-row">
+              <div class="gold-rule-left"></div>
+              <img src="/android-chrome-512x512.png" alt="NextGenGrowth" class="cert-logo-badge" onerror="this.src='/logo.png'" />
+              <div class="gold-rule-right"></div>
+            </div>
+
+            <!-- Title + Laurel Wreaths -->
+            <div class="cert-title-row">
+              <!-- Left Laurel -->
+              <svg class="laurel-svg" viewBox="0 0 60 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M46 72 C24 62, 16 38, 28 10" stroke="#c89628" stroke-width="2" stroke-linecap="round" />
+                <ellipse cx="26" cy="14" rx="4" ry="8" transform="rotate(-20 26 14)" fill="#daa52d" />
+                <ellipse cx="18" cy="24" rx="4" ry="8" transform="rotate(-45 18 24)" fill="#d49b24" />
+                <ellipse cx="29" cy="28" rx="3.5" ry="7.5" transform="rotate(20 29 28)" fill="#e3b642" />
+                <ellipse cx="14" cy="37" rx="4" ry="8" transform="rotate(-65 14 37)" fill="#d49b24" />
+                <ellipse cx="27" cy="41" rx="3.5" ry="7.5" transform="rotate(15 27 41)" fill="#e3b642" />
+                <ellipse cx="17" cy="51" rx="4" ry="8" transform="rotate(-80 17 51)" fill="#d49b24" />
+                <ellipse cx="30" cy="55" rx="3.5" ry="7.5" transform="rotate(5 30 55)" fill="#e3b642" />
+                <ellipse cx="26" cy="64" rx="4" ry="7.5" transform="rotate(-95 26 64)" fill="#c89628" />
+                <ellipse cx="38" cy="67" rx="3.5" ry="7" transform="rotate(-15 38 67)" fill="#daa52d" />
+              </svg>
+
+              <div class="cert-title-stack">
+                <div class="cert-h1">CERTIFICATE</div>
+                <div class="cert-h2" id="p-cert-subtitle">OF APPRECIATION</div>
+              </div>
+
+              <!-- Right Laurel (Mirrored) -->
+              <svg class="laurel-svg" style="transform: scaleX(-1);" viewBox="0 0 60 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M46 72 C24 62, 16 38, 28 10" stroke="#c89628" stroke-width="2" stroke-linecap="round" />
+                <ellipse cx="26" cy="14" rx="4" ry="8" transform="rotate(-20 26 14)" fill="#daa52d" />
+                <ellipse cx="18" cy="24" rx="4" ry="8" transform="rotate(-45 18 24)" fill="#d49b24" />
+                <ellipse cx="29" cy="28" rx="3.5" ry="7.5" transform="rotate(20 29 28)" fill="#e3b642" />
+                <ellipse cx="14" cy="37" rx="4" ry="8" transform="rotate(-65 14 37)" fill="#d49b24" />
+                <ellipse cx="27" cy="41" rx="3.5" ry="7.5" transform="rotate(15 27 41)" fill="#e3b642" />
+                <ellipse cx="17" cy="51" rx="4" ry="8" transform="rotate(-80 17 51)" fill="#d49b24" />
+                <ellipse cx="30" cy="55" rx="3.5" ry="7.5" transform="rotate(5 30 55)" fill="#e3b642" />
+                <ellipse cx="26" cy="64" rx="4" ry="7.5" transform="rotate(-95 26 64)" fill="#c89628" />
+                <ellipse cx="38" cy="67" rx="3.5" ry="7" transform="rotate(-15 38 67)" fill="#daa52d" />
+              </svg>
+            </div>
+
+            <!-- Presented To + Recipient Name -->
+            <div class="cert-presented">Presented to</div>
+            <div class="cert-recipient-name" id="p-name">AYUSH SINGH</div>
+
+            <!-- Notched Emerald Ribbon Banner -->
+            <div class="role-ribbon-wrap">
+              <svg class="role-ribbon-svg" viewBox="0 0 420 42" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="ribbonGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#033e2a" />
+                    <stop offset="50%" stop-color="#0c724f" />
+                    <stop offset="100%" stop-color="#033e2a" />
+                  </linearGradient>
+                </defs>
+                <polygon points="0,1 420,1 402,21 420,41 0,41 18,21" fill="url(#ribbonGrad)" stroke="#c9a145" stroke-width="1.6" />
+              </svg>
+              <span class="role-ribbon-text" id="p-role-ribbon">MANAGEMENT</span>
+            </div>
+
+            <!-- Official Recognition Text + Champagne Journey Strip -->
+            <div class="cert-copy-block">
+              <p class="cert-p1" id="p-statement-1">
+                In recognition of your valuable contribution, dedication, responsibility, and sincere efforts towards the work of <strong>NextGenGrowth</strong>.
+              </p>
+              <p class="cert-p2" id="p-statement-2">
+                Your commitment, professionalism, and willingness to learn and contribute have been appreciated. We recognize your efforts and wish you continued growth, success, and excellence in all your future endeavors.
+              </p>
+              <div class="journey-bar">
+                Thank you for being a part of our journey.
+              </div>
+            </div>
+
+            <!-- 4-Column Footer -->
+            <div class="cert-bottom-bar">
+              <!-- Col 1: Brand -->
+              <div class="col-brand">
+                <div class="col-brand-title">NEXTGENGROWTH</div>
+                <div class="col-brand-sub">Where Skills Meet Opportunity</div>
+              </div>
+
+              <!-- Col 2: Udyam Pill Stack -->
+              <div class="col-udyam">
+                <div class="udyam-top-pill">UDYAM REGISTRATION NUMBER</div>
+                <div class="udyam-num-box">UDYAM-UP-48-0068269</div>
+              </div>
+
+              <!-- Col 3: Founder Signature -->
+              <div class="col-sig">
+                <div class="sig-visual-slot" id="p-sig-slot">
+                  <!-- Crisp handwritten vector fallback -->
+                  <svg id="p-sig-svg" width="175" height="44" viewBox="0 0 220 55" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18 39 C26 15, 42 8, 34 29 C28 45, 14 43, 25 32 C37 20, 48 36, 56 26 C60 21, 59 35, 67 27 C72 22, 73 34, 82 28 C90 23, 86 35, 95 26 C100 18, 103 10, 99 34 C96 42, 108 26, 118 28 C128 29, 134 22, 142 29 C149 34, 154 20, 162 28 C170 35, 184 26, 202 27" stroke="#06281c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M12 46 Q95 40 194 37" stroke="#06281c" stroke-width="1.3" stroke-linecap="round" opacity="0.7" />
+                  </svg>
+                  <img id="p-sig-img" class="sig-img-rendered" style="display: none;" alt="Authorized Signature" />
+                </div>
+                <div class="sig-line"></div>
+                <div class="sig-caption">Authorized Signatory</div>
+              </div>
+
+              <!-- Col 4: Real QR Verification Box -->
+              <div class="col-qr">
+                <div class="qr-box-frame">
+                  <img id="p-qr-img" src="" alt="Verify QR" style="display: none;" />
+                  <div id="p-qr-placeholder" class="qr-placeholder-txt">ISSUE TO<br />GEN QR</div>
+                </div>
+                <div class="qr-id-caption" id="p-cert-id">DRAFT</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. OFFICIAL LETTER OF RECOMMENDATION (LOR) -->
+        <div class="lor-sheet" id="lor-sheet">
+          <div>
+            <div class="lor-header">
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <img src="/android-chrome-512x512.png" alt="NextGenGrowth" style="height: 48px; width: 48px; border-radius: 50%;" onerror="this.src='/logo.png'" />
+                <div>
+                  <h3 style="font-size: 1.25rem; font-weight: 800; color: #033d2a;">NextGenGrowth</h3>
+                  <p style="font-size: 0.74rem; font-family: 'JetBrains Mono', monospace; color: #044731; font-weight: 700;">MSME UDYAM REG: UDYAM-UP-48-0068269</p>
+                </div>
+              </div>
+              <div style="text-align: right; font-family: 'JetBrains Mono', monospace; font-size: 0.76rem; color: var(--ink-500);">
+                REF ID: <strong id="lor-cert-id" style="color: #033d2a; display: block; font-size: 0.88rem;">DRAFT</strong>
+                <span id="lor-date"></span>
+              </div>
+            </div>
+
+            <div class="lor-title">Letter of Recommendation</div>
+
+            <p class="lor-para"><strong>To Whomsoever It May Concern,</strong></p>
+            <p class="lor-para" id="lor-p1"></p>
+            <p class="lor-para" id="lor-p2"></p>
+            <p class="lor-para">
+              I strongly recommend them for any professional, creative, or leadership opportunity. Should you wish to verify this letter, please scan the QR code below or reach out to <strong>verify@nextgengrowth.in</strong>.
+            </p>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: flex-end; border-top: 1.5px solid #d5c188; padding-top: 20px;">
+            <div>
+              <div id="lor-sig-slot" style="height: 44px; margin-bottom: 4px;"></div>
+              <div style="width: 190px; height: 1.2px; background: #1a2d24; margin-bottom: 6px;"></div>
+              <strong style="display: block; font-size: 0.9rem;">Swatantra Shukla</strong>
+              <span style="font-size: 0.78rem; color: var(--ink-500);">Founder, NextGenGrowth • UDYAM-UP-48-0068269</span>
+            </div>
+            <div style="text-align: center;">
+              <div class="qr-box-frame" style="width: 78px; height: 78px;">
+                <img id="lor-qr-img" src="" alt="QR" style="display: none;" />
+              </div>
+              <div style="font-size: 0.68rem; font-family: 'JetBrains Mono', monospace; color: #044731; margin-top: 4px;">Scan to Verify</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SIGNATURE DRAW / UPLOAD MODAL ==================== -->
+  <div class="modal-backdrop" id="sig-modal">
+    <div class="sig-modal-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <h3 style="font-size: 1.15rem; font-weight: 800;">Set Your Founder Signature ✍️</h3>
+        <button type="button" onclick="closeSigModal()" style="background: none; border: none; font-size: 1.4rem; cursor: pointer;">&times;</button>
+      </div>
+      <p style="font-size: 0.82rem; color: var(--ink-500); margin-bottom: 12px;">Draw directly with your mouse/trackpad below, OR upload your transparent/white signature PNG image.</p>
+
+      <canvas id="sig-draw-pad" width="430" height="170"></canvas>
+
+      <div style="display: flex; gap: 8px; margin-top: 10px;">
+        <button type="button" class="btn btn-outline" onclick="clearSigPad()">Clear Pad</button>
+        <button type="button" class="btn btn-primary" onclick="saveDrawnSig()">Save Drawn Signature</button>
+      </div>
+
+      <div style="margin: 14px 0; text-align: center; font-size: 0.78rem; color: var(--ink-500); font-weight: 700;">— OR UPLOAD IMAGE —</div>
+
+      <input type="file" accept="image/*" id="sig-file-input" onchange="handleSigUpload(event)" class="form-input" style="padding: 8px;" />
+      <button type="button" class="btn btn-outline" style="margin-top: 8px; color: #dc2626;" onclick="resetDefaultSig()">Reset to Default Vector Signature</button>
+    </div>
+  </div>
+
+  <script>
+    const TOKEN_KEY = 'ngg_admin_token';
+    const SIG_STORAGE_KEY = 'ngg_founder_signature_v1';
+    let currentDocType = 'appreciation';
+    let currentIssuedCert = null;
+
+    // ==================== AUTH LOGIC ====================
+    function getAuthToken() {
+      return localStorage.getItem(TOKEN_KEY) || '';
+    }
+
+    async function checkAdminSession() {
+      const token = getAuthToken();
+      if (!token) {
+        document.getElementById('auth-overlay').style.display = 'flex';
+        return;
+      }
+      try {
+        const res = await fetch('/api/certificates', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.status === 401 || res.status === 403) {
+          localStorage.removeItem(TOKEN_KEY);
+          document.getElementById('auth-overlay').style.display = 'flex';
+          return;
+        }
+        const data = await res.json();
+        document.getElementById('auth-overlay').style.display = 'none';
+        renderHistory(data.certificates || []);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function handleAdminLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-pass').value;
+      const errBox = document.getElementById('login-error');
+      const btn = document.getElementById('login-btn');
+      errBox.style.display = 'none';
+      btn.disabled = true;
+      btn.innerText = 'Verifying...';
+
+      try {
+        const res = await fetch('/api/admin/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password }),
+        });
+        const data = await res.json();
+        if (data.success && data.token) {
+          localStorage.setItem(TOKEN_KEY, data.token);
+          document.getElementById('auth-overlay').style.display = 'none';
+          loadHistory();
+        } else {
+          errBox.innerText = data.message || 'Invalid credentials.';
+          errBox.style.display = 'block';
+        }
+      } catch (err) {
+        errBox.innerText = 'Server error while logging in.';
+        errBox.style.display = 'block';
+      } finally {
+        btn.disabled = false;
+        btn.innerText = '🔓 Unlock Certificate Studio';
+      }
+    }
+
+    function logoutAdmin() {
+      localStorage.removeItem(TOKEN_KEY);
+      location.reload();
+    }
+
+    // ==================== RESPONSIVE CANVAS SCALER ====================
+    function scalePreviewCanvas() {
+      const viewport = document.getElementById('cert-viewport');
+      const sheet = document.getElementById('experience-sheet');
+      if (!viewport || !sheet || currentDocType !== 'appreciation') return;
+      const availWidth = viewport.clientWidth - 8;
+      const scale = Math.min(1, availWidth / 1120);
+      sheet.style.transform = `scale(${scale})`;
+      viewport.style.height = `${Math.round(792 * scale) + 16}px`;
+    }
+    window.addEventListener('resize', scalePreviewCanvas);
+
+    // ==================== LIVE PREVIEW & FORM ====================
+    function setDocType(type) {
+      currentDocType = type;
+      document.getElementById('btn-type-app').classList.toggle('active', type === 'appreciation');
+      document.getElementById('btn-type-lor').classList.toggle('active', type === 'lor');
+      document.getElementById('title-select-wrap').style.display = type === 'appreciation' ? 'block' : 'none';
+      document.getElementById('experience-sheet').style.display = type === 'appreciation' ? 'block' : 'none';
+      document.getElementById('lor-sheet').style.display = type === 'lor' ? 'flex' : 'none';
+      if (type === 'lor') {
+        document.getElementById('cert-viewport').style.height = 'auto';
+      } else {
+        scalePreviewCanvas();
+      }
+      updateLivePreview();
+    }
+
+    function updateLivePreview() {
+      const name = (document.getElementById('in-name').value.trim() || 'AYUSH SINGH').toUpperCase();
+      const role = (document.getElementById('in-role').value.trim() || 'MANAGEMENT').toUpperCase();
+      const college = document.getElementById('in-college').value.trim() || 'NextGenGrowth Fellow';
+      const duration = document.getElementById('in-duration').value.trim() || '2026';
+      const projects = document.getElementById('in-projects').value || '1';
+      const certSubtitle = document.getElementById('in-cert-title').value;
+      const customNote = document.getElementById('in-note').value.trim();
+
+      document.getElementById('p-cert-subtitle').innerText = certSubtitle;
+      document.getElementById('p-name').innerText = name;
+      document.getElementById('p-role-ribbon').innerText = role;
+
+      if (customNote) {
+        document.getElementById('p-statement-1').innerText = customNote;
+      } else {
+        document.getElementById('p-statement-1').innerHTML =
+          'In recognition of your valuable contribution, dedication, responsibility, and sincere efforts towards the work of <strong>NextGenGrowth</strong>.';
+      }
+
+      const todayStr = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+      document.getElementById('lor-date').innerText = `Date: ${todayStr}`;
+      document.getElementById('lor-p1').innerHTML =
+        `It gives me immense pleasure to recommend <strong>${name}</strong> (${college}), who contributed to <strong>NextGenGrowth</strong> in <strong>${role}</strong> during <strong>${duration}</strong>.`;
+      document.getElementById('lor-p2').innerHTML = customNote
+        ? customNote
+        : `Throughout their tenure, ${name} executed <strong>${projects} commercial sprint(s)</strong> with strong dedication, professionalism, and reliable ownership.`;
+    }
+
+    // ==================== SIGNATURE MANAGEMENT ====================
+    function applyStoredSignature() {
+      const savedSig = localStorage.getItem(SIG_STORAGE_KEY);
+      const svgEl = document.getElementById('p-sig-svg');
+      const imgEl = document.getElementById('p-sig-img');
+      const miniImg = document.getElementById('mini-sig-preview');
+      const miniFallback = document.getElementById('mini-sig-fallback');
+      const lorSlot = document.getElementById('lor-sig-slot');
+
+      if (savedSig) {
+        svgEl.style.display = 'none';
+        imgEl.src = savedSig;
+        imgEl.style.display = 'block';
+        miniImg.src = savedSig;
+        miniImg.style.display = 'block';
+        miniFallback.style.display = 'none';
+        lorSlot.innerHTML = `<img src="${savedSig}" style="max-height:44px; max-width:175px; mix-blend-mode:multiply;" />`;
+      } else {
+        svgEl.style.display = 'block';
+        imgEl.style.display = 'none';
+        miniImg.style.display = 'none';
+        miniFallback.style.display = 'inline';
+        lorSlot.innerHTML = svgEl.outerHTML;
+      }
+    }
+
+    const sigCanvas = document.getElementById('sig-draw-pad');
+    const sigCtx = sigCanvas.getContext('2d');
+    let drawing = false;
+
+    function getPos(e) {
+      const rect = sigCanvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return {
+        x: ((clientX - rect.left) / rect.width) * sigCanvas.width,
+        y: ((clientY - rect.top) / rect.height) * sigCanvas.height,
+      };
+    }
+
+    sigCanvas.addEventListener('mousedown', (e) => { drawing = true; const p = getPos(e); sigCtx.beginPath(); sigCtx.moveTo(p.x, p.y); });
+    sigCanvas.addEventListener('mousemove', (e) => {
+      if (!drawing) return;
+      const p = getPos(e);
+      sigCtx.lineWidth = 2.6;
+      sigCtx.lineCap = 'round';
+      sigCtx.strokeStyle = '#06281c';
+      sigCtx.lineTo(p.x, p.y);
+      sigCtx.stroke();
+    });
+    window.addEventListener('mouseup', () => { drawing = false; });
+
+    sigCanvas.addEventListener('touchstart', (e) => { e.preventDefault(); drawing = true; const p = getPos(e); sigCtx.beginPath(); sigCtx.moveTo(p.x, p.y); });
+    sigCanvas.addEventListener('touchmove', (e) => {
+      e.preventDefault();
+      if (!drawing) return;
+      const p = getPos(e);
+      sigCtx.lineWidth = 2.6;
+      sigCtx.lineCap = 'round';
+      sigCtx.strokeStyle = '#06281c';
+      sigCtx.lineTo(p.x, p.y);
+      sigCtx.stroke();
+    });
+    sigCanvas.addEventListener('touchend', () => { drawing = false; });
+
+    function openSigModal() { document.getElementById('sig-modal').classList.add('open'); }
+    function closeSigModal() { document.getElementById('sig-modal').classList.remove('open'); }
+    function clearSigPad() { sigCtx.clearRect(0, 0, sigCanvas.width, sigCanvas.height); }
+
+    function saveDrawnSig() {
+      localStorage.setItem(SIG_STORAGE_KEY, sigCanvas.toDataURL('image/png'));
+      applyStoredSignature();
+      closeSigModal();
+    }
+
+    function handleSigUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        localStorage.setItem(SIG_STORAGE_KEY, reader.result);
+        applyStoredSignature();
+        closeSigModal();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function resetDefaultSig() {
+      localStorage.removeItem(SIG_STORAGE_KEY);
+      applyStoredSignature();
+      closeSigModal();
+    }
+
+    // ==================== ISSUE & HISTORY API ====================
+    function applyIssuedData(certificate, qrDataUrl, verifyUrl, localVerifyUrl, qrDownloadUrl) {
+      currentIssuedCert = certificate;
+      document.getElementById('p-cert-id').innerText = certificate.certificateId;
+      document.getElementById('lor-cert-id').innerText = certificate.certificateId;
+      document.getElementById('toolbar-cert-id').innerText = `ID: ${certificate.certificateId}`;
+
+      if (qrDataUrl) {
+        const pImg = document.getElementById('p-qr-img');
+        pImg.src = qrDataUrl;
+        pImg.style.display = 'block';
+        document.getElementById('p-qr-placeholder').style.display = 'none';
+
+        const lImg = document.getElementById('lor-qr-img');
+        lImg.src = qrDataUrl;
+        lImg.style.display = 'block';
+      }
+
+      const banner = document.getElementById('issued-banner');
+      const link = document.getElementById('verify-link');
+      link.href = localVerifyUrl || verifyUrl;
+      link.innerText = verifyUrl;
+
+      const token = getAuthToken();
+      const qrBtn = document.getElementById('download-qr-btn');
+      qrBtn.href = `${qrDownloadUrl || `/api/certificates/qr/${certificate.certificateId}`}?token=${encodeURIComponent(token)}`;
+      qrBtn.download = `${certificate.studentName.replace(/\s+/g, '_')}-${certificate.certificateId}-QR.png`;
+      banner.style.display = 'block';
+    }
+
+    async function issueCertificate(e) {
+      e.preventDefault();
+      const btn = document.getElementById('issue-btn');
+      btn.disabled = true;
+      btn.innerText = 'Issuing & Locking in MongoDB...';
+
+      const payload = {
+        type: currentDocType,
+        certTitle: `CERTIFICATE ${document.getElementById('in-cert-title').value}`,
+        studentName: document.getElementById('in-name').value.trim(),
+        role: document.getElementById('in-role').value.trim(),
+        college: document.getElementById('in-college').value.trim(),
+        duration: document.getElementById('in-duration').value.trim(),
+        projectsCompleted: Number(document.getElementById('in-projects').value) || 1,
+        endorsementText: document.getElementById('in-note').value.trim(),
+      };
+
+      try {
+        const res = await fetch('/api/certificates', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${getAuthToken()}`,
+          },
+          body: JSON.stringify(payload),
+        });
+        if (res.status === 401 || res.status === 403) {
+          checkAdminSession();
+          return;
+        }
+        const data = await res.json();
+        if (data.success) {
+          applyIssuedData(data.certificate, data.qrDataUrl, data.verifyUrl, data.localVerifyUrl, data.qrDownloadUrl);
+          loadHistory();
+        } else {
+          alert(data.message || 'Could not issue certificate.');
+        }
+      } catch (err) {
+        alert('Error connecting to backend API.');
+      } finally {
+        btn.disabled = false;
+        btn.innerText = '⚡ Issue Official QR & Save to MongoDB';
+      }
+    }
+
+    async function loadHistory() {
+      try {
+        const res = await fetch('/api/certificates', {
+          headers: { Authorization: `Bearer ${getAuthToken()}` },
+        });
+        const data = await res.json();
+        if (data.success) renderHistory(data.certificates || []);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function renderHistory(items) {
+      const container = document.getElementById('history-container');
+      if (!items.length) {
+        container.innerText = 'No certificates issued yet.';
+        return;
+      }
+      container.innerHTML = items.slice(0, 6).map(c => `
+        <div class="history-item" onclick="loadExisting('${c.certificateId}')">
+          <div>
+            <strong>${c.studentName}</strong> • <span style="color:#044731;">${c.role}</span>
+            <div style="font-size: 0.7rem; color: var(--ink-500);">${c.certificateId}</div>
+          </div>
+          <span style="color: #044731; font-weight: 800;">Load →</span>
+        </div>
+      `).join('');
+    }
+
+    async function loadExisting(certId) {
+      const res = await fetch(`/api/certificates/verify/${certId}`);
+      const data = await res.json();
+      if (data.success) {
+        const c = data.certificate;
+        document.getElementById('in-name').value = c.studentName;
+        document.getElementById('in-role').value = c.role;
+        document.getElementById('in-college').value = c.college || '';
+        document.getElementById('in-duration').value = c.duration || '';
+        document.getElementById('in-projects').value = c.projectsCompleted || 1;
+        document.getElementById('in-note').value = c.endorsementText || '';
+        const mode = c.type === 'lor' ? 'lor' : 'appreciation';
+        setDocType(mode);
+        applyIssuedData(c, data.qrDataUrl, data.verifyUrl, data.localVerifyUrl, data.qrDownloadUrl);
+      }
+    }
+
+    // ==================== 300-DPI PNG & PDF DIRECT EXPORT ====================
+    async function captureCertificateCanvas() {
+      await document.fonts.ready;
+      const targetId = currentDocType === 'lor' ? 'lor-sheet' : 'experience-sheet';
+      const el = document.getElementById(targetId);
+
+      const canvas = await html2canvas(el, {
+        scale: 3,
+        useCORS: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+        onclone: (clonedDoc) => {
+          const clonedEl = clonedDoc.getElementById(targetId);
+          clonedEl.style.transform = 'none';
+          clonedEl.style.boxShadow = 'none';
+          clonedEl.style.margin = '0';
+        },
+      });
+      return canvas;
+    }
+
+    function getFileBaseName() {
+      const name = (document.getElementById('in-name').value.trim() || 'Certificate').replace(/[^a-zA-Z0-9]+/g, '_');
+      const role = (document.getElementById('in-role').value.trim() || '').replace(/[^a-zA-Z0-9]+/g, '_');
+      return role ? `NextGenGrowth_${name}_${role}` : `NextGenGrowth_${name}`;
+    }
+
+    async function downloadHighResPNG() {
+      const btn = document.getElementById('dl-png-btn');
+      const orig = btn.innerText;
+      btn.disabled = true;
+      btn.innerText = 'Rendering 300 DPI...';
+      try {
+        const canvas = await captureCertificateCanvas();
+        const a = document.createElement('a');
+        a.download = `${getFileBaseName()}.png`;
+        a.href = canvas.toDataURL('image/png', 1.0);
+        a.click();
+      } catch (err) {
+        alert('Export failed: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = orig;
+      }
+    }
+
+    async function downloadHighResPDF() {
+      const btn = document.getElementById('dl-pdf-btn');
+      const orig = btn.innerText;
+      btn.disabled = true;
+      btn.innerText = 'Building PDF...';
+      try {
+        const canvas = await captureCertificateCanvas();
+        const imgData = canvas.toDataURL('image/jpeg', 0.98);
+        const { jsPDF } = window.jspdf;
+        const isPortrait = currentDocType === 'lor';
+        const pdf = new jsPDF({
+          orientation: isPortrait ? 'portrait' : 'landscape',
+          unit: 'mm',
+          format: 'a4',
+        });
+        const w = pdf.internal.pageSize.getWidth();
+        const h = pdf.internal.pageSize.getHeight();
+        pdf.addImage(imgData, 'JPEG', 0, 0, w, h);
+        pdf.save(`${getFileBaseName()}.pdf`);
+      } catch (err) {
+        alert('PDF export failed: ' + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = orig;
+      }
+    }
+
+    // Boot
+    applyStoredSignature();
+    updateLivePreview();
+    scalePreviewCanvas();
+    checkAdminSession();
+  </script>
+</body>
+</html>
