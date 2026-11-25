@@ -367,8 +367,8 @@
       position: absolute;
       top: 0;
       left: 0;
-      width: 245px;
-      height: 245px;
+      width: 200px;
+      height: 200px;
       z-index: 8;
       pointer-events: none;
     }
@@ -377,8 +377,8 @@
       position: absolute;
       bottom: 0;
       right: 0;
-      width: 245px;
-      height: 245px;
+      width: 200px;
+      height: 200px;
       z-index: 8;
       pointer-events: none;
     }
@@ -386,10 +386,10 @@
     /* Inner Content Layout */
     .cert-content {
       position: relative;
-      z-index: 10;
+      z-index: 12;
       width: 100%;
       height: 100%;
-      padding: 26px 64px 28px;
+      padding: 26px 68px 28px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -562,10 +562,11 @@
     .cert-bottom-bar {
       width: 100%;
       display: grid;
-      grid-template-columns: 1.1fr 1.25fr 1.05fr 0.72fr;
+      grid-template-columns: 0.98fr 1.32fr 1.05fr 0.85fr;
       align-items: center;
       margin-top: 8px;
       padding-bottom: 4px;
+      padding-right: 42px;
     }
 
     .col-brand {
@@ -606,25 +607,27 @@
     .udyam-top-pill {
       background: #04432f;
       color: #ffffff;
-      font-size: 10px;
+      font-size: 9.5px;
       font-weight: 800;
       letter-spacing: 0.08em;
-      padding: 5px 18px;
+      padding: 5px 16px;
       border-radius: 999px;
       z-index: 2;
       margin-bottom: -4px;
+      white-space: nowrap;
     }
 
     .udyam-num-box {
       border: 1.5px solid #c9a145;
       background: #fffdf7;
       border-radius: 8px;
-      padding: 7px 18px 5px;
+      padding: 7px 14px 5px;
       font-family: 'Plus Jakarta Sans', sans-serif;
       font-weight: 800;
-      font-size: 15.5px;
+      font-size: 14.5px;
       letter-spacing: 0.04em;
       color: #081e16;
+      white-space: nowrap;
     }
 
     .col-sig {
@@ -747,10 +750,10 @@
 
     .lor-inner-content {
       position: relative;
-      z-index: 10;
+      z-index: 12;
       width: 100%;
       height: 100%;
-      padding: 46px 58px 42px;
+      padding: 38px 54px 36px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -760,14 +763,15 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      padding-bottom: 18px;
+      padding-bottom: 14px;
+      padding-left: 38px;
       border-bottom: 1.5px solid rgba(201, 161, 69, 0.55);
-      margin-bottom: 24px;
+      margin-bottom: 16px;
     }
 
     .lor-title-wrap {
       text-align: center;
-      margin: 6px 0 22px;
+      margin: 4px 0 16px;
     }
 
     .lor-kicker {
@@ -782,12 +786,12 @@
     .lor-title {
       text-align: center;
       font-family: 'Cinzel', Georgia, serif;
-      font-size: 25px;
+      font-size: 24px;
       font-weight: 700;
       letter-spacing: 0.14em;
       text-transform: uppercase;
       color: #033d2a;
-      padding-bottom: 8px;
+      padding-bottom: 6px;
       border-bottom: 2px solid #c9a145;
       display: inline-block;
     }
@@ -798,19 +802,19 @@
       align-items: center;
       background: linear-gradient(90deg, rgba(212, 175, 55, 0.14), rgba(16, 185, 129, 0.08), rgba(212, 175, 55, 0.14));
       border-left: 3px solid #044731;
-      padding: 10px 16px;
+      padding: 9px 16px;
       border-radius: 6px;
-      margin-bottom: 22px;
+      margin-bottom: 16px;
       font-size: 13px;
       color: #0a1f17;
     }
 
     .lor-para {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 14.3px;
-      line-height: 1.78;
+      font-size: 13.8px;
+      line-height: 1.66;
       color: #16241d;
-      margin-bottom: 15px;
+      margin-bottom: 12px;
       text-align: justify;
     }
 
@@ -882,9 +886,9 @@
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
       }
-      @page { size: A4 landscape; margin: 0; }
     }
   </style>
+  <style id="dynamic-page-style">@page { size: A4 landscape; margin: 0; }</style>
 </head>
 <body>
 
@@ -1215,24 +1219,54 @@
             <path d="M-40 760 C 200 860, 480 650, 840 790" stroke="#d9c698" stroke-width="1" stroke-opacity="0.24" />
           </svg>
 
-          <!-- Top-Left & Bottom-Right Scaled Luxury Corner Ribbons -->
-          <svg class="corner-ribbon-tl" style="width:155px;height:155px;" viewBox="0 0 245 245" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="0,0 238,0 0,238" fill="url(#tlGold)" />
-            <polygon points="0,0 220,0 0,220" fill="url(#tlGreen1)" />
-            <polygon points="0,0 175,0 0,175" fill="url(#tlGreen2)" />
-            <polygon points="0,206 206,0 218,0 0,218" fill="url(#tlGold)" opacity="0.95" />
+          <!-- Top-Left & Bottom-Right Scaled Luxury Corner Ribbons (Self-Contained Gradients) -->
+          <svg class="corner-ribbon-tl" style="width:142px;height:142px;" viewBox="0 0 245 245" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="lorTlGold" x1="0%" y1="100%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#c08e27" />
+                <stop offset="50%" stop-color="#f7e291" />
+                <stop offset="100%" stop-color="#b98620" />
+              </linearGradient>
+              <linearGradient id="lorTlGreen1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#045138" />
+                <stop offset="100%" stop-color="#022c1e" />
+              </linearGradient>
+              <linearGradient id="lorTlGreen2" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#096f4d" />
+                <stop offset="100%" stop-color="#03442e" />
+              </linearGradient>
+            </defs>
+            <polygon points="0,0 238,0 0,238" fill="url(#lorTlGold)" />
+            <polygon points="0,0 220,0 0,220" fill="url(#lorTlGreen1)" />
+            <polygon points="0,0 175,0 0,175" fill="url(#lorTlGreen2)" />
+            <polygon points="0,206 206,0 218,0 0,218" fill="url(#lorTlGold)" opacity="0.95" />
           </svg>
-          <svg class="corner-ribbon-br" style="width:155px;height:155px;" viewBox="0 0 245 245" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="245,245 7,245 245,7" fill="url(#brGold)" />
-            <polygon points="245,245 25,245 245,25" fill="url(#brGreen1)" />
-            <polygon points="245,245 70,245 245,70" fill="url(#brGreen2)" />
-            <polygon points="245,39 39,245 27,245 245,27" fill="url(#brGold)" opacity="0.95" />
+          <svg class="corner-ribbon-br" style="width:142px;height:142px;" viewBox="0 0 245 245" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="lorBrGold" x1="0%" y1="100%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#b98620" />
+                <stop offset="50%" stop-color="#f7e291" />
+                <stop offset="100%" stop-color="#c08e27" />
+              </linearGradient>
+              <linearGradient id="lorBrGreen1" x1="100%" y1="100%" x2="0%" y2="0%">
+                <stop offset="0%" stop-color="#045138" />
+                <stop offset="100%" stop-color="#022c1e" />
+              </linearGradient>
+              <linearGradient id="lorBrGreen2" x1="100%" y1="100%" x2="0%" y2="0%">
+                <stop offset="0%" stop-color="#096f4d" />
+                <stop offset="100%" stop-color="#03442e" />
+              </linearGradient>
+            </defs>
+            <polygon points="245,245 7,245 245,7" fill="url(#lorBrGold)" />
+            <polygon points="245,245 25,245 245,25" fill="url(#lorBrGreen1)" />
+            <polygon points="245,245 70,245 245,70" fill="url(#lorBrGreen2)" />
+            <polygon points="245,39 39,245 27,245 245,27" fill="url(#lorBrGold)" opacity="0.95" />
           </svg>
 
           <div class="lor-inner-content">
             <div>
               <div class="lor-header">
-                <div style="display: flex; align-items: center; gap: 14px; padding-left: 28px;">
+                <div style="display: flex; align-items: center; gap: 14px;">
                   <img src="/android-chrome-512x512.png" alt="NextGenGrowth" style="height: 62px; width: 62px; border-radius: 50%; box-shadow: 0 4px 14px rgba(3,53,36,0.18);" onerror="this.src='/logo.png'" />
                   <div>
                     <h3 style="font-size: 1.25rem; font-weight: 800; letter-spacing: 0.08em; color: #033d2a;">NEXTGENGROWTH</h3>
@@ -1272,7 +1306,7 @@
               </p>
             </div>
 
-            <div style="display: flex; justify-content: space-between; align-items: flex-end; border-top: 1.5px solid rgba(201, 161, 69, 0.55); padding-top: 16px; padding-right: 36px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-end; border-top: 1.5px solid rgba(201, 161, 69, 0.55); padding-top: 16px; padding-right: 54px;">
               <div>
                 <div id="lor-sig-slot" style="height: 46px; margin-bottom: 2px;"></div>
                 <div style="width: 210px; height: 1.2px; background: #1a2d24; margin-bottom: 5px;"></div>
@@ -1421,6 +1455,10 @@
       document.getElementById('title-select-wrap').style.display = type === 'appreciation' ? 'block' : 'none';
       document.getElementById('experience-sheet').style.display = type === 'appreciation' ? 'block' : 'none';
       document.getElementById('lor-sheet').style.display = type === 'lor' ? 'flex' : 'none';
+      const pageStyleEl = document.getElementById('dynamic-page-style');
+      if (pageStyleEl) {
+        pageStyleEl.textContent = type === 'lor' ? '@page { size: A4 portrait; margin: 0; }' : '@page { size: A4 landscape; margin: 0; }';
+      }
       if (type === 'lor') {
         document.getElementById('cert-viewport').style.height = 'auto';
       } else {
