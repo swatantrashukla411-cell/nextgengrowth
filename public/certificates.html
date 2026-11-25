@@ -941,8 +941,8 @@
           <div class="form-group" id="title-select-wrap">
             <label class="form-label">Certificate Type</label>
             <select class="form-select" id="in-cert-title" onchange="updateLivePreview()">
+              <option value="OF INTERNSHIP" selected>CERTIFICATE OF INTERNSHIP</option>
               <option value="OF APPRECIATION">CERTIFICATE OF APPRECIATION</option>
-              <option value="OF INTERNSHIP">CERTIFICATE OF INTERNSHIP</option>
               <option value="OF EXCELLENCE">CERTIFICATE OF EXCELLENCE</option>
               <option value="OF COMPLETION">CERTIFICATE OF COMPLETION</option>
             </select>
@@ -963,14 +963,14 @@
             <input type="text" class="form-input" id="in-college" value="NextGenGrowth Fellow" oninput="updateLivePreview()" placeholder="e.g. Delhi University" />
           </div>
 
-          <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: 8px;">
+          <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 8px;">
             <div class="form-group">
-              <label class="form-label">Duration (Optional)</label>
-              <input type="text" class="form-input" id="in-duration" value="2026" oninput="updateLivePreview()" placeholder="e.g. Oct - Nov 2026" />
+              <label class="form-label">Internship Duration *</label>
+              <input type="text" class="form-input" id="in-duration" value="15 August 2026 – 15 October 2026" oninput="updateLivePreview()" placeholder="e.g. 15 August 2026 – 15 October 2026" />
             </div>
             <div class="form-group">
               <label class="form-label">Sprints Done</label>
-              <input type="number" class="form-input" id="in-projects" value="5" min="1" oninput="updateLivePreview()" />
+              <input type="number" class="form-input" id="in-projects" value="8" min="1" oninput="updateLivePreview()" />
             </div>
           </div>
 
@@ -1287,7 +1287,8 @@
 
               <div class="lor-meta-strip">
                 <div><strong>Candidate:</strong> <span id="lor-meta-name">AYUSH SINGH</span></div>
-                <div><strong>Department / Role:</strong> <span id="lor-meta-role">MANAGEMENT</span></div>
+                <div><strong>Internship Role:</strong> <span id="lor-meta-role">MANAGEMENT</span></div>
+                <div><strong>Tenure:</strong> <span id="lor-meta-duration">15 Aug 2026 – 15 Oct 2026</span></div>
               </div>
 
               <p class="lor-para"><strong>To Whomsoever It May Concern,</strong></p>
@@ -1470,8 +1471,8 @@
     function updateLivePreview() {
       const name = (document.getElementById('in-name').value.trim() || 'AYUSH SINGH').toUpperCase();
       const role = (document.getElementById('in-role').value.trim() || 'MANAGEMENT').toUpperCase();
-      const college = document.getElementById('in-college').value.trim() || 'NextGenGrowth Fellow';
-      const duration = document.getElementById('in-duration').value.trim() || '2026';
+      const college = document.getElementById('in-college').value.trim();
+      const duration = document.getElementById('in-duration').value.trim() || '15 August 2026 – 15 October 2026';
       const projects = document.getElementById('in-projects').value || '1';
       const certSubtitle = document.getElementById('in-cert-title').value;
       const customNote = document.getElementById('in-note').value.trim();
@@ -1497,20 +1498,29 @@
 
       if (customNote) {
         document.getElementById('p-statement-1').innerText = customNote;
+      } else if (certSubtitle === 'OF INTERNSHIP') {
+        document.getElementById('p-statement-1').innerHTML =
+          `For successfully completing a <strong>2-Month Internship</strong> in <strong>${role}</strong> at <strong>NextGenGrowth</strong> from <strong>${duration}</strong>.`;
+        document.getElementById('p-statement-2').innerText =
+          'Throughout the internship tenure, your commitment, professionalism, responsibility, and willingness to learn and execute were truly commendable. We wish you continued growth and excellence in all your future endeavors.';
       } else {
         document.getElementById('p-statement-1').innerHTML =
           'In recognition of your valuable contribution, dedication, responsibility, and sincere efforts towards the work of <strong>NextGenGrowth</strong>.';
+        document.getElementById('p-statement-2').innerText =
+          'Your commitment, professionalism, and willingness to learn and contribute have been appreciated. We recognize your efforts and wish you continued growth, success, and excellence in all your future endeavors.';
       }
 
       const todayStr = new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
       document.getElementById('lor-date').innerText = `Date: ${todayStr}`;
       document.getElementById('lor-meta-name').innerText = name;
       document.getElementById('lor-meta-role').innerText = role;
+      document.getElementById('lor-meta-duration').innerText = duration;
+      const showCollege = college && !/^nextgengrowth/i.test(college);
       document.getElementById('lor-p1').innerHTML =
-        `It gives me immense pride and pleasure to strongly recommend <strong>${name}</strong>${college ? ` (<em>${college}</em>)` : ''}, who worked closely with <strong>NextGenGrowth</strong> in the capacity of <strong>${role}</strong> during <strong>${duration}</strong>.`;
+        `It gives me immense pride and pleasure to strongly recommend <strong>${name}</strong>${showCollege ? ` (<em>${college}</em>)` : ''}, who successfully completed an intensive internship at <strong>NextGenGrowth</strong> in the capacity of <strong>${role}</strong> from <strong>${duration}</strong>.`;
       document.getElementById('lor-p2').innerHTML = customNote
         ? customNote
-        : `During their tenure, ${name} took end-to-end ownership of <strong>${projects} high-priority project sprint(s)</strong> and core team initiatives, consistently demonstrating sharp analytical thinking, operational discipline, and swift problem-solving under fast-paced startup conditions.`;
+        : `During the internship period, ${name} took end-to-end ownership of <strong>${projects} high-priority project sprint(s)</strong> and core team initiatives, consistently demonstrating sharp analytical thinking, operational discipline, and swift problem-solving under fast-paced startup conditions.`;
     }
 
     // ==================== SIGNATURE MANAGEMENT ====================
@@ -1731,6 +1741,11 @@
         document.getElementById('in-duration').value = c.duration || '';
         document.getElementById('in-projects').value = c.projectsCompleted || 1;
         document.getElementById('in-note').value = c.endorsementText || '';
+        const titleSel = document.getElementById('in-cert-title');
+        const cleanedTitle = String(c.certTitle || '').replace(/^CERTIFICATE\s+/i, '').toUpperCase();
+        if ([...titleSel.options].some(o => o.value === cleanedTitle)) {
+          titleSel.value = cleanedTitle;
+        }
         const mode = c.type === 'lor' ? 'lor' : 'appreciation';
         setDocType(mode);
         applyIssuedData(c, data.qrDataUrl, data.verifyUrl, data.localVerifyUrl, data.qrDownloadUrl);
