@@ -495,8 +495,8 @@
       align-items: center;
       justify-content: center;
       min-width: 390px;
-      max-width: 720px;
-      height: 42px;
+      max-width: 920px;
+      height: 44px;
       padding: 0 54px;
       margin-top: 8px;
     }
@@ -526,7 +526,7 @@
     /* Body Copy & Champagne Journey Strip */
     .cert-copy-block {
       text-align: center;
-      max-width: 850px;
+      max-width: 960px;
       margin-top: 8px;
     }
 
@@ -801,18 +801,18 @@
       flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
-      gap: 6px 14px;
+      gap: 5px 12px;
       background: linear-gradient(90deg, rgba(212, 175, 55, 0.14), rgba(16, 185, 129, 0.08), rgba(212, 175, 55, 0.14));
       border-left: 3px solid #044731;
       padding: 10px 16px;
       border-radius: 6px;
       margin-bottom: 16px;
-      font-size: 12.2px;
+      font-size: 11.8px;
       color: #0a1f17;
     }
 
     .lor-meta-item {
-      white-space: nowrap;
+      max-width: 100%;
     }
 
     .lor-para {
@@ -1294,7 +1294,7 @@
               <div class="lor-meta-strip">
                 <div class="lor-meta-item"><strong>Candidate:</strong> <span id="lor-meta-name">AYUSH SINGH</span></div>
                 <div class="lor-meta-item"><strong>Internship Role:</strong> <span id="lor-meta-role">MANAGEMENT</span></div>
-                <div class="lor-meta-item"><strong>Tenure:</strong> <span id="lor-meta-duration">15 August 2026 – 15 October 2026</span></div>
+                <div class="lor-meta-item" style="white-space: nowrap;"><strong>Tenure:</strong> <span id="lor-meta-duration">15 August 2026 – 15 October 2026</span></div>
               </div>
 
               <p class="lor-para"><strong>To Whomsoever It May Concern,</strong></p>
@@ -1486,7 +1486,21 @@
 
       document.getElementById('p-cert-subtitle').innerText = certSubtitle;
       document.getElementById('p-name').innerText = name;
-      document.getElementById('p-role-ribbon').innerText = role;
+      const ribbonTextEl = document.getElementById('p-role-ribbon');
+      ribbonTextEl.innerText = role;
+      if (role.length > 34) {
+        ribbonTextEl.style.fontSize = '12.5px';
+        ribbonTextEl.style.letterSpacing = '0.18em';
+        ribbonTextEl.style.marginRight = '-0.18em';
+      } else if (role.length > 24) {
+        ribbonTextEl.style.fontSize = '14px';
+        ribbonTextEl.style.letterSpacing = '0.24em';
+        ribbonTextEl.style.marginRight = '-0.24em';
+      } else {
+        ribbonTextEl.style.fontSize = '16px';
+        ribbonTextEl.style.letterSpacing = '0.36em';
+        ribbonTextEl.style.marginRight = '-0.36em';
+      }
       document.getElementById('p-sig-svg').innerText = signatory;
       document.getElementById('p-sig-label').innerText = signatory.toUpperCase();
       if (!localStorage.getItem(SIG_STORAGE_KEY)) {
@@ -1505,8 +1519,9 @@
       if (customNote) {
         document.getElementById('p-statement-1').innerText = customNote;
       } else if (certSubtitle === 'OF INTERNSHIP') {
+        const prep = /^(MANAGEMENT|MARKETING|OPERATIONS|FINANCE|DESIGN|DEVELOPMENT|HR)$/i.test(role) ? 'in' : 'as';
         document.getElementById('p-statement-1').innerHTML =
-          `For successfully completing a <strong>2-Month Internship</strong> in <strong>${role}</strong> at <strong>NextGenGrowth</strong><br/>from <strong style="white-space: nowrap;">${duration}</strong>.`;
+          `For successfully completing a <strong>2-Month Internship</strong> ${prep} <strong style="white-space: nowrap;">${role}</strong> at <strong>NextGenGrowth</strong><br/>from <strong style="white-space: nowrap;">${duration}</strong>.`;
         document.getElementById('p-statement-2').innerText =
           'Throughout the internship tenure, your commitment, professionalism, responsibility, and willingness to learn and execute were truly commendable. We wish you continued growth and excellence in all your future endeavors.';
       } else {
