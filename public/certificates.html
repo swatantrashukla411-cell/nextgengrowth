@@ -798,15 +798,21 @@
 
     .lor-meta-strip {
       display: flex;
+      flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
+      gap: 6px 14px;
       background: linear-gradient(90deg, rgba(212, 175, 55, 0.14), rgba(16, 185, 129, 0.08), rgba(212, 175, 55, 0.14));
       border-left: 3px solid #044731;
-      padding: 9px 16px;
+      padding: 10px 16px;
       border-radius: 6px;
       margin-bottom: 16px;
-      font-size: 13px;
+      font-size: 12.2px;
       color: #0a1f17;
+    }
+
+    .lor-meta-item {
+      white-space: nowrap;
     }
 
     .lor-para {
@@ -1286,9 +1292,9 @@
               </div>
 
               <div class="lor-meta-strip">
-                <div><strong>Candidate:</strong> <span id="lor-meta-name">AYUSH SINGH</span></div>
-                <div><strong>Internship Role:</strong> <span id="lor-meta-role">MANAGEMENT</span></div>
-                <div><strong>Tenure:</strong> <span id="lor-meta-duration">15 Aug 2026 – 15 Oct 2026</span></div>
+                <div class="lor-meta-item"><strong>Candidate:</strong> <span id="lor-meta-name">AYUSH SINGH</span></div>
+                <div class="lor-meta-item"><strong>Internship Role:</strong> <span id="lor-meta-role">MANAGEMENT</span></div>
+                <div class="lor-meta-item"><strong>Tenure:</strong> <span id="lor-meta-duration">15 August 2026 – 15 October 2026</span></div>
               </div>
 
               <p class="lor-para"><strong>To Whomsoever It May Concern,</strong></p>
@@ -1500,7 +1506,7 @@
         document.getElementById('p-statement-1').innerText = customNote;
       } else if (certSubtitle === 'OF INTERNSHIP') {
         document.getElementById('p-statement-1').innerHTML =
-          `For successfully completing a <strong>2-Month Internship</strong> in <strong>${role}</strong> at <strong>NextGenGrowth</strong> from <strong>${duration}</strong>.`;
+          `For successfully completing a <strong>2-Month Internship</strong> in <strong>${role}</strong> at <strong>NextGenGrowth</strong><br/>from <strong style="white-space: nowrap;">${duration}</strong>.`;
         document.getElementById('p-statement-2').innerText =
           'Throughout the internship tenure, your commitment, professionalism, responsibility, and willingness to learn and execute were truly commendable. We wish you continued growth and excellence in all your future endeavors.';
       } else {
@@ -1516,11 +1522,12 @@
       document.getElementById('lor-meta-role').innerText = role;
       document.getElementById('lor-meta-duration').innerText = duration;
       const showCollege = college && !/^nextgengrowth/i.test(college);
+      const sprintWord = Number(projects) === 1 ? 'project sprint' : 'project sprints';
       document.getElementById('lor-p1').innerHTML =
-        `It gives me immense pride and pleasure to strongly recommend <strong>${name}</strong>${showCollege ? ` (<em>${college}</em>)` : ''}, who successfully completed an intensive internship at <strong>NextGenGrowth</strong> in the capacity of <strong>${role}</strong> from <strong>${duration}</strong>.`;
+        `It gives me immense pride and pleasure to strongly recommend <strong>${name}</strong>${showCollege ? ` (<em>${college}</em>)` : ''}, who successfully completed an intensive internship at <strong>NextGenGrowth</strong> in the capacity of <strong>${role}</strong> <span style="white-space: nowrap;">from <strong>${duration}</strong></span>.`;
       document.getElementById('lor-p2').innerHTML = customNote
         ? customNote
-        : `During the internship period, ${name} took end-to-end ownership of <strong>${projects} high-priority project sprint(s)</strong> and core team initiatives, consistently demonstrating sharp analytical thinking, operational discipline, and swift problem-solving under fast-paced startup conditions.`;
+        : `During the internship period, ${name} took end-to-end ownership of <strong>${projects} high-priority ${sprintWord}</strong> and core team initiatives, consistently demonstrating sharp analytical thinking, operational discipline, and swift problem-solving under fast-paced startup conditions.`;
     }
 
     // ==================== SIGNATURE MANAGEMENT ====================
